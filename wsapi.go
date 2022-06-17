@@ -408,6 +408,22 @@ func (s *Session) UpdateStatusComplex(usd UpdateStatusData) (err error) {
 	return
 }
 
+func (s *Session) SendWsData(data string) (err error) {
+	s.RLock()
+	defer s.RUnlock()
+	if s.wsConn == nil {
+		return ErrWSNotFound
+	}
+
+	s.wsMutex.Lock()
+	w, _ := s.wsConn.NextWriter(websocket.TextMessage)
+	w.Write([]byte(data))
+	w.Close()
+	s.wsMutex.Unlock()
+
+	return
+}
+
 type requestGuildMembersData struct {
 	// TODO: Deprecated. Use string instead of []string
 	GuildIDs  []string  `json:"guild_id"`
