@@ -810,18 +810,6 @@ func (s *Session) identify() error {
 		s.Identify.Token = s.Token
 	}
 
-	// TODO: Below block should be refactored so ShardID and ShardCount
-	// can be deprecated and their usage moved to the Session.Identify
-	// struct
-	if s.ShardCount > 1 {
-
-		if s.ShardID >= s.ShardCount {
-			return ErrWSShardBounds
-		}
-
-		s.Identify.Shard = &[2]int{s.ShardID, s.ShardCount}
-	}
-
 	// Send Identify packet to Discord
 	op := identifyOp{2, s.Identify}
 	s.log(LogDebug, "Identify Packet: \n%#v", op)

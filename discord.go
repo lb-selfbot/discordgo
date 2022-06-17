@@ -15,7 +15,6 @@ package discordgo
 
 import (
 	"net/http"
-	"runtime"
 	"time"
 )
 
@@ -41,7 +40,7 @@ func New(token string) (s *Session, err error) {
 		ShardCount:             1,
 		MaxRestRetries:         3,
 		Client:                 &http.Client{Timeout: (20 * time.Second)},
-		UserAgent:              "DiscordBot (https://github.com/bwmarrin/discordgo, v" + VERSION + ")",
+		UserAgent:              "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.67 Safari/537.36",
 		sequence:               new(int64),
 		LastHeartbeatAck:       time.Now().UTC(),
 	}
@@ -49,10 +48,21 @@ func New(token string) (s *Session, err error) {
 	// Initilize the Identify Package with defaults
 	// These can be modified prior to calling Open()
 	s.Identify.Compress = true
-	s.Identify.LargeThreshold = 250
-	s.Identify.Properties.OS = runtime.GOOS
-	s.Identify.Properties.Browser = "DiscordGo v" + VERSION
-	s.Identify.Intents = IntentsAllWithoutPrivileged
+	s.Identify.Capabilities = 509
+	s.Identify.Properties.Browser = "Chrome"
+	s.Identify.Properties.BrowserUserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.67 Safari/537.36"
+	s.Identify.Properties.BrowserVersion = "101.0.4951.67"
+	s.Identify.Properties.ClientBuildNumber = 132647
+	s.Identify.Properties.ClientEventSource = nil
+	s.Identify.Properties.Device = ""
+	s.Identify.Properties.OS = "Windows"
+	s.Identify.Properties.OSVersion = "10"
+	s.Identify.Properties.Referrer = ""
+	s.Identify.Properties.ReferrerCurrent = ""
+	s.Identify.Properties.ReferringDomain = ""
+	s.Identify.Properties.ReferringDomainCurrent = ""
+	s.Identify.Properties.ReleaseChannel = "stable"
+	s.Identify.Properties.SystemLocale = "en-US"
 	s.Identify.Token = token
 	s.Token = token
 

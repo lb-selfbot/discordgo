@@ -1748,23 +1748,30 @@ const (
 // Identify is sent during initial handshake with the discord gateway.
 // https://discord.com/developers/docs/topics/gateway#identify
 type Identify struct {
-	Token          string              `json:"token"`
-	Properties     IdentifyProperties  `json:"properties"`
-	Compress       bool                `json:"compress"`
-	LargeThreshold int                 `json:"large_threshold"`
-	Shard          *[2]int             `json:"shard,omitempty"`
-	Presence       GatewayStatusUpdate `json:"presence,omitempty"`
-	Intents        Intent              `json:"intents"`
+	Token        string              `json:"token"`
+	Properties   IdentifyProperties  `json:"properties"`
+	Compress     bool                `json:"compress"`
+	Capabilities int                 `json:"capabilities"` // 509
+	Presence     GatewayStatusUpdate `json:"presence,omitempty"`
 }
 
 // IdentifyProperties contains the "properties" portion of an Identify packet
 // https://discord.com/developers/docs/topics/gateway#identify-identify-connection-properties
 type IdentifyProperties struct {
-	OS              string `json:"$os"`
-	Browser         string `json:"$browser"`
-	Device          string `json:"$device"`
-	Referer         string `json:"$referer"`
-	ReferringDomain string `json:"$referring_domain"`
+	Browser                string `json:"browser"`                  // Chrome
+	BrowserUserAgent       string `json:"browser_user_agent"`       // Chrome User Agent
+	BrowserVersion         string `json:"browser_version"`          // Chrome Version
+	ClientBuildNumber      int    `json:"client_build_number"`      // Discord Build Number
+	ClientEventSource      any    `json:"client_event_source"`      // null
+	Device                 string `json:"device"`                   // Empty String
+	OS                     string `json:"os"`                       // Windows
+	OSVersion              string `json:"os_version"`               // Windows Version
+	Referrer               string `json:"referrer"`                 // Empty String
+	ReferrerCurrent        string `json:"referrer_current"`         // Empty String
+	ReferringDomain        string `json:"referring_domain"`         // Empty String
+	ReferringDomainCurrent string `json:"referring_domain_current"` // Empty String
+	ReleaseChannel         string `json:"release_channel"`          // "stable"
+	SystemLocale           string `json:"system_locale"`            // "en-US"
 }
 
 // StageInstance holds information about a live stage.
