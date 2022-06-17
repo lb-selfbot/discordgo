@@ -58,7 +58,6 @@ func main() {
 			}
 		}
 	})
-	s.Identify.Intents = discordgo.MakeIntent(discordgo.IntentsAllWithoutPrivileged)
 
 	err := s.Open()
 	if err != nil {
