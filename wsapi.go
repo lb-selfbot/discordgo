@@ -21,6 +21,7 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/bitly/go-simplejson"
 	"github.com/gorilla/websocket"
 )
 
@@ -322,8 +323,9 @@ func (s *Session) heartbeat(wsConn *websocket.Conn, listening <-chan interface{}
 
 // UpdateStatusData ia provided to UpdateStatusComplex()
 type UpdateStatusData struct {
-	IdleSince  *int        `json:"since"`
-	Activities []*Activity `json:"activities"`
+	IdleSince  float64     `json:"since"`
+	Activities []*Activity `json:"activities,omitempty"`
+	Game       *Activity   `json:"game"`
 	AFK        bool        `json:"afk"`
 	Status     string      `json:"status"`
 }
@@ -333,21 +335,21 @@ type updateStatusOp struct {
 	Data UpdateStatusData `json:"d"`
 }
 
-func newUpdateStatusData(idle int, activityType ActivityType, name, url string) *UpdateStatusData {
+func newUpdateStatusData(idle float64, activityType ActivityType, name, url string) *UpdateStatusData {
 	usd := &UpdateStatusData{
 		Status: "online",
 	}
 
 	if idle > 0 {
-		usd.IdleSince = &idle
+		usd.IdleSince = idle
 	}
 
 	if name != "" {
-		usd.Activities = []*Activity{{
-			Name: name,
-			Type: activityType,
-			URL:  url,
-		}}
+		// usd.Activities = []*Activity{{
+		// 	Name: name,
+		// 	Type: activityType,
+		// 	URL:  url,
+		// }}
 	}
 
 	return usd
@@ -357,7 +359,7 @@ func newUpdateStatusData(idle int, activityType ActivityType, name, url string) 
 // If idle>0 then set status to idle.
 // If name!="" then set game.
 // if otherwise, set status to active, and no activity.
-func (s *Session) UpdateGameStatus(idle int, name string) (err error) {
+func (s *Session) UpdateGameStatus(idle float64, name string) (err error) {
 	return s.UpdateStatusComplex(*newUpdateStatusData(idle, ActivityTypeGame, name, ""))
 }
 
@@ -366,7 +368,7 @@ func (s *Session) UpdateGameStatus(idle int, name string) (err error) {
 // If name!="" then set game.
 // If name!="" and url!="" then set the status type to streaming with the URL set.
 // if otherwise, set status to active, and no game.
-func (s *Session) UpdateStreamingStatus(idle int, name string, url string) (err error) {
+func (s *Session) UpdateStreamingStatus(idle float64, name string, url string) (err error) {
 	gameType := ActivityTypeGame
 	if url != "" {
 		gameType = ActivityTypeStreaming
@@ -391,9 +393,9 @@ func (s *Session) UpdateStatusComplex(usd UpdateStatusData) (err error) {
 	// and am fixing this bug accordingly. Because sending `null` for `activities` instantly
 	// disconnects us, I think that disallowing it from being sent in `UpdateStatusComplex`
 	// isn't that big of an issue.
-	if usd.Activities == nil {
-		usd.Activities = make([]*Activity, 0)
-	}
+	// if usd.Activities == nil {
+	// 	 usd.Activities = make([]*Activity, 0)
+	// }
 
 	s.RLock()
 	defer s.RUnlock()
@@ -624,6 +626,16 @@ func (s *Session) onEvent(messageType int, message []byte) (*Event, error) {
 
 	// Store the message sequence
 	atomic.StoreInt64(s.sequence, e.Sequence)
+
+	// Discord made some changes so now the actual user_guild_settings and read_state
+	// are in the entries field.
+	if e.Type == "READY" {
+		jsonData, _ := simplejson.NewJson(e.RawData)
+		jsonData.Set("user_guild_settings", jsonData.Get("user_guild_settings").Get("entries"))
+		jsonData.Set("read_state", jsonData.Get("read_state").Get("entries"))
+		rawData, _ := jsonData.MarshalJSON()
+		e.RawData = rawData
+	}
 
 	// Map event to registered event handlers and pass it along to any registered handlers.
 	if eh, ok := registeredInterfaceProviders[e.Type]; ok {

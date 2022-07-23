@@ -1664,15 +1664,15 @@ type Activity struct {
 	Name          string       `json:"name"`
 	Type          ActivityType `json:"type"`
 	URL           string       `json:"url,omitempty"`
-	CreatedAt     time.Time    `json:"created_at"`
+	CreatedAt     *time.Time   `json:"created_at,omitempty"`
 	ApplicationID string       `json:"application_id,omitempty"`
 	State         string       `json:"state,omitempty"`
 	Details       string       `json:"details,omitempty"`
-	Timestamps    TimeStamps   `json:"timestamps,omitempty"`
-	Emoji         Emoji        `json:"emoji,omitempty"`
-	Party         Party        `json:"party,omitempty"`
-	Assets        Assets       `json:"assets,omitempty"`
-	Secrets       Secrets      `json:"secrets,omitempty"`
+	Timestamps    *TimeStamps  `json:"timestamps,omitempty"`
+	Emoji         *Emoji       `json:"emoji,omitempty"`
+	Party         *Party       `json:"party,omitempty"`
+	Assets        *Assets      `json:"assets,omitempty"`
+	Secrets       *Secrets     `json:"secrets,omitempty"`
 	Instance      bool         `json:"instance,omitempty"`
 	Flags         int          `json:"flags,omitempty"`
 }
@@ -1699,18 +1699,19 @@ func (activity *Activity) UnmarshalJSON(b []byte) error {
 	if err != nil {
 		return err
 	}
-	activity.CreatedAt = time.Unix(0, temp.CreatedAt*1000000)
+	timeT := time.Unix(0, temp.CreatedAt*1000000)
+	activity.CreatedAt = &timeT
 	activity.ApplicationID = temp.ApplicationID
-	activity.Assets = temp.Assets
+	activity.Assets = &temp.Assets
 	activity.Details = temp.Details
-	activity.Emoji = temp.Emoji
+	activity.Emoji = &temp.Emoji
 	activity.Flags = temp.Flags
 	activity.Instance = temp.Instance
 	activity.Name = temp.Name
-	activity.Party = temp.Party
-	activity.Secrets = temp.Secrets
+	activity.Party = &temp.Party
+	activity.Secrets = &temp.Secrets
 	activity.State = temp.State
-	activity.Timestamps = temp.Timestamps
+	activity.Timestamps = &temp.Timestamps
 	activity.Type = temp.Type
 	activity.URL = temp.URL
 	return nil
