@@ -12,6 +12,7 @@ package discordgo
 
 import (
 	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -98,7 +99,7 @@ func (s *Session) Request(method, urlStr string, data interface{}) (response []b
 }
 
 // RequestWithBucketID makes a (GET/POST/...) Requests to Discord REST API with JSON data.
-func (s *Session) RequestWithBucketID(method, urlStr string, data interface{}, bucketID string) (response []byte, err error) {
+func (s *Session) RequestWithBucketID(method, urlStr string, data interface{}, bucketID string, headers ...map[string]string) (response []byte, err error) {
 	var body []byte
 	if data != nil {
 		body, err = Marshal(data)
@@ -107,21 +108,21 @@ func (s *Session) RequestWithBucketID(method, urlStr string, data interface{}, b
 		}
 	}
 
-	return s.request(method, urlStr, "application/json", body, bucketID, 0)
+	return s.request(method, urlStr, "application/json", body, bucketID, 0, headers...)
 }
 
 // request makes a (GET/POST/...) Requests to Discord REST API.
 // Sequence is the sequence number, if it fails with a 502 it will
 // retry with sequence+1 until it either succeeds or sequence >= session.MaxRestRetries
-func (s *Session) request(method, urlStr, contentType string, b []byte, bucketID string, sequence int) (response []byte, err error) {
+func (s *Session) request(method, urlStr, contentType string, b []byte, bucketID string, sequence int, headers ...map[string]string) (response []byte, err error) {
 	if bucketID == "" {
 		bucketID = strings.SplitN(urlStr, "?", 2)[0]
 	}
-	return s.RequestWithLockedBucket(method, urlStr, contentType, b, s.Ratelimiter.LockBucket(bucketID), sequence)
+	return s.RequestWithLockedBucket(method, urlStr, contentType, b, s.Ratelimiter.LockBucket(bucketID), sequence, headers...)
 }
 
 // RequestWithLockedBucket makes a request using a bucket that's already been locked
-func (s *Session) RequestWithLockedBucket(method, urlStr, contentType string, b []byte, bucket *Bucket, sequence int) (response []byte, err error) {
+func (s *Session) RequestWithLockedBucket(method, urlStr, contentType string, b []byte, bucket *Bucket, sequence int, headers ...map[string]string) (response []byte, err error) {
 	if s.Debug {
 		log.Printf("API REQUEST %8s :: %s\n", method, urlStr)
 		log.Printf("API REQUEST  PAYLOAD :: [%s]\n", string(b))
@@ -147,6 +148,12 @@ func (s *Session) RequestWithLockedBucket(method, urlStr, contentType string, b 
 
 	// TODO: Make a configurable static variable.
 	req.Header.Set("User-Agent", s.UserAgent)
+
+	for _, header := range headers {
+		for k, v := range header {
+			req.Header.Set(k, v)
+		}
+	}
 
 	if s.Debug {
 		for k, v := range req.Header {
@@ -317,6 +324,36 @@ func (s *Session) UserConnections() (conn []*UserConnection, err error) {
 	return
 }
 
+// UserMutualFriends returns the client's mutual friends with the given user
+func (s *Session) UserMutualFriends(userID string) (users []*User, err error) {
+	response, err := s.RequestWithBucketID("GET", EndpointUserRelationships(userID), nil, EndpointUserConnections(""))
+	if err != nil {
+		return nil, err
+	}
+
+	err = unmarshal(response, &users)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+// UserProfile returns the user's profile
+func (s *Session) UserProfile(userID string) (st *Profile, err error) {
+	response, err := s.RequestWithBucketID("GET", EndpointUserProfile(userID)+"?with_mutual_guilds=true", nil, EndpointUserProfile(""))
+	if err != nil {
+		return nil, err
+	}
+
+	err = unmarshal(response, &st)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
 // UserChannelCreate creates a new User (Private) Channel with another User
 // recipientID : A user ID for the user to which this channel is opened with.
 func (s *Session) UserChannelCreate(recipientID string) (st *Channel, err error) {
@@ -410,12 +447,12 @@ func (s *Session) UserChannelPermissions(userID, channelID string) (apermissions
 		}
 	}
 
-	return memberPermissions(guild, channel, userID, member.Roles), nil
+	return MemberPermissions(guild, channel, userID, member.Roles), nil
 }
 
 // Calculates the permissions for a member.
 // https://support.discord.com/hc/en-us/articles/206141927-How-is-the-permission-hierarchy-structured-
-func memberPermissions(guild *Guild, channel *Channel, userID string, roles []string) (apermissions int64) {
+func MemberPermissions(guild *Guild, channel *Channel, userID string, roles []string) (apermissions int64) {
 	if userID == guild.OwnerID {
 		apermissions = PermissionAll
 		return
@@ -480,6 +517,13 @@ func memberPermissions(guild *Guild, channel *Channel, userID string, roles []st
 	return apermissions
 }
 
+func (s *Session) UserRelationshipsDelete(userID string) (err error) {
+	_, err = s.RequestWithBucketID("DELETE", EndpointUserRelationships(userID), nil, EndpointUserRelationships(""), map[string]string{
+		"x-context-properties": "eyJsb2NhdGlvbiI6IkZyaWVuZHMifQ==",
+	})
+	return
+}
+
 // ------------------------------------------------------------------------------------------------
 // Functions specific to Discord Guilds
 // ------------------------------------------------------------------------------------------------
@@ -523,11 +567,32 @@ func (s *Session) GuildPreview(guildID string) (st *GuildPreview, err error) {
 
 // GuildCreate creates a new Guild
 // name      : A name for the Guild (2-100 characters)
-func (s *Session) GuildCreate(name string) (st *Guild, err error) {
+func (s *Session) GuildCreate(name string, icon []byte) (st *Guild, err error) {
+	iconBase64 := ""
+	mimeType := ""
+
+	if len(icon) > 0 {
+		if bytes.HasPrefix(icon, []byte{0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A}) {
+			mimeType = "image/png"
+		} else if bytes.HasPrefix(icon, []byte{0xFF, 0xD8, 0xFF}) || bytes.Contains(icon, []byte("JFIF")) || bytes.Contains(icon, []byte("Exif")) {
+			mimeType = "image/jpeg"
+		} else if bytes.HasPrefix(icon, []byte{0x47, 0x49, 0x46, 0x38, 0x37, 0x61}) || bytes.HasPrefix(icon, []byte{0x47, 0x49, 0x46, 0x38, 0x39, 0x61}) {
+			mimeType = "image/gif"
+		} else if bytes.HasPrefix(icon, []byte("RIFF")) && bytes.Contains(icon, []byte("WEBP")) {
+			mimeType = "image/webp"
+		}
+		if mimeType != "" {
+			iconBase64 = fmt.Sprintf("data:%s;base64,%s", mimeType, base64.StdEncoding.EncodeToString(icon))
+		}
+	}
 
 	data := struct {
-		Name string `json:"name"`
-	}{name}
+		Name            string        `json:"name"`
+		Icon            string        `json:"icon"`
+		SystemChannelID interface{}   `json:"system_channel_id"`
+		Channels        []interface{} `json:"channels"`
+		TemplateCode    string        `json:"guild_template_code"`
+	}{name, iconBase64, nil, []interface{}{}, ""}
 
 	body, err := s.RequestWithBucketID("POST", EndpointGuildCreate, data, EndpointGuildCreate)
 	if err != nil {
@@ -602,10 +667,11 @@ func (s *Session) GuildLeave(guildID string) (err error) {
 }
 
 // GuildBans returns an array of GuildBan structures for bans in the given guild.
-//  guildID   : The ID of a Guild
-//  limit     : Max number of bans to return (max 1000)
-//  beforeID  : If not empty all returned users will be after the given id
-//  afterID   : If not empty all returned users will be before the given id
+//
+//	guildID   : The ID of a Guild
+//	limit     : Max number of bans to return (max 1000)
+//	beforeID  : If not empty all returned users will be after the given id
+//	afterID   : If not empty all returned users will be before the given id
 func (s *Session) GuildBans(guildID string, limit int, beforeID, afterID string) (st []*GuildBan, err error) {
 	uri := EndpointGuildBans(guildID)
 
@@ -690,9 +756,10 @@ func (s *Session) GuildBanDelete(guildID, userID string) (err error) {
 }
 
 // GuildMembers returns a list of members for a guild.
-//  guildID  : The ID of a Guild.
-//  after    : The id of the member to return members after
-//  limit    : max number of members to return (max 1000)
+//
+//	guildID  : The ID of a Guild.
+//	after    : The id of the member to return members after
+//	limit    : max number of members to return (max 1000)
 func (s *Session) GuildMembers(guildID string, after string, limit int) (st []*Member, err error) {
 
 	uri := EndpointGuildMembers(guildID)
@@ -744,8 +811,9 @@ func (s *Session) GuildMembersSearch(guildID, query string, limit int) (st []*Me
 }
 
 // GuildMember returns a member of a guild.
-//  guildID   : The ID of a Guild.
-//  userID    : The ID of a User
+//
+//	guildID   : The ID of a Guild.
+//	userID    : The ID of a User
 func (s *Session) GuildMember(guildID, userID string) (st *Member, err error) {
 
 	body, err := s.RequestWithBucketID("GET", EndpointGuildMember(guildID, userID), nil, EndpointGuildMember(guildID, ""))
@@ -760,13 +828,14 @@ func (s *Session) GuildMember(guildID, userID string) (st *Member, err error) {
 }
 
 // GuildMemberAdd force joins a user to the guild.
-//  accessToken   : Valid access_token for the user.
-//  guildID       : The ID of a Guild.
-//  userID        : The ID of a User.
-//  nick          : Value to set users nickname to
-//  roles         : A list of role ID's to set on the member.
-//  mute          : If the user is muted.
-//  deaf          : If the user is deafened.
+//
+//	accessToken   : Valid access_token for the user.
+//	guildID       : The ID of a Guild.
+//	userID        : The ID of a User.
+//	nick          : Value to set users nickname to
+//	roles         : A list of role ID's to set on the member.
+//	mute          : If the user is muted.
+//	deaf          : If the user is deafened.
 func (s *Session) GuildMemberAdd(accessToken, guildID, userID, nick string, roles []string, mute, deaf bool) (err error) {
 
 	data := struct {
@@ -838,9 +907,11 @@ func (s *Session) GuildMemberEditComplex(guildID, userID string, data GuildMembe
 }
 
 // GuildMemberMove moves a guild member from one voice channel to another/none
-//  guildID   : The ID of a Guild.
-//  userID    : The ID of a User.
-//  channelID : The ID of a channel to move user to or nil to remove from voice channel
+//
+//	guildID   : The ID of a Guild.
+//	userID    : The ID of a User.
+//	channelID : The ID of a channel to move user to or nil to remove from voice channel
+//
 // NOTE : I am not entirely set on the name of this function and it may change
 // prior to the final 1.0.0 release of Discordgo
 func (s *Session) GuildMemberMove(guildID string, userID string, channelID *string) (err error) {
@@ -872,9 +943,10 @@ func (s *Session) GuildMemberNickname(guildID, userID, nickname string) (err err
 }
 
 // GuildMemberMute server mutes a guild member
-//  guildID   : The ID of a Guild.
-//  userID    : The ID of a User.
-//  mute    : boolean value for if the user should be muted
+//
+//	guildID   : The ID of a Guild.
+//	userID    : The ID of a User.
+//	mute    : boolean value for if the user should be muted
 func (s *Session) GuildMemberMute(guildID string, userID string, mute bool) (err error) {
 	data := struct {
 		Mute bool `json:"mute"`
@@ -885,10 +957,11 @@ func (s *Session) GuildMemberMute(guildID string, userID string, mute bool) (err
 }
 
 // GuildMemberTimeout times out a guild member
-//  guildID   : The ID of a Guild.
-//  userID    : The ID of a User.
-//  until     : The timestamp for how long a member should be timed out.
-//              Set to nil to remove timeout.
+//
+//	guildID   : The ID of a Guild.
+//	userID    : The ID of a User.
+//	until     : The timestamp for how long a member should be timed out.
+//	            Set to nil to remove timeout.
 func (s *Session) GuildMemberTimeout(guildID string, userID string, until *time.Time) (err error) {
 	data := struct {
 		CommunicationDisabledUntil *time.Time `json:"communication_disabled_until"`
@@ -899,9 +972,10 @@ func (s *Session) GuildMemberTimeout(guildID string, userID string, until *time.
 }
 
 // GuildMemberDeafen server deafens a guild member
-//  guildID   : The ID of a Guild.
-//  userID    : The ID of a User.
-//  deaf    : boolean value for if the user should be deafened
+//
+//	guildID   : The ID of a Guild.
+//	userID    : The ID of a User.
+//	deaf    : boolean value for if the user should be deafened
 func (s *Session) GuildMemberDeafen(guildID string, userID string, deaf bool) (err error) {
 	data := struct {
 		Deaf bool `json:"deaf"`
@@ -912,9 +986,10 @@ func (s *Session) GuildMemberDeafen(guildID string, userID string, deaf bool) (e
 }
 
 // GuildMemberRoleAdd adds the specified role to a given member
-//  guildID   : The ID of a Guild.
-//  userID    : The ID of a User.
-//  roleID 	  : The ID of a Role to be assigned to the user.
+//
+//	guildID   : The ID of a Guild.
+//	userID    : The ID of a User.
+//	roleID 	  : The ID of a Role to be assigned to the user.
 func (s *Session) GuildMemberRoleAdd(guildID, userID, roleID string) (err error) {
 
 	_, err = s.RequestWithBucketID("PUT", EndpointGuildMemberRole(guildID, userID, roleID), nil, EndpointGuildMemberRole(guildID, "", ""))
@@ -923,9 +998,10 @@ func (s *Session) GuildMemberRoleAdd(guildID, userID, roleID string) (err error)
 }
 
 // GuildMemberRoleRemove removes the specified role to a given member
-//  guildID   : The ID of a Guild.
-//  userID    : The ID of a User.
-//  roleID 	  : The ID of a Role to be removed from the user.
+//
+//	guildID   : The ID of a Guild.
+//	userID    : The ID of a User.
+//	roleID 	  : The ID of a Role to be removed from the user.
 func (s *Session) GuildMemberRoleRemove(guildID, userID, roleID string) (err error) {
 
 	_, err = s.RequestWithBucketID("DELETE", EndpointGuildMemberRole(guildID, userID, roleID), nil, EndpointGuildMemberRole(guildID, "", ""))
@@ -1033,9 +1109,23 @@ func (s *Session) GuildRoles(guildID string) (st []*Role, err error) {
 
 // GuildRoleCreate returns a new Guild Role.
 // guildID: The ID of a Guild.
-func (s *Session) GuildRoleCreate(guildID string) (st *Role, err error) {
+func (s *Session) GuildRoleCreate(guildID string, name string, color int, hoist bool, perm int64, mention bool) (st *Role, err error) {
 
-	body, err := s.RequestWithBucketID("POST", EndpointGuildRoles(guildID), nil, EndpointGuildRoles(guildID))
+	// Prevent sending a color int that is too big.
+	if color > 0xFFFFFF {
+		err = fmt.Errorf("color value cannot be larger than 0xFFFFFF")
+		return nil, err
+	}
+
+	data := struct {
+		Name        string `json:"name"`               // The role's name (overwrites existing)
+		Color       int    `json:"color"`              // The color the role should have (as a decimal, not hex)
+		Hoist       bool   `json:"hoist"`              // Whether to display the role's users separately
+		Permissions int64  `json:"permissions,string"` // The overall permissions number of the role (overwrites existing)
+		Mentionable bool   `json:"mentionable"`        // Whether this role is mentionable
+	}{name, color, hoist, perm, mention}
+
+	body, err := s.RequestWithBucketID("POST", EndpointGuildRoles(guildID), data, EndpointGuildRoles(guildID))
 	if err != nil {
 		return
 	}
@@ -1473,7 +1563,7 @@ func (s *Session) GuildTemplateCreate(guildID, name, description string) (st *Gu
 		return
 	}
 
-	err = unmarshal(body, &st)
+	unmarshal(body, &st)
 	return
 }
 
@@ -1513,6 +1603,12 @@ func (s *Session) GuildTemplateEdit(guildID, templateCode, name, description str
 func (s *Session) GuildTemplateDelete(guildID, templateCode string) (err error) {
 
 	_, err = s.RequestWithBucketID("DELETE", EndpointGuildTemplateSync(guildID, templateCode), nil, EndpointGuildTemplateSync(guildID, ""))
+	return
+}
+
+func (s *Session) GuildAck(guildID string) (err error) {
+
+	_, err = s.RequestWithBucketID("POST", EndpointGuildAck(guildID), struct{}{}, EndpointGuildAck(guildID))
 	return
 }
 
@@ -2015,10 +2111,11 @@ func (s *Session) InviteWithCounts(inviteID string) (st *Invite, err error) {
 }
 
 // InviteComplex returns an Invite structure of the given invite including specified fields.
-//  inviteID                  : The invite code
-//  guildScheduledEventID     : If specified, includes specified guild scheduled event.
-//  withCounts                : Whether to include approximate member counts or not
-//  withExpiration            : Whether to include expiration time or not
+//
+//	inviteID                  : The invite code
+//	guildScheduledEventID     : If specified, includes specified guild scheduled event.
+//	withCounts                : Whether to include approximate member counts or not
+//	withExpiration            : Whether to include expiration time or not
 func (s *Session) InviteComplex(inviteID, guildScheduledEventID string, withCounts, withExpiration bool) (st *Invite, err error) {
 	endpoint := EndpointInvite(inviteID)
 	v := url.Values{}
@@ -2063,6 +2160,18 @@ func (s *Session) InviteDelete(inviteID string) (st *Invite, err error) {
 func (s *Session) InviteAccept(inviteID string) (st *Invite, err error) {
 
 	body, err := s.RequestWithBucketID("POST", EndpointInvite(inviteID), nil, EndpointInvite(""))
+	if err != nil {
+		return
+	}
+
+	err = unmarshal(body, &st)
+	return
+}
+
+// CreateFriendInvite creates a friend invite for the given user.
+func (s *Session) CreateFriendInvite(userID string) (st *Invite, err error) {
+
+	body, err := s.RequestWithBucketID("POST", EndpointUserInvites(userID), map[string]string{}, EndpointUserInvites(""))
 	if err != nil {
 		return
 	}
@@ -2484,6 +2593,11 @@ func (s *Session) MessageReactions(channelID, messageID, emojiID string, limit i
 
 	err = unmarshal(body, &st)
 	return
+}
+
+func (s *Session) MessageAck(channelID, messageID string) error {
+	_, err := s.RequestWithBucketID("POST", EndpointMessageAck(channelID, messageID), struct{}{}, EndpointMessageAck(channelID, ""))
+	return err
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -2924,6 +3038,39 @@ func (s *Session) InteractionResponseDelete(interaction *Interaction) error {
 
 	_, err := s.RequestWithBucketID("DELETE", endpoint, nil, endpoint)
 
+	return err
+}
+
+func (s *Session) InteractionClick(button *Button, message *Message) error {
+	type dataStruct struct {
+		ComponentType int    `json:"component_type"`
+		CustomID      string `json:"custom_id"`
+	}
+	data := struct {
+		ApplicationID string     `json:"application_id"`
+		ChannelID     string     `json:"channel_id"`
+		Data          dataStruct `json:"data"`
+		GuildID       string     `json:"guild_id"`
+		MessageFlags  int        `json:"message_flags"`
+		MessageID     string     `json:"message_id"`
+		Nonce         string     `json:"nonce"`
+		SessionID     string     `json:"session_id"`
+		Type          int        `json:"type"`
+	}{
+		ApplicationID: message.Author.ID,
+		ChannelID:     message.ChannelID,
+		Data: dataStruct{
+			ComponentType: 2,
+			CustomID:      button.CustomID,
+		},
+		GuildID:      message.GuildID,
+		MessageFlags: 0,
+		MessageID:    message.ID,
+		Nonce:        message.ID,
+		SessionID:    s.State.SessionID,
+		Type:         3,
+	}
+	_, err := s.RequestWithBucketID("POST", EndpointInteractions, data, EndpointInteractions)
 	return err
 }
 

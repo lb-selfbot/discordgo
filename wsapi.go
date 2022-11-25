@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"sort"
 	"sync/atomic"
 	"time"
 
@@ -202,8 +203,61 @@ func (s *Session) Open() error {
 	go s.heartbeat(s.wsConn, s.listening, h.HeartbeatInterval)
 	go s.listen(s.wsConn, s.listening)
 
+	if s.ShouldSubscribeGuilds {
+		go s.subscribeGuilds(s.wsConn, s.listening)
+	}
+
 	s.log(LogInformational, "exiting")
 	return nil
+}
+
+func (s *Session) subscribeGuilds(wsConn *websocket.Conn, listening <-chan interface{}) {
+	s.log(LogInformational, "subscribing to guilds")
+
+	if time.Since(s.guildSubscriptionStart) < (300*time.Second) && (s.guildSubscriptionTries >= 2) {
+		s.log(LogInformational, "skipping guild subscription, already did it less than 5 minutes ago. Discord probably closed the connection.")
+		return
+	}
+
+	s.guildSubscriptionTries++
+	s.guildSubscriptionStart = time.Now()
+	guilds := make([]*Guild, len(s.State.Guilds))
+	copy(guilds, s.State.Guilds)
+	shouldExit := false
+	sort.Slice(guilds, func(i, j int) bool {
+		// Change the order of the guilds so each side of the server that caused the
+		// gateway reconnect (if applicable) can be subscribed to.
+		switch s.guildSubscriptionTries {
+		case 1:
+			return guilds[i].MemberCount < guilds[j].MemberCount
+		case 2:
+			return guilds[i].MemberCount > guilds[j].MemberCount
+		default:
+			shouldExit = true
+			return false
+		}
+	})
+	if shouldExit {
+		return
+	}
+
+	for _, g := range guilds {
+		s.log(LogInformational, "subscribing to guild %s", g.Name)
+
+		guildSubscription := GuildSubscription{
+			Session: s,
+			GuildID: g.ID,
+			Limit:   10000,
+		}
+
+		guildSubscription.Subscribe()
+		select {
+		case <-listening:
+			return
+		default:
+			continue
+		}
+	}
 }
 
 // listen polls the websocket connection for events, it will stop when the
@@ -521,6 +575,39 @@ func (s *Session) requestGuildMembers(data requestGuildMembersData) (err error) 
 	return
 }
 
+// Lazy Guild Implementation
+
+type RequestLazyGuildData struct {
+	GuildID           string             `json:"guild_id"`
+	Typing            bool               `json:"typing,omitempty"`
+	Threads           bool               `json:"threads,omitempty"`
+	Activities        bool               `json:"activities,omitempty"`
+	Members           []string           `json:"members,omitempty"`
+	Channels          map[string][][]int `json:"channels,omitempty"`
+	ThreadMemberLists []string           `json:"thread_member_lists,omitempty"`
+}
+
+type requestLazyGuildOp struct {
+	Op   int                  `json:"op"`
+	Data RequestLazyGuildData `json:"d"`
+}
+
+func (s *Session) RequestLazyGuild(data RequestLazyGuildData) (err error) {
+	s.log(LogInformational, "called")
+
+	s.RLock()
+	defer s.RUnlock()
+	if s.wsConn == nil {
+		return ErrWSNotFound
+	}
+
+	s.wsMutex.Lock()
+	err = s.wsConn.WriteJSON(requestLazyGuildOp{14, data})
+	s.wsMutex.Unlock()
+
+	return
+}
+
 // onEvent is the "event handler" for all messages received on the
 // Discord Gateway API websocket connection.
 //
@@ -561,6 +648,14 @@ func (s *Session) onEvent(messageType int, message []byte) (*Event, error) {
 		s.log(LogError, "error decoding websocket message, %s", err)
 		return e, err
 	}
+	// if e.Type == "GUILD_MEMBER_LIST_UPDATE" {
+	// 	a := string(e.RawData)
+	// 	if strings.Contains(a, "mp:external") {
+
+	// 		f, _ := os.Create("D:\\Projects\\LightningBot\\Selfbot\\Src\\update.json")
+	// 		f.WriteString(string(e.RawData))
+	// 	}
+	// }
 
 	s.log(LogDebug, "Op: %d, Seq: %d, Type: %s, Data: %s\n\n", e.Operation, e.Sequence, e.Type, string(e.RawData))
 

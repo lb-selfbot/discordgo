@@ -156,7 +156,7 @@ func (b Button) MarshalJSON() ([]byte, error) {
 
 // Type is a method to get the type of a component.
 func (Button) Type() ComponentType {
-	return ButtonComponent
+	return 1//ButtonComponent
 }
 
 // SelectMenuOption represents an option for a select menu.

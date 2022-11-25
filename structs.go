@@ -67,6 +67,10 @@ type Session struct {
 	// e.g false = launch event handlers in their own goroutines.
 	SyncEvents bool
 
+	// Should guilds be subscribed to automatically.
+	// Uses OP 14 lazy guilds.
+	ShouldSubscribeGuilds bool
+
 	// Exposed but should not be modified by User.
 
 	// Whether the Data Websocket is ready
@@ -129,6 +133,10 @@ type Session struct {
 
 	// used to make sure gateway websocket writes do not happen concurrently
 	wsMutex sync.Mutex
+
+	guildSubscriptionStart time.Time
+
+	guildSubscriptionTries int
 }
 
 // Application stores values for a Discord Application
@@ -372,7 +380,7 @@ type ChannelEdit struct {
 
 	Archived            bool `json:"archived,omitempty"`
 	AutoArchiveDuration int  `json:"auto_archive_duration,omitempty"`
-	Locked              bool `json:"locked,bool"`
+	Locked              bool `json:"locked,omitempty"`
 	Invitable           bool `json:"invitable,omitempty"`
 }
 
@@ -489,6 +497,13 @@ func (e *Emoji) APIName() string {
 		return e.Name
 	}
 	return e.ID
+}
+
+func (e *Emoji) URL() string {
+	if e.Animated {
+		return EndpointEmojiAnimated(e.ID)
+	}
+	return EndpointEmoji(e.ID)
 }
 
 // StickerFormat is the file format of the Sticker.
@@ -1117,10 +1132,11 @@ type VoiceState struct {
 
 // A Presence stores the online, offline, or idle and game status of Guild members.
 type Presence struct {
-	User       *User       `json:"user"`
-	Status     Status      `json:"status"`
-	Activities []*Activity `json:"activities"`
-	Since      *int        `json:"since"`
+	User         *User             `json:"user"`
+	Status       Status            `json:"status"`
+	Activities   []*Activity       `json:"activities"`
+	Since        *int              `json:"since"`
+	ClientStatus map[string]string `json:"client_status"`
 }
 
 // A TimeStamps struct contains start and end times used in the rich presence "playing .." Game
@@ -1191,6 +1207,8 @@ type Member struct {
 	// The time at which the member's timeout will expire.
 	// Time in the past or nil if the user is not timed out.
 	CommunicationDisabledUntil *time.Time `json:"communication_disabled_until"`
+
+	Presence *Presence
 }
 
 // Mention creates a member mention
@@ -1665,7 +1683,10 @@ type Activity struct {
 	Type          ActivityType `json:"type"`
 	URL           string       `json:"url,omitempty"`
 	CreatedAt     *time.Time   `json:"created_at,omitempty"`
+	ID            string       `json:"id,omitempty"`
+	Platform      string       `json:"platform,omitempty"`
 	ApplicationID string       `json:"application_id,omitempty"`
+	SessionID     string       `json:"session_id,omitempty"`
 	State         string       `json:"state,omitempty"`
 	Details       string       `json:"details,omitempty"`
 	Timestamps    *TimeStamps  `json:"timestamps,omitempty"`
@@ -1673,18 +1694,19 @@ type Activity struct {
 	Party         *Party       `json:"party,omitempty"`
 	Assets        *Assets      `json:"assets,omitempty"`
 	Secrets       *Secrets     `json:"secrets,omitempty"`
+	Buttons       []string     `json:"buttons,omitempty"`
 	Instance      bool         `json:"instance,omitempty"`
 	Flags         int          `json:"flags,omitempty"`
 }
 
-// UnmarshalJSON is a custom unmarshaljson to make CreatedAt a time.Time instead of an int
+// UnmarshalJSON is a custom unmarshaljson to make CreatedAt a time.Time instead of a string/int64
 func (activity *Activity) UnmarshalJSON(b []byte) error {
 	temp := struct {
 		Name          string       `json:"name"`
 		Type          ActivityType `json:"type"`
 		URL           string       `json:"url,omitempty"`
-		CreatedAt     int64        `json:"created_at"`
-		ApplicationID string       `json:"application_id,omitempty"`
+		CreatedAt     any          `json:"created_at"`
+		ApplicationID any          `json:"application_id,omitempty"`
 		State         string       `json:"state,omitempty"`
 		Details       string       `json:"details,omitempty"`
 		Timestamps    TimeStamps   `json:"timestamps,omitempty"`
@@ -1699,9 +1721,17 @@ func (activity *Activity) UnmarshalJSON(b []byte) error {
 	if err != nil {
 		return err
 	}
-	timeT := time.Unix(0, temp.CreatedAt*1000000)
-	activity.CreatedAt = &timeT
-	activity.ApplicationID = temp.ApplicationID
+	switch temp.CreatedAt.(type) {
+	case string:
+		timeT, err := time.Parse(time.RFC3339, temp.CreatedAt.(string))
+		if err == nil {
+			activity.CreatedAt = &timeT
+		}
+	case int64:
+		timeT := time.Unix(temp.CreatedAt.(int64), 0)
+		activity.CreatedAt = &timeT
+	}
+	activity.ApplicationID = fmt.Sprint(temp.ApplicationID)
 	activity.Assets = &temp.Assets
 	activity.Details = temp.Details
 	activity.Emoji = &temp.Emoji
@@ -1773,6 +1803,20 @@ type IdentifyProperties struct {
 	ReferringDomainCurrent string `json:"referring_domain_current"` // Empty String
 	ReleaseChannel         string `json:"release_channel"`          // "stable"
 	SystemLocale           string `json:"system_locale"`            // "en-US"
+}
+
+type DiscordSessionClientInfo struct {
+	Version int    `json:"version"`
+	OS      string `json:"os"`
+	Client  string `json:"client"`
+}
+
+type DiscordSession struct {
+	Status     string                   `json:"status"`
+	SessionID  string                   `json:"session_id"`
+	ClientInfo DiscordSessionClientInfo `json:"client_info"`
+	Activities []*Activity              `json:"activities"`
+	Active     bool                     `json:"active"`
 }
 
 // StageInstance holds information about a live stage.

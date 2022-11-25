@@ -62,10 +62,14 @@ var (
 		return EndpointCDNBanners + uID + "/" + cID + ".gif"
 	}
 
-	EndpointUserGuilds      = func(uID string) string { return EndpointUsers + uID + "/guilds" }
-	EndpointUserGuild       = func(uID, gID string) string { return EndpointUsers + uID + "/guilds/" + gID }
-	EndpointUserChannels    = func(uID string) string { return EndpointUsers + uID + "/channels" }
-	EndpointUserConnections = func(uID string) string { return EndpointUsers + uID + "/connections" }
+	EndpointUserGuilds        = func(uID string) string { return EndpointUsers + uID + "/guilds" }
+	EndpointUserGuild         = func(uID, gID string) string { return EndpointUsers + uID + "/guilds/" + gID }
+	EndpointUserChannels      = func(uID string) string { return EndpointUsers + uID + "/channels" }
+	EndpointUserConnections   = func(uID string) string { return EndpointUsers + uID + "/connections" }
+	EndpointUserRelationships = func(uID string) string { return EndpointUsers + uID + "/relationships" }
+	EndpointUserProfile = func(uID string) string { return EndpointUsers + uID + "/profile" }
+
+	EndpointUserInvites = func(uID string) string { return EndpointUsers + uID + "/invites" }
 
 	EndpointGuild                    = func(gID string) string { return EndpointGuilds + gID }
 	EndpointGuildThreads             = func(gID string) string { return EndpointGuild(gID) + "/threads" }
@@ -109,6 +113,7 @@ var (
 	EndpointGuildMemberAvatarAnimated = func(gId, uID, aID string) string {
 		return EndpointCDNGuilds + gId + "/users/" + uID + "/avatars/" + aID + ".gif"
 	}
+	EndpointGuildAck				 = func(gID string) string { return EndpointGuilds + gID + "/ack" }
 
 	EndpointChannel                             = func(cID string) string { return EndpointChannels + cID }
 	EndpointChannelThreads                      = func(cID string) string { return EndpointChannel(cID) + "/threads" }
@@ -152,6 +157,10 @@ var (
 	EndpointMessageReaction = func(cID, mID, eID, uID string) string {
 		return EndpointMessageReactions(cID, mID, eID) + "/" + uID
 	}
+	EndpointMessageAck = func(cID, mID string) string {
+		return EndpointChannelMessage(cID, mID) + "/ack"
+	}
+
 
 	EndpointApplicationGlobalCommands = func(aID string) string {
 		return EndpointApplication(aID) + "/commands"
@@ -172,6 +181,7 @@ var (
 	EndpointApplicationCommandsGuildPermissions = func(aID, gID string) string {
 		return EndpointApplicationGuildCommands(aID, gID) + "/permissions"
 	}
+	EndpointInteractions = EndpointAPI + "interactions"
 	EndpointInteraction = func(aID, iToken string) string {
 		return EndpointAPI + "interactions/" + aID + "/" + iToken
 	}

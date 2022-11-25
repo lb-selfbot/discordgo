@@ -36,12 +36,13 @@ type Event struct {
 
 // A Ready stores all data for the websocket READY event.
 type Ready struct {
-	Version         int          `json:"v"`
-	SessionID       string       `json:"session_id"`
-	User            *User        `json:"user"`
-	ReadState       []*ReadState `json:"read_state"`
-	PrivateChannels []*Channel   `json:"private_channels"`
-	Guilds          []*Guild     `json:"guilds"`
+	Version         int               `json:"v"`
+	SessionID       string            `json:"session_id"`
+	User            *User             `json:"user"`
+	ReadState       []*ReadState      `json:"read_state"`
+	PrivateChannels []*Channel        `json:"private_channels"`
+	Guilds          []*Guild          `json:"guilds"`
+	Sessions        []*DiscordSession `json:"sessions"`
 
 	// Undocumented fields
 	Settings          *Settings            `json:"user_settings"`
@@ -194,6 +195,15 @@ type GuildMembersChunk struct {
 	NotFound   []string    `json:"not_found,omitempty"`
 	Presences  []*Presence `json:"presences,omitempty"`
 	Nonce      string      `json:"nonce,omitempty"`
+}
+
+type GuildMemberListUpdate struct {
+	OnlineCount int              `json:"online_count"`
+	MemberCount int              `json:"member_count"`
+	ID          string           `json:"id"`
+	GuildID     string           `json:"guild_id"`
+	Ops         []*Operator      `json:"ops"`
+	Groups      []*SyncItemGroup `json:"groups"`
 }
 
 // GuildIntegrationsUpdate is the data for a GuildIntegrationsUpdate event.

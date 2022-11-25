@@ -60,6 +60,7 @@ func NewState() *State {
 			PrivateChannels: []*Channel{},
 			Guilds:          []*Guild{},
 		},
+		MaxMessageCount:    500,
 		TrackChannels:      true,
 		TrackThreads:       true,
 		TrackEmojis:        true,
@@ -293,6 +294,29 @@ func (s *State) Presence(guildID, userID string) (*Presence, error) {
 	return nil, ErrStateNotFound
 }
 
+// GetUser gets a user by ID.
+func (s *State) GetUser(userID string) (*User, error) {
+	if s == nil {
+		return nil, ErrNilState
+	}
+
+	s.RLock()
+	defer s.RUnlock()
+
+	if userID == s.User.ID {
+		return s.User, nil
+	}
+
+	for _, guild := range s.guildMap {
+		for _, member := range guild.Members {
+			if member.User.ID == userID {
+				return member.User, nil
+			}
+		}
+	}
+	return nil, ErrStateNotFound
+}
+
 // TODO: Consider moving Guild state update methods onto *Guild.
 
 func (s *State) memberAdd(member *Member) error {
@@ -305,6 +329,16 @@ func (s *State) memberAdd(member *Member) error {
 	if !ok {
 		return ErrStateNotFound
 	}
+
+	// if member.Presence != nil {
+	// 	for _, activity := range member.Presence.Activities {
+	// 		if strings.HasPrefix(activity.Assets.SmallImageID, "mp:") {
+	// 			fmt.Printf("User: %s Name: %s SmallImage: %s\n", member.User.String(), activity.Name, activity.Assets.SmallImageID)
+	// 		}
+	// 		// jsonActivity, _ := json.MarshalIndent(activity, "", "    ")
+	// 		// fmt.Println(member.User.String(), string(jsonActivity))
+	// 	}
+	// }
 
 	m, ok := members[member.User.ID]
 	if !ok {
@@ -949,6 +983,60 @@ func (s *State) onReady(se *Session, r *Ready) (err error) {
 	return nil
 }
 
+func (s *State) onGuildMemberListUpdate(se *Session, g *GuildMemberListUpdate) (err error) {
+	if s == nil {
+		return ErrNilState
+	}
+
+	s.Lock()
+	defer s.Unlock()
+
+	guild, ok := s.guildMap[g.GuildID]
+	if !ok {
+		return ErrStateNotFound
+	}
+
+	if g.MemberCount > 0 {
+		guild.MemberCount = g.MemberCount
+	}
+
+	onlineCount := 0
+	for _, group := range g.Groups {
+		if group.GroupID != "offline" {
+			onlineCount += group.MemberCount
+		}
+	}
+	guild.ApproximatePresenceCount = onlineCount
+
+	for _, op := range g.Ops {
+		switch op.Op {
+		case "SYNC":
+			for _, item := range op.Items {
+				if item.Member != nil {
+					item.Member.GuildID = g.GuildID
+					s.memberAdd(item.Member)
+					if item.Member.Presence != nil {
+						s.presenceAdd(item.Member.GuildID, item.Member.Presence)
+					}
+				}
+			}
+		case "INSERT":
+		case "UPDATE":
+			if op.Item.Member == nil {
+				// Hoisted role INSERT/UPDATE
+				continue
+			}
+			op.Item.Member.GuildID = g.GuildID
+			s.memberAdd(op.Item.Member)
+			if op.Item.Member.Presence != nil {
+				s.presenceAdd(op.Item.Member.GuildID, op.Item.Member.Presence)
+			}
+		}
+	}
+
+	return nil
+}
+
 // OnInterface handles all events related to states.
 func (s *State) OnInterface(se *Session, i interface{}) (err error) {
 	if s == nil {
@@ -1020,6 +1108,10 @@ func (s *State) OnInterface(se *Session, i interface{}) (err error) {
 			for _, p := range t.Presences {
 				err = s.PresenceAdd(t.GuildID, p)
 			}
+		}
+	case *GuildMemberListUpdate:
+		if s.TrackMembers {
+			err = s.onGuildMemberListUpdate(se, t)
 		}
 	case *GuildRoleCreate:
 		if s.TrackRoles {
@@ -1145,9 +1237,10 @@ func (s *State) OnInterface(se *Session, i interface{}) (err error) {
 				}
 			}
 
+			m.Presence = &t.Presence
+
 			err = s.MemberAdd(m)
 		}
-
 	}
 
 	return
@@ -1176,7 +1269,7 @@ func (s *State) UserChannelPermissions(userID, channelID string) (apermissions i
 		return
 	}
 
-	return memberPermissions(guild, channel, userID, member.Roles), nil
+	return MemberPermissions(guild, channel, userID, member.Roles), nil
 }
 
 // MessagePermissions returns the permissions of the author of the message
@@ -1200,7 +1293,7 @@ func (s *State) MessagePermissions(message *Message) (apermissions int64, err er
 		return
 	}
 
-	return memberPermissions(guild, channel, message.Author.ID, message.Member.Roles), nil
+	return MemberPermissions(guild, channel, message.Author.ID, message.Member.Roles), nil
 }
 
 // UserColor returns the color of a user in a channel.

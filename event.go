@@ -51,7 +51,6 @@ func registerInterfaceProvider(eh EventInterfaceProvider) {
 		// fmt.Errorf("event %s already registered", eh.Type())
 	}
 	registeredInterfaceProviders[eh.Type()] = eh
-	return
 }
 
 // eventHandlerInstance is a wrapper around an event handler, as functions
@@ -244,4 +243,12 @@ func (s *Session) onReady(r *Ready) {
 
 	// Store the SessionID within the Session struct.
 	s.sessionID = r.SessionID
+
+	for _, guild := range s.State.Guilds {
+		s.State.MemberAdd(&Member{
+			GuildID: guild.ID,
+			Avatar:  s.State.User.Avatar,
+			User:    s.State.User,
+		})
+	}
 }

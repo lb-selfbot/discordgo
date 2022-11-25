@@ -33,6 +33,7 @@ func New(token string) (s *Session, err error) {
 		State:                  NewState(),
 		Ratelimiter:            NewRatelimiter(),
 		StateEnabled:           true,
+		ShouldSubscribeGuilds:  true,
 		Compress:               true,
 		ShouldReconnectOnError: true,
 		ShouldRetryOnRateLimit: true,
@@ -50,7 +51,7 @@ func New(token string) (s *Session, err error) {
 	s.Identify.Compress = true
 	s.Identify.Capabilities = 509
 	s.Identify.Properties.Browser = "Chrome"
-	s.Identify.Properties.BrowserUserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.67 Safari/537.36"
+	s.Identify.Properties.BrowserUserAgent = s.UserAgent
 	s.Identify.Properties.BrowserVersion = "101.0.4951.67"
 	s.Identify.Properties.ClientBuildNumber = 132647
 	s.Identify.Properties.ClientEventSource = nil
