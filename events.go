@@ -2,7 +2,6 @@ package discordgo
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"runtime"
