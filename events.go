@@ -2,9 +2,6 @@ package discordgo
 
 import (
 	"encoding/json"
-	"io/ioutil"
-	"os"
-	"runtime"
 )
 
 // This file contains all the possible structs that can be
@@ -67,8 +64,6 @@ func (r *Ready) UnmarshalJSON(data []byte) error {
 	}
 
 	var ready rawReady
-
-	ioutil.WriteFile("C:\\Users\\kaani\\Desktop\\ready.json", data, os.ModePerm)
 
 	if err := json.Unmarshal(data, &ready); err != nil {
 		return err
@@ -134,8 +129,6 @@ func (r *Ready) UnmarshalJSON(data []byte) error {
 
 		r.Guilds = append(r.Guilds, &guild)
 	}
-
-	runtime.GC()
 
 	return nil
 }
