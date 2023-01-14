@@ -549,8 +549,10 @@ func (m *MemberSidebar) GetMembers() ([]*Member, error) {
 		// guild.Name becomes empty when m.Safe is false
 		// guild.Properties.Name is still fine
 		// always happens between 200 and 300ms
-		if m.Guild.Name != m.Guild.Properties.Name {
-			m.Guild.Name = m.Guild.Properties.Name
+		if m.Guild.Properties != nil {
+			if m.Guild.Name != m.Guild.Properties.Name {
+				m.Guild.Name = m.Guild.Properties.Name
+			}
 		}
 
 		time.Sleep(time.Millisecond * 100)
