@@ -223,6 +223,13 @@ func (s *Session) QueryGuildMembers(params QueryGuildMembersParams) ([]*Member, 
 			return nil, fmt.Errorf("subscribe is not supported yet")
 		}
 
+		if params.Cache {
+			for _, member := range members {
+				member.GuildID = params.GuildID
+				s.State.MemberAdd(member)
+			}
+		}
+
 		return members, nil
 	case <-time.After(10 * time.Second):
 		removeHandler()

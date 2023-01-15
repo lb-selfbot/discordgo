@@ -880,8 +880,6 @@ type ReadyGuild struct {
 // A Guild holds all data related to a specific Discord Guild.  Guilds are also
 // sometimes referred to as Servers in the Discord client.
 type Guild struct {
-	Properties *GuildProperties
-	
 	// The ID of the guild.
 	ID string `json:"id"`
 
@@ -1068,6 +1066,51 @@ type Guild struct {
 
 	// The guild's home header hash
 	HomeHeader string `json:"home_header"`
+
+	// Guild properties
+	Properties *GuildProperties `json:"properties"`
+}
+
+func (g *Guild) UnmarshalJSON(data []byte) error {
+	type guild Guild
+	var err error
+	if err = json.Unmarshal(data, (*guild)(g)); err != nil {
+		return err
+	}
+
+	g.VerificationLevel = g.Properties.VerificationLevel
+	g.VanityURLCode = g.Properties.VanityURLCode
+	g.SystemChannelID = g.Properties.SystemChannelID
+	g.SystemChannelFlags = g.Properties.SystemChannelFlags
+	g.Splash = g.Properties.Splash
+	g.SafetyAlertsChannelID = g.Properties.SafetyAlertsChannelID
+	g.RulesChannelID = g.Properties.RulesChannelID
+	g.PublicUpdatesChannelID = g.Properties.PublicUpdatesChannelID
+	g.PremiumTier = g.Properties.PremiumTier
+	g.PremiumProgressBarEnabled = g.Properties.PremiumProgressBarEnabled
+	g.PreferredLocale = g.Properties.PreferredLocale
+	g.OwnerID = g.Properties.OwnerID
+	g.NSFWLevel = g.Properties.NSFWLevel
+	g.NSFW = g.Properties.NSFW
+	g.Name = g.Properties.Name
+	g.MfaLevel = g.Properties.MfaLevel
+	g.MaxVideoChannelUsers = g.Properties.MaxVideoChannelUsers
+	g.MaxStageVideoChannelUsers = g.Properties.MaxStageVideoChannelUsers
+	g.MaxMembers = g.Properties.MaxMembers
+	g.Icon = g.Properties.Icon
+	g.HubType = g.Properties.HubType
+	g.HomeHeader = g.Properties.HomeHeader
+	g.Features = g.Properties.Features
+	g.ExplicitContentFilter = g.Properties.ExplicitContentFilter
+	g.DiscoverySplash = g.Properties.DiscoverySplash
+	g.Description = g.Properties.Description
+	g.DefaultMessageNotifications = g.Properties.DefaultMessageNotifications
+	g.Banner = g.Properties.Banner
+	g.ApplicationID = g.Properties.ApplicationID
+	g.AfkTimeout = g.Properties.AfkTimeout
+	g.AfkChannelID = g.Properties.AfkChannelID
+
+	return nil
 }
 
 // A GuildPreview holds data related to a specific public Discord Guild, even if the user is not in the guild.

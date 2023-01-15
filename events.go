@@ -58,7 +58,7 @@ func (r *Ready) UnmarshalJSON(data []byte) error {
 		Relationships     []*Relationship        `json:"relationships"`
 		ReadState         *ReadStateData         `json:"read_state"`
 		PrivateChannels   []*Channel             `json:"private_channels"`
-		Guilds            []*ReadyGuild          `json:"guilds"`
+		Guilds            []*Guild               `json:"guilds"`
 		CountryCode       string                 `json:"country_code"`
 		ConnectedAccounts []*UserConnection      `json:"connected_accounts"`
 	}
@@ -77,58 +77,59 @@ func (r *Ready) UnmarshalJSON(data []byte) error {
 	r.Sessions = ready.Sessions
 	r.UserGuildSettings = ready.UserGuildSettings.Entries
 	r.Relationships = ready.Relationships
+	r.Guilds = ready.Guilds
 
-	for _, readyGuild := range ready.Guilds {
-		guild := Guild{
-			Properties:                  readyGuild.Properties,
-			ID:                          readyGuild.ID,
-			Large:                       readyGuild.Large,
-			Lazy:                        readyGuild.Lazy,
-			MemberCount:                 readyGuild.MemberCount,
-			PremiumSubscriptionCount:    readyGuild.PremiumSubscriptionCount,
-			JoinedAt:                    readyGuild.JoinedAt,
-			Threads:                     readyGuild.Threads,
-			Stickers:                    readyGuild.Stickers,
-			StageInstances:              readyGuild.StageInstances,
-			ScheduledEvents:             readyGuild.ScheduledEvents,
-			Roles:                       readyGuild.Roles,
-			Channels:                    readyGuild.Channels,
-			Emojis:                      readyGuild.Emojis,
-			VerificationLevel:           readyGuild.Properties.VerificationLevel,
-			VanityURLCode:               readyGuild.Properties.VanityURLCode,
-			SystemChannelID:             readyGuild.Properties.SystemChannelID,
-			SystemChannelFlags:          readyGuild.Properties.SystemChannelFlags,
-			Splash:                      readyGuild.Properties.Splash,
-			SafetyAlertsChannelID:       readyGuild.Properties.SafetyAlertsChannelID,
-			RulesChannelID:              readyGuild.Properties.RulesChannelID,
-			PublicUpdatesChannelID:      readyGuild.Properties.PublicUpdatesChannelID,
-			PremiumTier:                 readyGuild.Properties.PremiumTier,
-			PremiumProgressBarEnabled:   readyGuild.Properties.PremiumProgressBarEnabled,
-			PreferredLocale:             readyGuild.Properties.PreferredLocale,
-			OwnerID:                     readyGuild.Properties.OwnerID,
-			NSFWLevel:                   readyGuild.Properties.NSFWLevel,
-			NSFW:                        readyGuild.Properties.NSFW,
-			Name:                        readyGuild.Properties.Name,
-			MfaLevel:                    readyGuild.Properties.MfaLevel,
-			MaxVideoChannelUsers:        readyGuild.Properties.MaxVideoChannelUsers,
-			MaxStageVideoChannelUsers:   readyGuild.Properties.MaxStageVideoChannelUsers,
-			MaxMembers:                  readyGuild.Properties.MaxMembers,
-			Icon:                        readyGuild.Properties.Icon,
-			HubType:                     readyGuild.Properties.HubType,
-			HomeHeader:                  readyGuild.Properties.HomeHeader,
-			Features:                    readyGuild.Properties.Features,
-			ExplicitContentFilter:       readyGuild.Properties.ExplicitContentFilter,
-			DiscoverySplash:             readyGuild.Properties.DiscoverySplash,
-			Description:                 readyGuild.Properties.Description,
-			DefaultMessageNotifications: readyGuild.Properties.DefaultMessageNotifications,
-			Banner:                      readyGuild.Properties.Banner,
-			ApplicationID:               readyGuild.Properties.ApplicationID,
-			AfkTimeout:                  readyGuild.Properties.AfkTimeout,
-			AfkChannelID:                readyGuild.Properties.AfkChannelID,
-		}
+	// for _, readyGuild := range ready.Guilds {
+	// 	guild := Guild{
+	// 		Properties:                  readyGuild.Properties,
+	// 		ID:                          readyGuild.ID,
+	// 		Large:                       readyGuild.Large,
+	// 		Lazy:                        readyGuild.Lazy,
+	// 		MemberCount:                 readyGuild.MemberCount,
+	// 		PremiumSubscriptionCount:    readyGuild.PremiumSubscriptionCount,
+	// 		JoinedAt:                    readyGuild.JoinedAt,
+	// 		Threads:                     readyGuild.Threads,
+	// 		Stickers:                    readyGuild.Stickers,
+	// 		StageInstances:              readyGuild.StageInstances,
+	// 		ScheduledEvents:             readyGuild.ScheduledEvents,
+	// 		Roles:                       readyGuild.Roles,
+	// 		Channels:                    readyGuild.Channels,
+	// 		Emojis:                      readyGuild.Emojis,
+	// 		VerificationLevel:           readyGuild.Properties.VerificationLevel,
+	// 		VanityURLCode:               readyGuild.Properties.VanityURLCode,
+	// 		SystemChannelID:             readyGuild.Properties.SystemChannelID,
+	// 		SystemChannelFlags:          readyGuild.Properties.SystemChannelFlags,
+	// 		Splash:                      readyGuild.Properties.Splash,
+	// 		SafetyAlertsChannelID:       readyGuild.Properties.SafetyAlertsChannelID,
+	// 		RulesChannelID:              readyGuild.Properties.RulesChannelID,
+	// 		PublicUpdatesChannelID:      readyGuild.Properties.PublicUpdatesChannelID,
+	// 		PremiumTier:                 readyGuild.Properties.PremiumTier,
+	// 		PremiumProgressBarEnabled:   readyGuild.Properties.PremiumProgressBarEnabled,
+	// 		PreferredLocale:             readyGuild.Properties.PreferredLocale,
+	// 		OwnerID:                     readyGuild.Properties.OwnerID,
+	// 		NSFWLevel:                   readyGuild.Properties.NSFWLevel,
+	// 		NSFW:                        readyGuild.Properties.NSFW,
+	// 		Name:                        readyGuild.Properties.Name,
+	// 		MfaLevel:                    readyGuild.Properties.MfaLevel,
+	// 		MaxVideoChannelUsers:        readyGuild.Properties.MaxVideoChannelUsers,
+	// 		MaxStageVideoChannelUsers:   readyGuild.Properties.MaxStageVideoChannelUsers,
+	// 		MaxMembers:                  readyGuild.Properties.MaxMembers,
+	// 		Icon:                        readyGuild.Properties.Icon,
+	// 		HubType:                     readyGuild.Properties.HubType,
+	// 		HomeHeader:                  readyGuild.Properties.HomeHeader,
+	// 		Features:                    readyGuild.Properties.Features,
+	// 		ExplicitContentFilter:       readyGuild.Properties.ExplicitContentFilter,
+	// 		DiscoverySplash:             readyGuild.Properties.DiscoverySplash,
+	// 		Description:                 readyGuild.Properties.Description,
+	// 		DefaultMessageNotifications: readyGuild.Properties.DefaultMessageNotifications,
+	// 		Banner:                      readyGuild.Properties.Banner,
+	// 		ApplicationID:               readyGuild.Properties.ApplicationID,
+	// 		AfkTimeout:                  readyGuild.Properties.AfkTimeout,
+	// 		AfkChannelID:                readyGuild.Properties.AfkChannelID,
+	// 	}
 
-		r.Guilds = append(r.Guilds, &guild)
-	}
+	// 	r.Guilds = append(r.Guilds, &guild)
+	// }
 
 	return nil
 }
@@ -458,6 +459,36 @@ type InteractionCreate struct {
 // UnmarshalJSON is a helper function to unmarshal Interaction object.
 func (i *InteractionCreate) UnmarshalJSON(b []byte) error {
 	return json.Unmarshal(b, &i.Interaction)
+}
+
+// InteractionModalCreate is the data to send when creating a modal.
+type InteractionModalCreate struct {
+	Title       string             `json:"title"`
+	Nonce       string             `json:"nonce"`
+	ID          string             `json:"id"`
+	CustomID    string             `json:"custom_id"`
+	ChannelID   string             `json:"channel_id"`
+	Components  []MessageComponent `json:"-"`
+	Application Application        `json:"application"`
+}
+
+// UnmarshalJSON is a helper function to correctly unmarshal Components.
+func (d *InteractionModalCreate) UnmarshalJSON(data []byte) error {
+	type interactionModalCreate InteractionModalCreate
+	var v struct {
+		interactionModalCreate
+		RawComponents []unmarshalableMessageComponent `json:"components"`
+	}
+	err := json.Unmarshal(data, &v)
+	if err != nil {
+		return err
+	}
+	*d = InteractionModalCreate(v.interactionModalCreate)
+	d.Components = make([]MessageComponent, len(v.RawComponents))
+	for i, v := range v.RawComponents {
+		d.Components[i] = v.MessageComponent
+	}
+	return err
 }
 
 // InviteCreate is the data for a InviteCreate event

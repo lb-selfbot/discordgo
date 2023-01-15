@@ -622,8 +622,6 @@ func (s *Session) onEvent(messageType int, message []byte) (*Event, error) {
 
 	s.log(LogDebug, "Op: %d, Seq: %d, Type: %s, Data: %s\n\n", e.Operation, e.Sequence, e.Type, string(e.RawData))
 
-	//fmt.Println(e.Operation, e.Type)
-
 	// Ping request.
 	// Must respond with a heartbeat packet within 5 seconds
 	if e.Operation == 1 {

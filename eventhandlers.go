@@ -40,6 +40,7 @@ const (
 	guildScheduledEventUserRemoveEventType       = "GUILD_SCHEDULED_EVENT_USER_REMOVE"
 	guildUpdateEventType                         = "GUILD_UPDATE"
 	interactionCreateEventType                   = "INTERACTION_CREATE"
+	interactionModalCreateEventType              = "INTERACTION_MODAL_CREATE"
 	inviteCreateEventType                        = "INVITE_CREATE"
 	inviteDeleteEventType                        = "INVITE_DELETE"
 	messageCreateEventType                       = "MESSAGE_CREATE"
@@ -717,6 +718,26 @@ func (eh interactionCreateEventHandler) Handle(s *Session, i interface{}) {
 	}
 }
 
+// interactionModalCreateEventHandler is an event handler for InteractionModalCreate events.
+type interactionModalCreateEventHandler func(*Session, *InteractionModalCreate)
+
+// Type returns the event type for InteractionModalCreate events.
+func (eh interactionModalCreateEventHandler) Type() string {
+	return interactionModalCreateEventType
+}
+
+// New returns a new instance of InteractionModalCreate.
+func (eh interactionModalCreateEventHandler) New() interface{} {
+	return &InteractionModalCreate{}
+}
+
+// Handle is the handler for InteractionModalCreate events.
+func (eh interactionModalCreateEventHandler) Handle(s *Session, i interface{}) {
+	if t, ok := i.(*InteractionModalCreate); ok {
+		eh(s, t)
+	}
+}
+
 // inviteCreateEventHandler is an event handler for InviteCreate events.
 type inviteCreateEventHandler func(*Session, *InviteCreate)
 
@@ -1382,6 +1403,8 @@ func handlerForInterface(handler interface{}) EventHandler {
 		return guildUpdateEventHandler(v)
 	case func(*Session, *InteractionCreate):
 		return interactionCreateEventHandler(v)
+	case func(*Session, *InteractionModalCreate):
+		return interactionModalCreateEventHandler(v)
 	case func(*Session, *InviteCreate):
 		return inviteCreateEventHandler(v)
 	case func(*Session, *InviteDelete):
@@ -1478,6 +1501,7 @@ func init() {
 	registerInterfaceProvider(guildScheduledEventUserRemoveEventHandler(nil))
 	registerInterfaceProvider(guildUpdateEventHandler(nil))
 	registerInterfaceProvider(interactionCreateEventHandler(nil))
+	registerInterfaceProvider(interactionModalCreateEventHandler(nil))
 	registerInterfaceProvider(inviteCreateEventHandler(nil))
 	registerInterfaceProvider(inviteDeleteEventHandler(nil))
 	registerInterfaceProvider(messageCreateEventHandler(nil))

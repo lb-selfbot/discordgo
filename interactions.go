@@ -571,17 +571,6 @@ type InteractionClickData struct {
 	CustomID      string `json:"custom_id"`
 }
 
-// InteractionModalCreate is the data to send when creating a modal.
-type InteractionModalCreate struct {
-	ModalSubmitInteractionData
-
-	Title       string      `json:"title"`
-	Nonce       string      `json:"nonce"`
-	ID          string      `json:"id"`
-	ChannelID   string      `json:"channel_id"`
-	Application Application `json:"application"`
-}
-
 // InteractionClick is the data to send when clicking a button.
 type InteractionClick struct {
 	ApplicationID string               `json:"application_id"`
