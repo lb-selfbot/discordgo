@@ -420,7 +420,7 @@ type Channel struct {
 	Flags ChannelFlags `json:"flags"`
 
 	// The set of tags that can be used in a forum channel.
-	AvailableTags []ForumTag `json:"available_tags"`
+	// AvailableTags []ForumTag `json:"available_tags"`
 
 	// The IDs of the set of tags that have been applied to a thread in a forum channel.
 	AppliedTags []string `json:"applied_tags"`
@@ -574,7 +574,7 @@ type ForumTag struct {
 	ID        string `json:"id,omitempty"`
 	Name      string `json:"name"`
 	Moderated bool   `json:"moderated"`
-	EmojiID   string `json:"emoji_id,omitempty"`
+	EmojiID   int    `json:"emoji_id,omitempty"`
 	EmojiName string `json:"emoji_name,omitempty"`
 }
 
