@@ -1075,40 +1075,43 @@ func (g *Guild) UnmarshalJSON(data []byte) error {
 	type guild Guild
 	var err error
 	if err = json.Unmarshal(data, (*guild)(g)); err != nil {
+		fmt.Println("Guild unmarshal error:", err)
 		return err
 	}
 
-	g.VerificationLevel = g.Properties.VerificationLevel
-	g.VanityURLCode = g.Properties.VanityURLCode
-	g.SystemChannelID = g.Properties.SystemChannelID
-	g.SystemChannelFlags = g.Properties.SystemChannelFlags
-	g.Splash = g.Properties.Splash
-	g.SafetyAlertsChannelID = g.Properties.SafetyAlertsChannelID
-	g.RulesChannelID = g.Properties.RulesChannelID
-	g.PublicUpdatesChannelID = g.Properties.PublicUpdatesChannelID
-	g.PremiumTier = g.Properties.PremiumTier
-	g.PremiumProgressBarEnabled = g.Properties.PremiumProgressBarEnabled
-	g.PreferredLocale = g.Properties.PreferredLocale
-	g.OwnerID = g.Properties.OwnerID
-	g.NSFWLevel = g.Properties.NSFWLevel
-	g.NSFW = g.Properties.NSFW
-	g.Name = g.Properties.Name
-	g.MfaLevel = g.Properties.MfaLevel
-	g.MaxVideoChannelUsers = g.Properties.MaxVideoChannelUsers
-	g.MaxStageVideoChannelUsers = g.Properties.MaxStageVideoChannelUsers
-	g.MaxMembers = g.Properties.MaxMembers
-	g.Icon = g.Properties.Icon
-	g.HubType = g.Properties.HubType
-	g.HomeHeader = g.Properties.HomeHeader
-	g.Features = g.Properties.Features
-	g.ExplicitContentFilter = g.Properties.ExplicitContentFilter
-	g.DiscoverySplash = g.Properties.DiscoverySplash
-	g.Description = g.Properties.Description
-	g.DefaultMessageNotifications = g.Properties.DefaultMessageNotifications
-	g.Banner = g.Properties.Banner
-	g.ApplicationID = g.Properties.ApplicationID
-	g.AfkTimeout = g.Properties.AfkTimeout
-	g.AfkChannelID = g.Properties.AfkChannelID
+	if g.Properties != nil {
+		g.VerificationLevel = g.Properties.VerificationLevel
+		g.VanityURLCode = g.Properties.VanityURLCode
+		g.SystemChannelID = g.Properties.SystemChannelID
+		g.SystemChannelFlags = g.Properties.SystemChannelFlags
+		g.Splash = g.Properties.Splash
+		g.SafetyAlertsChannelID = g.Properties.SafetyAlertsChannelID
+		g.RulesChannelID = g.Properties.RulesChannelID
+		g.PublicUpdatesChannelID = g.Properties.PublicUpdatesChannelID
+		g.PremiumTier = g.Properties.PremiumTier
+		g.PremiumProgressBarEnabled = g.Properties.PremiumProgressBarEnabled
+		g.PreferredLocale = g.Properties.PreferredLocale
+		g.OwnerID = g.Properties.OwnerID
+		g.NSFWLevel = g.Properties.NSFWLevel
+		g.NSFW = g.Properties.NSFW
+		g.Name = g.Properties.Name
+		g.MfaLevel = g.Properties.MfaLevel
+		g.MaxVideoChannelUsers = g.Properties.MaxVideoChannelUsers
+		g.MaxStageVideoChannelUsers = g.Properties.MaxStageVideoChannelUsers
+		g.MaxMembers = g.Properties.MaxMembers
+		g.Icon = g.Properties.Icon
+		g.HubType = g.Properties.HubType
+		g.HomeHeader = g.Properties.HomeHeader
+		g.Features = g.Properties.Features
+		g.ExplicitContentFilter = g.Properties.ExplicitContentFilter
+		g.DiscoverySplash = g.Properties.DiscoverySplash
+		g.Description = g.Properties.Description
+		g.DefaultMessageNotifications = g.Properties.DefaultMessageNotifications
+		g.Banner = g.Properties.Banner
+		g.ApplicationID = g.Properties.ApplicationID
+		g.AfkTimeout = g.Properties.AfkTimeout
+		g.AfkChannelID = g.Properties.AfkChannelID
+	}
 
 	return nil
 }
