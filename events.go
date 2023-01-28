@@ -2,6 +2,7 @@ package discordgo
 
 import (
 	"encoding/json"
+	"fmt"
 )
 
 // This file contains all the possible structs that can be
@@ -66,6 +67,7 @@ func (r *Ready) UnmarshalJSON(data []byte) error {
 	var ready rawReady
 
 	if err := json.Unmarshal(data, &ready); err != nil {
+		fmt.Println("Error unmarshaling rawReady:", err)
 		return err
 	}
 
@@ -153,17 +155,17 @@ type ThreadMembersUpdate struct {
 
 // GuildCreate is the data for a GuildCreate event.
 type GuildCreate struct {
-	*Guild
+	Guild
 }
 
 // GuildUpdate is the data for a GuildUpdate event.
 type GuildUpdate struct {
-	*Guild
+	Guild
 }
 
 // GuildDelete is the data for a GuildDelete event.
 type GuildDelete struct {
-	*Guild
+	Guild
 	BeforeDelete *Guild `json:"-"`
 }
 
@@ -292,8 +294,11 @@ type MessageCreate struct {
 }
 
 // UnmarshalJSON is a helper function to unmarshal MessageCreate object.
-func (m *MessageCreate) UnmarshalJSON(b []byte) error {
-	return json.Unmarshal(b, &m.Message)
+func (m *MessageCreate) UnmarshalJSON(b []byte) (err error) {
+	if err = json.Unmarshal(b, &m.Message); err != nil {
+		fmt.Println("Error unmarshaling MessageCreate:", err)
+	}
+	return err
 }
 
 // MessageUpdate is the data for a MessageUpdate event.
@@ -304,8 +309,11 @@ type MessageUpdate struct {
 }
 
 // UnmarshalJSON is a helper function to unmarshal MessageUpdate object.
-func (m *MessageUpdate) UnmarshalJSON(b []byte) error {
-	return json.Unmarshal(b, &m.Message)
+func (m *MessageUpdate) UnmarshalJSON(b []byte) (err error) {
+	if err = json.Unmarshal(b, &m.Message); err != nil {
+		fmt.Println("Error unmarshaling MessageUpdate:", err)
+	}
+	return err
 }
 
 // MessageDelete is the data for a MessageDelete event.
@@ -315,8 +323,11 @@ type MessageDelete struct {
 }
 
 // UnmarshalJSON is a helper function to unmarshal MessageDelete object.
-func (m *MessageDelete) UnmarshalJSON(b []byte) error {
-	return json.Unmarshal(b, &m.Message)
+func (m *MessageDelete) UnmarshalJSON(b []byte) (err error) {
+	if err = json.Unmarshal(b, &m.Message); err != nil {
+		fmt.Println("Error unmarshaling MessageDelete:", err)
+	}
+	return err
 }
 
 // MessageReactionAdd is the data for a MessageReactionAdd event.
@@ -405,8 +416,11 @@ type InteractionCreate struct {
 }
 
 // UnmarshalJSON is a helper function to unmarshal Interaction object.
-func (i *InteractionCreate) UnmarshalJSON(b []byte) error {
-	return json.Unmarshal(b, &i.Interaction)
+func (i *InteractionCreate) UnmarshalJSON(b []byte) (err error) {
+	if err = json.Unmarshal(b, &i.Interaction); err != nil {
+		fmt.Println("Error unmarshaling InteractionCreate:", err)
+	}
+	return err
 }
 
 // InteractionModalCreate is the data to send when creating a modal.
@@ -429,6 +443,7 @@ func (d *InteractionModalCreate) UnmarshalJSON(data []byte) error {
 	}
 	err := json.Unmarshal(data, &v)
 	if err != nil {
+		fmt.Println("Error unmarshaling InteractionModalCreate:", err)
 		return err
 	}
 	*d = InteractionModalCreate(v.interactionModalCreate)

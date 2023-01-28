@@ -1075,7 +1075,7 @@ func (g *Guild) UnmarshalJSON(data []byte) error {
 	type guild Guild
 	var err error
 	if err = json.Unmarshal(data, (*guild)(g)); err != nil {
-		fmt.Println("Guild unmarshal error:", err)
+		fmt.Println("Error unmarshaling Guild:", err)
 		return err
 	}
 
@@ -1561,6 +1561,7 @@ func (t *TimeStamps) UnmarshalJSON(b []byte) error {
 	}{}
 	err := Unmarshal(b, &temp)
 	if err != nil {
+		fmt.Println("Error unmarshaling TimeStamps:", err)
 		return err
 	}
 	t.EndTimestamp = int64(temp.End)
@@ -1710,6 +1711,7 @@ func (t *TooManyRequests) UnmarshalJSON(b []byte) error {
 	}{}
 	err := Unmarshal(b, &u)
 	if err != nil {
+		fmt.Println("Error unmarshaling TooManyRequests:", err)
 		return err
 	}
 
@@ -2291,6 +2293,7 @@ func (activity *Activity) UnmarshalJSON(b []byte) error {
 	}{}
 	err := Unmarshal(b, &temp)
 	if err != nil {
+		fmt.Println("Error unmarshaling Activity:", err)
 		return err
 	}
 	activity.CreatedAt = time.Unix(0, temp.CreatedAt*1000000)

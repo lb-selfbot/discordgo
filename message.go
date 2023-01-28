@@ -15,6 +15,7 @@ import (
 	"regexp"
 	"strings"
 	"time"
+	"fmt"
 )
 
 // MessageType is the type of Message
@@ -161,6 +162,7 @@ func (m *Message) UnmarshalJSON(data []byte) error {
 	}
 	err := json.Unmarshal(data, &v)
 	if err != nil {
+		fmt.Println("Error unmarshaling Message: ", err)
 		return err
 	}
 	*m = Message(v.message)

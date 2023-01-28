@@ -224,9 +224,9 @@ func (s *Session) onInterface(i interface{}) {
 		}
 		s.onReady(t)
 	case *GuildCreate:
-		setGuildIds(t.Guild)
+		setGuildIds(&t.Guild)
 	case *GuildUpdate:
-		setGuildIds(t.Guild)
+		setGuildIds(&t.Guild)
 	case *VoiceServerUpdate:
 		go s.onVoiceServerUpdate(t)
 	case *VoiceStateUpdate:

@@ -37,6 +37,7 @@ func (umc *unmarshalableMessageComponent) UnmarshalJSON(src []byte) error {
 	}
 	err := json.Unmarshal(src, &v)
 	if err != nil {
+		fmt.Println("Error unmarshaling unmarshalableMessageComponent:", err)
 		return err
 	}
 

@@ -987,9 +987,9 @@ func (s *State) OnInterface(se *Session, i interface{}) (err error) {
 
 	switch t := i.(type) {
 	case *GuildCreate:
-		err = s.GuildAdd(t.Guild)
+		err = s.GuildAdd(&t.Guild)
 	case *GuildUpdate:
-		err = s.GuildAdd(t.Guild)
+		err = s.GuildAdd(&t.Guild)
 	case *GuildDelete:
 		var old *Guild
 		old, err = s.Guild(t.ID)
@@ -998,7 +998,7 @@ func (s *State) OnInterface(se *Session, i interface{}) (err error) {
 			t.BeforeDelete = &oldCopy
 		}
 
-		err = s.GuildRemove(t.Guild)
+		err = s.GuildRemove(&t.Guild)
 	case *GuildMemberAdd:
 		var guild *Guild
 		// Updates the MemberCount of the guild.

@@ -248,6 +248,7 @@ func (i *Interaction) UnmarshalJSON(raw []byte) error {
 	var tmp rawInteraction
 	err := json.Unmarshal(raw, &tmp)
 	if err != nil {
+		fmt.Println("Error unmarshaling Interaction:", err)
 		return err
 	}
 
@@ -258,6 +259,7 @@ func (i *Interaction) UnmarshalJSON(raw []byte) error {
 		v := ApplicationCommandInteractionData{}
 		err = json.Unmarshal(tmp.Data, &v)
 		if err != nil {
+			fmt.Println("Error unmarshaling Interaction->ApplicationCommandInteractionData:", err)
 			return err
 		}
 		i.Data = v
@@ -265,6 +267,7 @@ func (i *Interaction) UnmarshalJSON(raw []byte) error {
 		v := MessageComponentInteractionData{}
 		err = json.Unmarshal(tmp.Data, &v)
 		if err != nil {
+			fmt.Println("Error unmarshaling Interaction->MessageComponentInteractionData:", err)
 			return err
 		}
 		i.Data = v
@@ -272,6 +275,7 @@ func (i *Interaction) UnmarshalJSON(raw []byte) error {
 		v := ModalSubmitInteractionData{}
 		err = json.Unmarshal(tmp.Data, &v)
 		if err != nil {
+			fmt.Println("Error unmarshaling Interaction->ModalSubmitInteractionData:", err)
 			return err
 		}
 		i.Data = v
@@ -384,6 +388,7 @@ func (d *ModalSubmitInteractionData) UnmarshalJSON(data []byte) error {
 	}
 	err := json.Unmarshal(data, &v)
 	if err != nil {
+		fmt.Println("Error unmarshaling ModalSubmitInteractionData:", err)
 		return err
 	}
 	*d = ModalSubmitInteractionData(v.modalSubmitInteractionData)
