@@ -148,14 +148,14 @@ func (s *Session) RequestWithLockedBucket(method, urlStr, contentType string, b 
 	// TODO: Make a configurable static variable.
 	req.Header.Set("User-Agent", s.UserAgent)
 
+	for k, v := range s.Headers {
+		req.Header.Set(k, v)
+	}
+
 	for _, header := range headers {
 		for k, v := range header {
 			req.Header.Set(k, v)
 		}
-	}
-
-	for k, v := range s.Headers {
-		req.Header.Set(k, v)
 	}
 
 	if s.Debug {
