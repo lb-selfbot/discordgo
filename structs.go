@@ -2257,18 +2257,18 @@ type GatewayStatusUpdate struct {
 // Activity defines the Activity sent with GatewayStatusUpdate
 // https://discord.com/developers/docs/topics/gateway#activity-object
 type Activity struct {
-	Name          string       `json:"name"`
+	Name          string       `json:"name,omitempty"`
 	Type          ActivityType `json:"type"`
 	URL           string       `json:"url,omitempty"`
-	CreatedAt     time.Time    `json:"created_at"`
+	CreatedAt     *time.Time    `json:"created_at,omitempty"`
 	ApplicationID string       `json:"application_id,omitempty"`
 	State         string       `json:"state,omitempty"`
 	Details       string       `json:"details,omitempty"`
-	Timestamps    TimeStamps   `json:"timestamps,omitempty"`
-	Emoji         Emoji        `json:"emoji,omitempty"`
-	Party         Party        `json:"party,omitempty"`
-	Assets        Assets       `json:"assets,omitempty"`
-	Secrets       Secrets      `json:"secrets,omitempty"`
+	Timestamps    *TimeStamps   `json:"timestamps,omitempty"`
+	Emoji         *Emoji        `json:"emoji,omitempty"`
+	Party         *Party        `json:"party,omitempty"`
+	Assets        *Assets       `json:"assets,omitempty"`
+	Secrets       *Secrets      `json:"secrets,omitempty"`
 	Instance      bool         `json:"instance,omitempty"`
 	Flags         int          `json:"flags,omitempty"`
 }
@@ -2276,18 +2276,18 @@ type Activity struct {
 // UnmarshalJSON is a custom unmarshaljson to make CreatedAt a time.Time instead of an int
 func (activity *Activity) UnmarshalJSON(b []byte) error {
 	temp := struct {
-		Name          string       `json:"name"`
+		Name          string       `json:"name,omitempty"`
 		Type          ActivityType `json:"type"`
 		URL           string       `json:"url,omitempty"`
-		CreatedAt     int64        `json:"created_at"`
+		CreatedAt     int64        `json:"created_at,omitempty"`
 		ApplicationID string       `json:"application_id,omitempty"`
 		State         string       `json:"state,omitempty"`
 		Details       string       `json:"details,omitempty"`
-		Timestamps    TimeStamps   `json:"timestamps,omitempty"`
-		Emoji         Emoji        `json:"emoji,omitempty"`
-		Party         Party        `json:"party,omitempty"`
-		Assets        Assets       `json:"assets,omitempty"`
-		Secrets       Secrets      `json:"secrets,omitempty"`
+		Timestamps    *TimeStamps   `json:"timestamps,omitempty"`
+		Emoji         *Emoji        `json:"emoji,omitempty"`
+		Party         *Party        `json:"party,omitempty"`
+		Assets        *Assets       `json:"assets,omitempty"`
+		Secrets       *Secrets      `json:"secrets,omitempty"`
 		Instance      bool         `json:"instance,omitempty"`
 		Flags         int          `json:"flags,omitempty"`
 	}{}
@@ -2296,7 +2296,9 @@ func (activity *Activity) UnmarshalJSON(b []byte) error {
 		fmt.Println("Error unmarshaling Activity:", err)
 		return err
 	}
-	activity.CreatedAt = time.Unix(0, temp.CreatedAt*1000000)
+	createdAt := time.Unix(0, temp.CreatedAt*1000000)
+	
+	activity.CreatedAt = &createdAt
 	activity.ApplicationID = temp.ApplicationID
 	activity.Assets = temp.Assets
 	activity.Details = temp.Details
