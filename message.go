@@ -229,12 +229,16 @@ type File struct {
 // MessageSend stores all parameters you can send with ChannelMessageSendComplex.
 type MessageSend struct {
 	Content         string                  `json:"content,omitempty"`
-	Embeds          []*MessageEmbed         `json:"embeds"`
+	Embeds          []*MessageEmbed         `json:"embeds,omitempty"`
+	Activity        *MessageActivity        `json:"activity,omitempty"`
 	TTS             bool                    `json:"tts"`
-	Components      []MessageComponent      `json:"components"`
+	Components      []*MessageComponent      `json:"components,omitempty"`
 	Files           []*File                 `json:"-"`
 	AllowedMentions *MessageAllowedMentions `json:"allowed_mentions,omitempty"`
 	Reference       *MessageReference       `json:"message_reference,omitempty"`
+
+	Flags           int                     `json:"flags"`
+	Nonce           string                  `json:"nonce,omitempty"`
 
 	// TODO: Remove this when compatibility is not required.
 	File *File `json:"-"`
@@ -436,8 +440,9 @@ type MessageReactions struct {
 
 // MessageActivity is sent with Rich Presence-related chat embeds
 type MessageActivity struct {
-	Type    MessageActivityType `json:"type"`
-	PartyID string              `json:"party_id"`
+	Type      MessageActivityType `json:"type"`
+	SessionID string              `json:"session_id,omitempty"`
+	PartyID   string              `json:"party_id"`
 }
 
 // MessageActivityType is the type of message activity
