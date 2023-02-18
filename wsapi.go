@@ -342,7 +342,7 @@ func (s *Session) heartbeat(wsConn *websocket.Conn, listening <-chan interface{}
 type UpdateStatusData struct {
 	IdleSince  *int        `json:"since"`
 	Activities []*Activity `json:"activities,omitempty"`
-	Game       *Activity   `json:"game"`
+	Game       *Activity   `json:"game,omitempty"`
 	AFK        bool        `json:"afk"`
 	Status     string      `json:"status"`
 }
