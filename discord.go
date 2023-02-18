@@ -41,7 +41,7 @@ func New(token string) (s *Session, err error) {
 		ShouldSubscribeGuilds:  true,
 		Compress:               true,
 		ShouldReconnectOnError: true,
-		ShouldRetryOnRateLimit: true,
+		ShouldRetryOnRateLimit: false,
 		ShardID:                0,
 		ShardCount:             1,
 		MaxRestRetries:         3,
