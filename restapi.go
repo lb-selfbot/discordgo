@@ -2344,6 +2344,10 @@ func (s *Session) webhookExecute(webhookID, token string, wait bool, threadID st
 		uri += "?" + v.Encode()
 	}
 
+	headers := map[string]string{
+		"Origin": uri,
+	}
+
 	var response []byte
 	if len(data.Files) > 0 {
 		contentType, body, encodeErr := MultipartBodyWithJSON(data, data.Files)
@@ -2351,9 +2355,9 @@ func (s *Session) webhookExecute(webhookID, token string, wait bool, threadID st
 			return st, encodeErr
 		}
 
-		response, err = s.request("POST", uri, contentType, body, uri, 0)
+		response, err = s.request("POST", uri, contentType, body, uri, 0, headers)
 	} else {
-		response, err = s.RequestWithBucketID("POST", uri, data, uri)
+		response, err = s.RequestWithBucketID("POST", uri, data, uri, headers)
 	}
 	if !wait || err != nil {
 		return
