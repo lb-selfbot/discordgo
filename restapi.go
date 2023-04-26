@@ -195,19 +195,19 @@ func (s *Session) RequestWithLockedBucket(method, urlStr, contentType string, b 
 		log.Printf("API RESPONSE    BODY :: [%s]\n\n\n", response)
 	}
 
+	if sequence > s.MaxRestRetries {
+		err = fmt.Errorf("Exceeded Max retries HTTP %s, %s", resp.Status, response)
+		return
+	}
+
 	switch resp.StatusCode {
 	case http.StatusOK:
 	case http.StatusCreated:
 	case http.StatusNoContent:
 	case http.StatusBadGateway:
-		// Retry sending request if possible
-		if sequence < s.MaxRestRetries {
-
-			s.log(LogInformational, "%s Failed (%s), Retrying...", urlStr, resp.Status)
-			response, err = s.RequestWithLockedBucket(method, urlStr, contentType, b, s.Ratelimiter.LockBucketObject(bucket), sequence+1)
-		} else {
-			err = fmt.Errorf("Exceeded Max retries HTTP %s, %s", resp.Status, response)
-		}
+		// Retry sending request
+		s.log(LogInformational, "%s Failed (%s), Retrying...", urlStr, resp.Status)
+		response, err = s.RequestWithLockedBucket(method, urlStr, contentType, b, s.Ratelimiter.LockBucketObject(bucket), sequence+1)
 	case 429: // TOO MANY REQUESTS - Rate limiting
 		rl := TooManyRequests{}
 		err = Unmarshal(response, &rl)
@@ -224,7 +224,7 @@ func (s *Session) RequestWithLockedBucket(method, urlStr, contentType string, b 
 			// we can make the above smarter
 			// this method can cause longer delays than required
 
-			response, err = s.RequestWithLockedBucket(method, urlStr, contentType, b, s.Ratelimiter.LockBucketObject(bucket), sequence)
+			response, err = s.RequestWithLockedBucket(method, urlStr, contentType, b, s.Ratelimiter.LockBucketObject(bucket), sequence+1)
 		} else {
 			err = &RateLimitError{&RateLimit{TooManyRequests: &rl, URL: urlStr}}
 		}
