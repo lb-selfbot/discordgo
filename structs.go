@@ -2348,32 +2348,36 @@ const (
 // Identify is sent during initial handshake with the discord gateway.
 // https://discord.com/developers/docs/topics/gateway#identify
 type Identify struct {
-	Token        string              `json:"token"`
-	Properties   IdentifyProperties  `json:"properties"`
-	Compress     bool                `json:"compress"`
-	Capabilities int                 `json:"capabilities"`
+	Token          string              `json:"token"`
+	Properties     IdentifyProperties  `json:"properties"`
+	Compress       bool                `json:"compress"`
+	Capabilities   int                 `json:"capabilities"`
 	LargeThreshold int                 `json:"large_threshold"`
 	ClientState    ClientState         `json:"client_state"`
-	Presence     GatewayStatusUpdate `json:"presence,omitempty"`
+	Presence       GatewayStatusUpdate `json:"presence,omitempty"`
 }
 
 // IdentifyProperties contains the "properties" portion of an Identify packet
 // https://discord.com/developers/docs/topics/gateway#identify-identify-connection-properties
 type IdentifyProperties struct {
-	Browser                string `json:"browser"`                  // Chrome
-	BrowserUserAgent       string `json:"browser_user_agent"`       // Chrome User Agent
-	BrowserVersion         string `json:"browser_version"`          // Chrome Version
-	ClientBuildNumber      int    `json:"client_build_number"`      // Discord Build Number
-	ClientEventSource      any    `json:"client_event_source"`      // null
-	Device                 string `json:"device"`                   // Empty String
-	OS                     string `json:"os"`                       // Windows
-	OSVersion              string `json:"os_version"`               // Windows Version
-	Referrer               string `json:"referrer"`                 // Empty String
-	ReferrerCurrent        string `json:"referrer_current"`         // Empty String
-	ReferringDomain        string `json:"referring_domain"`         // Empty String
-	ReferringDomainCurrent string `json:"referring_domain_current"` // Empty String
-	ReleaseChannel         string `json:"release_channel"`          // "stable"
-	SystemLocale           string `json:"system_locale"`            // "en-US"
+	Browser                string `json:"browser"`                       // Chrome
+	BrowserUserAgent       string `json:"browser_user_agent"`            // Chrome User Agent
+	BrowserVersion         string `json:"browser_version"`               // Chrome Version
+	NativeBuildNumber      int    `json:"native_build_number,omitempty"` // Native Build Number
+	ClientBuildNumber      int    `json:"client_build_number"`           // Discord Build Number
+	ClientEventSource      any    `json:"client_event_source"`           // null
+	ClientVersion          string `json:"client_version,omitempty"`      // Discord Version
+	Device                 string `json:"device,omitempty"`              // Empty String
+	OS                     string `json:"os"`                            // Windows
+	OSVersion              string `json:"os_version"`                    // Windows Version
+	OSArch                 string `json:"os_arch,omitempty"`             // OS Arch
+	Referrer               string `json:"referrer"`                      // Empty String
+	ReferrerCurrent        string `json:"referrer_current"`              // Empty String
+	ReferringDomain        string `json:"referring_domain"`              // Empty String
+	ReferringDomainCurrent string `json:"referring_domain_current"`      // Empty String
+	ReleaseChannel         string `json:"release_channel"`               // "stable"
+	SystemLocale           string `json:"system_locale"`                 // "en-US"
+	DesignID               int    `json:"design_id"`                     // 0
 }
 
 // ClientState contains the "client_state" portion of an Identify packet
