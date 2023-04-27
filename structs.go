@@ -2352,6 +2352,8 @@ type Identify struct {
 	Properties   IdentifyProperties  `json:"properties"`
 	Compress     bool                `json:"compress"`
 	Capabilities int                 `json:"capabilities"`
+	LargeThreshold int                 `json:"large_threshold"`
+	ClientState    ClientState         `json:"client_state"`
 	Presence     GatewayStatusUpdate `json:"presence,omitempty"`
 }
 
@@ -2372,6 +2374,17 @@ type IdentifyProperties struct {
 	ReferringDomainCurrent string `json:"referring_domain_current"` // Empty String
 	ReleaseChannel         string `json:"release_channel"`          // "stable"
 	SystemLocale           string `json:"system_locale"`            // "en-US"
+}
+
+// ClientState contains the "client_state" portion of an Identify packet
+type ClientState struct {
+	GuildHashes              map[string]string `json:"guild_hashes"`
+	HighestLastMessageID     string            `json:"highest_last_message_id"`
+	ReadStateVersion         int               `json:"read_state_version"`
+	UserGuildSettingsVersion int               `json:"user_guild_settings_version"`
+	UserSettingsVersion      int               `json:"user_settings_version,omitempty"`
+	PrivateChannelsVersion   string            `json:"private_channels_version,omitempty"`
+	APICodeVersion           int               `json:"api_code_version,omitempty"`
 }
 
 // DiscordSessionClientInfo holds information about the client used for a Discord session.

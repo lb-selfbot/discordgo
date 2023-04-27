@@ -23,6 +23,105 @@ import (
 // VERSION of DiscordGo, follows Semantic Versioning. (http://semver.org/)
 const VERSION = "0.26.5"
 
+var UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.5563.147 Safari/537.36"
+var BrowserVersion = "111.0.5563.147"
+
+var IdentifyMobile = Identify{
+	Properties: IdentifyProperties{
+		OS:                     "Android",
+		Browser:                "Discord Android",
+		Device:                 "Android",
+		SystemLocale:           "en-US",
+		BrowserUserAgent:       UserAgent,
+		BrowserVersion:         BrowserVersion,
+		OSVersion:              "10",
+		Referrer:               "https://www.google.com/",
+		ReferringDomain:        "google.com",
+		ReferrerCurrent:        "",
+		ReferringDomainCurrent: "",
+		ReleaseChannel:         "stable",
+		ClientBuildNumber:      0,
+		ClientEventSource:      nil,
+	},
+	Compress:     true,
+	Capabilities: 8189,
+	ClientState: ClientState{
+		GuildHashes:              map[string]string{},
+		HighestLastMessageID:     "0",
+		ReadStateVersion:         0,
+		UserGuildSettingsVersion: -1,
+	},
+	Presence: GatewayStatusUpdate{
+		Since:  0,
+		Status: "online",
+		AFK:    false,
+	},
+}
+
+var IdentifyDiscordClient = Identify{
+	Properties: IdentifyProperties{
+		OS:                "Windows",
+		Browser:           "Discord Client",
+		ReleaseChannel:    "stable",
+		ClientVersion:     "1.0.9012",
+		OSVersion:         "10.0.22621",
+		OSArch:            "x64",
+		SystemLocale:      "en-US",
+		ClientBuildNumber: 0,
+		NativeBuildNumber: 32020,
+		ClientEventSource: nil,
+	},
+	Compress:     true,
+	Capabilities: 8189,
+	ClientState: ClientState{
+		GuildHashes:              map[string]string{},
+		HighestLastMessageID:     "0",
+		ReadStateVersion:         0,
+		UserGuildSettingsVersion: -1,
+		UserSettingsVersion:      -1,
+		PrivateChannelsVersion:   "0",
+		APICodeVersion:           0,
+	},
+	Presence: GatewayStatusUpdate{
+		Since:  0,
+		Status: "online",
+		AFK:    false,
+	},
+}
+
+var IdentifyWeb = Identify{
+	Properties: IdentifyProperties{
+		OS:                     "Windows",
+		Browser:                "Chrome",
+		Device:                 "",
+		SystemLocale:           "en-US",
+		BrowserUserAgent:       UserAgent,
+		BrowserVersion:         BrowserVersion,
+		OSVersion:              "10",
+		Referrer:               "",
+		ReferringDomain:        "",
+		ReferrerCurrent:        "",
+		ReferringDomainCurrent: "",
+		ReleaseChannel:         "stable",
+		ClientBuildNumber:      0,
+		ClientEventSource:      nil,
+		DesignID:               0,
+	},
+	Compress:     true,
+	Capabilities: 8189,
+	ClientState: ClientState{
+		GuildHashes:              map[string]string{},
+		HighestLastMessageID:     "0",
+		ReadStateVersion:         0,
+		UserGuildSettingsVersion: -1,
+	},
+	Presence: GatewayStatusUpdate{
+		Since:  0,
+		Status: "online",
+		AFK:    false,
+	},
+}
+
 // New creates a new Discord session with provided token.
 // If the token is for a bot, it must be prefixed with "Bot "
 //
@@ -35,6 +134,7 @@ func New(token string) (s *Session, err error) {
 
 	// Create an empty Session interface.
 	s = &Session{
+		Token:                  token,
 		State:                  NewState(),
 		Ratelimiter:            NewRatelimiter(),
 		StateEnabled:           true,
@@ -50,47 +150,33 @@ func New(token string) (s *Session, err error) {
 		UserAgent:              "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36",
 		sequence:               new(int64),
 		LastHeartbeatAck:       time.Now().UTC(),
-	}
-
-	// Initialize the Identify Package with defaults
-	// These can be modified prior to calling Open()
-	s.Identify.Compress = true
-	s.Identify.Capabilities = 4093
-	s.Identify.Properties.Browser = "Chrome"
-	s.Identify.Properties.BrowserUserAgent = s.UserAgent
-	s.Identify.Properties.BrowserVersion = "108.0.0.0"
-	s.Identify.Properties.ClientBuildNumber = s.GetBuildNumber()
-	s.Identify.Properties.ClientEventSource = nil
-	s.Identify.Properties.Device = ""
-	s.Identify.Properties.OS = "Windows"
-	s.Identify.Properties.OSVersion = "10"
-	s.Identify.Properties.Referrer = ""
-	s.Identify.Properties.ReferrerCurrent = ""
-	s.Identify.Properties.ReferringDomain = ""
-	s.Identify.Properties.ReferringDomainCurrent = ""
-	s.Identify.Properties.ReleaseChannel = "stable"
-	s.Identify.Properties.SystemLocale = "en-US"
-	s.Identify.Token = token
-
-	s.Token = token
-
-	s.SuperProperties = s.GetSuperProperties()
-
-	// Default headers for API requests
-	s.Headers = map[string]string{
-		"accept":             "*/*",
-		"accept-encoding":    "",
-		"accept-language":    "en-GB,q=0.9",
-		"referer":            "https://discord.com/",
-		"origin":             "https://discord.com",
-		"sec-fetch-dest":     "empty",
-		"sec-fetch-mode":     "cors",
-		"sec-fetch-site":     "same-origin",
-		"user-agent":         s.UserAgent,
-		"x-debug-options":    "bugReporterEnabled",
-		"x-discord-locale":   s.Identify.Properties.SystemLocale,
-		"x-super-properties": s.SuperProperties,
+		Headers: map[string]string{
+			"accept":             "*/*",
+			"accept-encoding":    "",
+			"accept-language":    "en-US",
+			"referer":            "https://discord.com/",
+			"origin":             "https://discord.com",
+			"sec-fetch-dest":     "empty",
+			"sec-fetch-mode":     "cors",
+			"sec-fetch-site":     "same-origin",
+			"user-agent":         "",
+			"x-debug-options":    "bugReporterEnabled",
+			"x-discord-locale":   "",
+			"x-super-properties": "",
+		},
 	}
 
 	return
+}
+
+func (s *Session) SetIdentify(i Identify) {
+	s.Identify = i
+	s.Identify.Token = s.Token
+	s.Identify.Properties.ClientBuildNumber = s.GetBuildNumber()
+
+	s.SuperProperties = s.GetSuperProperties()
+
+	s.Headers["user-agent"] = s.UserAgent
+	s.Headers["x-discord-locale"] = s.Identify.Properties.SystemLocale
+	s.Headers["x-super-properties"] = s.SuperProperties
 }
