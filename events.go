@@ -106,6 +106,18 @@ type ChannelPinsUpdate struct {
 	GuildID          string `json:"guild_id,omitempty"`
 }
 
+// ChannelRecipientAdd is the data for a ChannelRecipientAdd event.
+type ChannelRecipientAdd struct {
+	User      *User  `json:"user"`
+	ChannelID string `json:"channel_id"`
+}
+
+// ChannelRecipientRemove is the data for a ChannelRecipientRemove event.
+type ChannelRecipientRemove struct {
+	User      *User  `json:"user"`
+	ChannelID string `json:"channel_id"`
+}
+
 // ThreadCreate is the data for a ThreadCreate event.
 type ThreadCreate struct {
 	*Channel

@@ -15,6 +15,8 @@ const (
 	channelCreateEventType                       = "CHANNEL_CREATE"
 	channelDeleteEventType                       = "CHANNEL_DELETE"
 	channelPinsUpdateEventType                   = "CHANNEL_PINS_UPDATE"
+	channelRecipientAddEventType                 = "CHANNEL_RECIPIENT_ADD"
+	channelRecipientRemoveEventType              = "CHANNEL_RECIPIENT_REMOVE"
 	channelUpdateEventType                       = "CHANNEL_UPDATE"
 	connectEventType                             = "__CONNECT__"
 	disconnectEventType                          = "__DISCONNECT__"
@@ -229,6 +231,46 @@ func (eh channelPinsUpdateEventHandler) New() interface{} {
 // Handle is the handler for ChannelPinsUpdate events.
 func (eh channelPinsUpdateEventHandler) Handle(s *Session, i interface{}) {
 	if t, ok := i.(*ChannelPinsUpdate); ok {
+		eh(s, t)
+	}
+}
+
+// channelRecipientAddEventHandler is an event handler for ChannelRecipientAdd events.
+type channelRecipientAddEventHandler func(*Session, *ChannelRecipientAdd)
+
+// Type returns the event type for ChannelRecipientAdd events.
+func (eh channelRecipientAddEventHandler) Type() string {
+	return channelRecipientAddEventType
+}
+
+// New returns a new instance of ChannelRecipientAdd.
+func (eh channelRecipientAddEventHandler) New() interface{} {
+	return &ChannelRecipientAdd{}
+}
+
+// Handle is the handler for ChannelRecipientAdd events.
+func (eh channelRecipientAddEventHandler) Handle(s *Session, i interface{}) {
+	if t, ok := i.(*ChannelRecipientAdd); ok {
+		eh(s, t)
+	}
+}
+
+// channelRecipientRemoveEventHandler is an event handler for ChannelRecipientRemove events.
+type channelRecipientRemoveEventHandler func(*Session, *ChannelRecipientRemove)
+
+// Type returns the event type for ChannelRecipientRemove events.
+func (eh channelRecipientRemoveEventHandler) Type() string {
+	return channelRecipientRemoveEventType
+}
+
+// New returns a new instance of ChannelRecipientRemove.
+func (eh channelRecipientRemoveEventHandler) New() interface{} {
+	return &ChannelRecipientRemove{}
+}
+
+// Handle is the handler for ChannelRecipientRemove events.
+func (eh channelRecipientRemoveEventHandler) Handle(s *Session, i interface{}) {
+	if t, ok := i.(*ChannelRecipientRemove); ok {
 		eh(s, t)
 	}
 }
@@ -1353,6 +1395,10 @@ func handlerForInterface(handler interface{}) EventHandler {
 		return channelDeleteEventHandler(v)
 	case func(*Session, *ChannelPinsUpdate):
 		return channelPinsUpdateEventHandler(v)
+	case func(*Session, *ChannelRecipientAdd):
+		return channelRecipientAddEventHandler(v)
+	case func(*Session, *ChannelRecipientRemove):
+		return channelRecipientRemoveEventHandler(v)
 	case func(*Session, *ChannelUpdate):
 		return channelUpdateEventHandler(v)
 	case func(*Session, *Connect):
@@ -1479,6 +1525,8 @@ func init() {
 	registerInterfaceProvider(channelCreateEventHandler(nil))
 	registerInterfaceProvider(channelDeleteEventHandler(nil))
 	registerInterfaceProvider(channelPinsUpdateEventHandler(nil))
+	registerInterfaceProvider(channelRecipientAddEventHandler(nil))
+	registerInterfaceProvider(channelRecipientRemoveEventHandler(nil))
 	registerInterfaceProvider(channelUpdateEventHandler(nil))
 	registerInterfaceProvider(guildBanAddEventHandler(nil))
 	registerInterfaceProvider(guildBanRemoveEventHandler(nil))
