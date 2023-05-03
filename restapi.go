@@ -220,6 +220,11 @@ func (s *Session) RequestWithLockedBucket(method, urlStr, contentType string, b 
 			s.log(LogInformational, "Rate Limiting %s, retry in %v", urlStr, rl.RetryAfter)
 			s.handleEvent(rateLimitEventType, &RateLimit{TooManyRequests: &rl, URL: urlStr})
 
+			if rl.RetryAfter == 0 {
+				err = fmt.Errorf("Possible global rate limit! HTTP %s, %s", resp.Status, response)
+				return
+			}
+
 			time.Sleep(rl.RetryAfter)
 			// we can make the above smarter
 			// this method can cause longer delays than required
