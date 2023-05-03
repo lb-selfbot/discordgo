@@ -2011,6 +2011,24 @@ func (s *Session) ChannelNewsFollow(channelID, targetID string) (st *ChannelFoll
 	return
 }
 
+// ChannelRecipientAdd adds a recipient to a GroupDM
+// channelID   : The ID of a GroupDM Channel
+// userID      : The ID of a User
+func (s *Session) ChannelRecipientAdd(channelID, userID string) (err error) {
+
+	_, err = s.RequestWithBucketID("PUT", EndpointChannelRecipient(channelID, userID), nil, EndpointChannelRecipient(channelID, ""))
+	return
+}
+
+// ChannelRecipientRemove removes a recipient from a GroupDM
+// channelID   : The ID of a GroupDM Channel
+// userID      : The ID of a User
+func (s *Session) ChannelRecipientRemove(channelID, userID string) (err error) {
+
+	_, err = s.RequestWithBucketID("DELETE", EndpointChannelRecipient(channelID, userID), nil, EndpointChannelRecipient(channelID, ""))
+	return
+}
+
 // ------------------------------------------------------------------------------------------------
 // Functions specific to Discord Invites
 // ------------------------------------------------------------------------------------------------
