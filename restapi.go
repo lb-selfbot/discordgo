@@ -3119,8 +3119,14 @@ func (s *Session) FollowupMessageDelete(interaction *Interaction, messageID stri
 
 // InteractionClick sends a click interaction.
 func (s *Session) InteractionClick(button *Button, message *Message) error {
+	appID := message.Author.ID
+
+	if message.ApplicationID != "" {
+		appID = message.ApplicationID
+	}
+
 	data := InteractionClick{
-		ApplicationID: message.Author.ID,
+		ApplicationID: appID,
 		ChannelID:     message.ChannelID,
 		Data: InteractionClickData{
 			ComponentType: 2,
