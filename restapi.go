@@ -225,6 +225,10 @@ func (s *Session) RequestWithLockedBucket(method, urlStr, contentType string, b 
 				return
 			}
 
+			fmt.Println("[RATELIMIT] Rate limit reached on URL:", urlStr)
+			fmt.Println("[RATELIMIT] Response:", resp.Status, string(response))
+			fmt.Println("[RATELIMIT] Retrying after:", rl.RetryAfter)
+
 			time.Sleep(rl.RetryAfter)
 			// we can make the above smarter
 			// this method can cause longer delays than required
