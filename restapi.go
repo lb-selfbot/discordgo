@@ -2373,6 +2373,7 @@ func (s *Session) webhookExecute(webhookID, token string, wait bool, threadID st
 
 	headers := map[string]string{
 		"Origin": uri,
+		"Authorization": "",
 	}
 
 	var response []byte
