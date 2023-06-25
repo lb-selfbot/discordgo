@@ -2249,10 +2249,11 @@ type SessionInformation struct {
 // GatewayStatusUpdate is sent by the client to indicate a presence or status update
 // https://discord.com/developers/docs/topics/gateway#update-status-gateway-status-update-structure
 type GatewayStatusUpdate struct {
-	Since  int      `json:"since"`
-	Game   Activity `json:"game"`
-	Status string   `json:"status"`
-	AFK    bool     `json:"afk"`
+	Since      int         `json:"since"`
+	Game       Activity    `json:"game,omitempty"`
+	Activities []*Activity `json:"activities"`
+	Status     string      `json:"status"`
+	AFK        bool        `json:"afk"`
 }
 
 // Activity defines the Activity sent with GatewayStatusUpdate

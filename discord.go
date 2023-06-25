@@ -52,9 +52,10 @@ var IdentifyMobile = Identify{
 		UserGuildSettingsVersion: -1,
 	},
 	Presence: GatewayStatusUpdate{
-		Since:  0,
-		Status: "online",
-		AFK:    false,
+		Since:      0,
+		Status:     "unknown",
+		Activities: []*Activity{},
+		AFK:        true,
 	},
 }
 
@@ -83,9 +84,10 @@ var IdentifyDiscordClient = Identify{
 		APICodeVersion:           0,
 	},
 	Presence: GatewayStatusUpdate{
-		Since:  0,
-		Status: "online",
-		AFK:    false,
+		Since:      0,
+		Status:     "unknown",
+		Activities: []*Activity{},
+		AFK:        true,
 	},
 }
 
@@ -116,9 +118,10 @@ var IdentifyWeb = Identify{
 		UserGuildSettingsVersion: -1,
 	},
 	Presence: GatewayStatusUpdate{
-		Since:  0,
-		Status: "online",
-		AFK:    false,
+		Since:      0,
+		Status:     "unknown",
+		Activities: []*Activity{},
+		AFK:        true,
 	},
 }
 
