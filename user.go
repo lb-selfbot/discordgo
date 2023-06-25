@@ -36,6 +36,9 @@ type User struct {
 	// The user's username.
 	Username string `json:"username"`
 
+	// The user's display name
+	DisplayName string `json:"global_name"`
+
 	// The hash of the user's avatar. Use Session.UserAvatar
 	// to retrieve the avatar itself.
 	Avatar string `json:"avatar"`
@@ -83,6 +86,7 @@ type User struct {
 }
 
 // String returns a unique identifier of the form username#discriminator
+// NOTE: deprecated, use user.Username or user.DisplayName instead
 func (u *User) String() string {
 	return u.Username + "#" + u.Discriminator
 }
