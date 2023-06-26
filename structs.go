@@ -2256,6 +2256,10 @@ type GatewayStatusUpdate struct {
 	AFK        bool        `json:"afk"`
 }
 
+type ActivityMetadata struct {
+	ButtonURLs []string `json:"button_urls,omitempty"`
+}
+
 // Activity defines the Activity sent with GatewayStatusUpdate
 // https://discord.com/developers/docs/topics/gateway#activity-object
 type Activity struct {
@@ -2273,6 +2277,8 @@ type Activity struct {
 	Secrets       *Secrets      `json:"secrets,omitempty"`
 	Instance      bool         `json:"instance,omitempty"`
 	Flags         int          `json:"flags,omitempty"`
+	Buttons  []string          `json:"buttons,omitempty"`
+	Metadata *ActivityMetadata `json:"metadata,omitempty"`
 }
 
 // UnmarshalJSON is a custom unmarshaljson to make CreatedAt a time.Time instead of an int
