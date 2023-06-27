@@ -566,9 +566,38 @@ func (s *Session) UserRelationships() (st []*Relationship, err error) {
 	return
 }
 
-func (s *Session) UserRelationshipsDelete(userID string) (err error) {
-	_, err = s.RequestWithBucketID("DELETE", EndpointUserRelationships(userID), nil, EndpointUserRelationships(""), map[string]string{
-		"x-context-properties": "eyJsb2NhdGlvbiI6IkZyaWVuZHMifQ==",
+func (s *Session) UserRelationshipDelete(userID string) (err error) {
+	_, err = s.RequestWithBucketID("DELETE", EndpointUserRelationship(userID), nil, EndpointUserRelationships(""), map[string]string{
+		"x-context-properties": "eyJsb2NhdGlvbiI6IkNvbnRleHRNZW51In0=",
+	})
+	return
+}
+
+func (s *Session) UserRelationshipCreate(userID string, relType int) (err error) {
+	data := map[string]int{}
+
+	if relType != 1 {
+		data["type"] = relType
+	}
+
+	_, err = s.RequestWithBucketID("PUT", EndpointUserRelationship(userID), data, EndpointUserRelationships(""), map[string]string{
+		"x-context-properties": "eyJsb2NhdGlvbiI6IkNvbnRleHRNZW51In0=",
+	})
+	return
+}
+
+func (s *Session) UserSendFriendRequest(username, discriminator string) (err error) {
+	data := map[string]any{
+		"username": username,
+		"discriminator": nil
+	}
+
+	if discriminator != "" && discriminator != "0" {
+		data["discriminator"] = discriminator
+	}
+
+	_, err = s.RequestWithBucketID("POST", EndpointUserRelationships(userID), data, EndpointUserRelationships(""), map[string]string{
+		"x-context-properties": "eyJsb2NhdGlvbiI6IkNvbnRleHRNZW51In0=",
 	})
 	return
 }

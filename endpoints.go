@@ -68,6 +68,7 @@ var (
 	EndpointUserSettings                  = func(uID string) string { return EndpointUsers + uID + "/settings" }
 	EndpointUserConnections               = func(uID string) string { return EndpointUsers + uID + "/connections" }
 	EndpointUserRelationships             = func(uID string) string { return EndpointUsers + uID + "/relationships" }
+	EndpointUserRelationship              = func(uID string) string { return EndpointUserRelationships("@me") + "/" + uID  }
 	EndpointUserProfile                   = func(uID string) string { return EndpointUsers + uID + "/profile" }
 	EndpointUserInvites                   = func(uID string) string { return EndpointUsers + uID + "/invites" }
 
