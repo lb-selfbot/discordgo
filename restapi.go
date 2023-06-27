@@ -541,6 +541,16 @@ func memberPermissions(guild *Guild, channel *Channel, userID string, roles []st
 	return apermissions
 }
 
+func (s *Session) UserRelationships() (st []*Relationship, err error) {
+	body, err := s.RequestWithBucketID("GET", EndpointUserRelationships("@me"), nil, EndpointUserRelationships(""))
+	if err != nil {
+		return
+	}
+
+	err = unmarshal(body, &st)
+	return
+}
+
 func (s *Session) UserRelationshipsDelete(userID string) (err error) {
 	_, err = s.RequestWithBucketID("DELETE", EndpointUserRelationships(userID), nil, EndpointUserRelationships(""), map[string]string{
 		"x-context-properties": "eyJsb2NhdGlvbiI6IkZyaWVuZHMifQ==",
