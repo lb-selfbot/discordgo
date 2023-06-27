@@ -11,7 +11,6 @@ import (
 // cloudFlareRoundTripper is a custom round tripper add the validated request headers.
 type cloudFlareRoundTripper struct {
 	inner   http.RoundTripper
-	options Options
 }
 
 // AddCloudFlareByPass returns a round tripper adding the required headers for the CloudFlare checks
