@@ -328,7 +328,7 @@ func (s *Session) UserSettings() (settings map[string]any, err error) {
 		return nil, err
 	}
 
-	err = unmarshal(response, &conn)
+	err = unmarshal(response, &settings)
 	if err != nil {
 		return
 	}
