@@ -586,7 +586,7 @@ func (s *Session) UserRelationshipCreate(userID string, relType int) (err error)
 	return
 }
 
-func (s *Session) UserSendFriendRequest(username, discriminator string) (err error) {
+func (s *Session) UserSendFriendRequest(username string, discriminator int) (err error) {
 	data := map[string]any{
 		"username": username,
 		"discriminator": nil,
