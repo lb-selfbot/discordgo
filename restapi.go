@@ -597,7 +597,7 @@ func (s *Session) UserSendFriendRequest(username, discriminator string) (err err
 	}
 
 	_, err = s.RequestWithBucketID("POST", EndpointUserRelationships("@me"), data, EndpointUserRelationships(""), map[string]string{
-		"x-context-properties": "eyJsb2NhdGlvbiI6IkNvbnRleHRNZW51In0=",
+		"x-context-properties": "eyJsb2NhdGlvbiI6IkFkZCBGcmllbmQifQ==",
 	})
 	return
 }

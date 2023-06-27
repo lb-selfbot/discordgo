@@ -154,9 +154,9 @@ func New(token string) (s *Session, err error) {
 		sequence:               new(int64),
 		LastHeartbeatAck:       time.Now().UTC(),
 		Headers: map[string]string{
-			"accept":             "*/*",
+			"accept":             "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
 			"accept-encoding":    "",
-			"accept-language":    "en-US",
+			"accept-language":    "en-US,en;q=0.5",
 			"referer":            "https://discord.com/",
 			"origin":             "https://discord.com",
 			"sec-fetch-dest":     "empty",
@@ -168,6 +168,8 @@ func New(token string) (s *Session, err error) {
 			"x-super-properties": "",
 		},
 	}
+
+	s.Client.Transport = RoundTripper(s.Client.Transport)
 
 	return
 }
