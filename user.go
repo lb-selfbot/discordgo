@@ -33,6 +33,9 @@ type User struct {
 	// the application possesses the email scope for the user.
 	Email string `json:"email"`
 
+	// The user's phone number
+	Phone string `json:"phone"`
+
 	// The user's username.
 	Username string `json:"username"`
 
@@ -62,6 +65,9 @@ type User struct {
 	// The hash of the user's banner image.
 	Banner string `json:"banner"`
 
+	// User's banner color, encoded as hexadecimal color code
+	BannerColor string `json:"banner_color"`
+
 	// User's banner color, encoded as an integer representation of hexadecimal color code
 	AccentColor int `json:"accent_color"`
 
@@ -83,6 +89,14 @@ type User struct {
 	// The flags on a user's account.
 	// Only available when the request is authorized via a Bearer token.
 	Flags int `json:"flags"`
+
+	// "About Me" section of the user.
+	// Only available on client state user.
+	Bio string `json:"bio"`
+
+	// Pronouns of the user.
+	// Only available on client state user.
+	Pronouns string `json:"pronouns"`
 }
 
 // String returns a unique identifier of the form username#discriminator
