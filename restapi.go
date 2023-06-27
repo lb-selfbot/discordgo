@@ -596,7 +596,7 @@ func (s *Session) UserSendFriendRequest(username, discriminator string) (err err
 		data["discriminator"] = discriminator
 	}
 
-	_, err = s.RequestWithBucketID("POST", EndpointUserRelationships(userID), data, EndpointUserRelationships(""), map[string]string{
+	_, err = s.RequestWithBucketID("POST", EndpointUserRelationships("@me"), data, EndpointUserRelationships(""), map[string]string{
 		"x-context-properties": "eyJsb2NhdGlvbiI6IkNvbnRleHRNZW51In0=",
 	})
 	return
