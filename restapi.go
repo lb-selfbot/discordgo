@@ -592,7 +592,7 @@ func (s *Session) UserSendFriendRequest(username string, discriminator int) (err
 		"discriminator": nil,
 	}
 
-	if discriminator != "" && discriminator != "0" {
+	if discriminator != 0 {
 		data["discriminator"] = discriminator
 	}
 
