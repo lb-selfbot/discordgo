@@ -1960,7 +1960,9 @@ func (s *Session) ChannelInviteCreate(channelID string, i Invite) (st *Invite, e
 		Unique    bool `json:"unique"`
 	}{i.MaxAge, i.MaxUses, i.Temporary, i.Unique}
 
-	body, err := s.RequestWithBucketID("POST", EndpointChannelInvites(channelID), data, EndpointChannelInvites(channelID))
+	body, err := s.RequestWithBucketID("POST", EndpointChannelInvites(channelID), data, EndpointChannelInvites(channelID), map[string]string{
+		"x-context-properties": "eyJsb2NhdGlvbiI6Ikd1aWxkIEhlYWRlciJ9",
+	})
 	if err != nil {
 		return
 	}
