@@ -321,6 +321,21 @@ func (s *Session) UserUpdate(username, avatar string) (st *User, err error) {
 	return
 }
 
+// UserSettings returns the user's settings
+func (s *Session) UserSettings() (settings map[string]any, err error) {
+	response, err := s.RequestWithBucketID("GET", EndpointUserSettings("@me"), nil, EndpointUserSettings("@me"))
+	if err != nil {
+		return nil, err
+	}
+
+	err = unmarshal(response, &conn)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
 // UserConnections returns the user's connections
 func (s *Session) UserConnections() (conn []*UserConnection, err error) {
 	response, err := s.RequestWithBucketID("GET", EndpointUserConnections("@me"), nil, EndpointUserConnections("@me"))
