@@ -8,9 +8,10 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"net/http"
 	"strconv"
 	"time"
+
+	http "github.com/bogdanfinn/fhttp"
 )
 
 // InteractionDeadline is the time allowed to respond to an interaction.

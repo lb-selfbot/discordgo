@@ -5,9 +5,9 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
-	"net/http"
 	"os"
 
+	http "github.com/bogdanfinn/fhttp"
 	"github.com/LightningDev1/discordgo"
 )
 

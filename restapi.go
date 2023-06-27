@@ -21,11 +21,12 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
-	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
 	"time"
+
+	http "github.com/bogdanfinn/fhttp"
 )
 
 // All error constants
@@ -588,7 +589,7 @@ func (s *Session) UserRelationshipCreate(userID string, relType int) (err error)
 
 func (s *Session) UserSendFriendRequest(username string, discriminator int) (err error) {
 	data := map[string]any{
-		"username": username,
+		"username":      username,
 		"discriminator": nil,
 	}
 
@@ -2428,7 +2429,7 @@ func (s *Session) webhookExecute(webhookID, token string, wait bool, threadID st
 	}
 
 	headers := map[string]string{
-		"Origin": uri,
+		"Origin":        uri,
 		"Authorization": "",
 	}
 

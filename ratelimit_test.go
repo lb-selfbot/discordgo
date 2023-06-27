@@ -2,10 +2,11 @@ package discordgo
 
 import (
 	"fmt"
-	"net/http"
 	"strconv"
 	"testing"
 	"time"
+	
+	http "github.com/bogdanfinn/fhttp"
 )
 
 // This test takes ~2 seconds to run

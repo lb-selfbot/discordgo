@@ -2,12 +2,13 @@ package discordgo
 
 import (
 	"math"
-	"net/http"
 	"strconv"
 	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
+
+	http "github.com/bogdanfinn/fhttp"
 )
 
 // customRateLimit holds information for defining a custom rate limit

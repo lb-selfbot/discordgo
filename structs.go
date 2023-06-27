@@ -15,12 +15,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"math"
-	"net/http"
 	"regexp"
 	"strings"
 	"sync"
 	"time"
 
+	tls_client "github.com/bogdanfinn/tls-client"
 	"github.com/gorilla/websocket"
 )
 
@@ -102,7 +102,7 @@ type Session struct {
 	State *State
 
 	// The http client used for REST requests
-	Client *http.Client
+	Client tls_client.HttpClient
 
 	// The dialer used for WebSocket connection
 	Dialer *websocket.Dialer
@@ -2263,22 +2263,22 @@ type ActivityMetadata struct {
 // Activity defines the Activity sent with GatewayStatusUpdate
 // https://discord.com/developers/docs/topics/gateway#activity-object
 type Activity struct {
-	Name          string       `json:"name,omitempty"`
-	Type          ActivityType `json:"type"`
-	URL           string       `json:"url,omitempty"`
-	CreatedAt     *time.Time    `json:"created_at,omitempty"`
-	ApplicationID string       `json:"application_id,omitempty"`
-	State         string       `json:"state,omitempty"`
-	Details       string       `json:"details,omitempty"`
-	Timestamps    *TimeStamps   `json:"timestamps,omitempty"`
-	Emoji         *Emoji        `json:"emoji,omitempty"`
-	Party         *Party        `json:"party,omitempty"`
-	Assets        *Assets       `json:"assets,omitempty"`
-	Secrets       *Secrets      `json:"secrets,omitempty"`
-	Instance      bool         `json:"instance,omitempty"`
-	Flags         int          `json:"flags,omitempty"`
-	Buttons  []string          `json:"buttons,omitempty"`
-	Metadata *ActivityMetadata `json:"metadata,omitempty"`
+	Name          string            `json:"name,omitempty"`
+	Type          ActivityType      `json:"type"`
+	URL           string            `json:"url,omitempty"`
+	CreatedAt     *time.Time        `json:"created_at,omitempty"`
+	ApplicationID string            `json:"application_id,omitempty"`
+	State         string            `json:"state,omitempty"`
+	Details       string            `json:"details,omitempty"`
+	Timestamps    *TimeStamps       `json:"timestamps,omitempty"`
+	Emoji         *Emoji            `json:"emoji,omitempty"`
+	Party         *Party            `json:"party,omitempty"`
+	Assets        *Assets           `json:"assets,omitempty"`
+	Secrets       *Secrets          `json:"secrets,omitempty"`
+	Instance      bool              `json:"instance,omitempty"`
+	Flags         int               `json:"flags,omitempty"`
+	Buttons       []string          `json:"buttons,omitempty"`
+	Metadata      *ActivityMetadata `json:"metadata,omitempty"`
 }
 
 // UnmarshalJSON is a custom unmarshaljson to make CreatedAt a time.Time instead of an int
@@ -2288,14 +2288,14 @@ func (activity *Activity) UnmarshalJSON(b []byte) error {
 		Type          ActivityType `json:"type"`
 		URL           string       `json:"url,omitempty"`
 		CreatedAt     int64        `json:"created_at,omitempty"`
-		ApplicationID any       `json:"application_id,omitempty"`
+		ApplicationID any          `json:"application_id,omitempty"`
 		State         string       `json:"state,omitempty"`
 		Details       string       `json:"details,omitempty"`
-		Timestamps    *TimeStamps   `json:"timestamps,omitempty"`
-		Emoji         *Emoji        `json:"emoji,omitempty"`
-		Party         *Party        `json:"party,omitempty"`
-		Assets        *Assets       `json:"assets,omitempty"`
-		Secrets       *Secrets      `json:"secrets,omitempty"`
+		Timestamps    *TimeStamps  `json:"timestamps,omitempty"`
+		Emoji         *Emoji       `json:"emoji,omitempty"`
+		Party         *Party       `json:"party,omitempty"`
+		Assets        *Assets      `json:"assets,omitempty"`
+		Secrets       *Secrets     `json:"secrets,omitempty"`
 		Instance      bool         `json:"instance,omitempty"`
 		Flags         int          `json:"flags,omitempty"`
 	}{}
@@ -2305,7 +2305,7 @@ func (activity *Activity) UnmarshalJSON(b []byte) error {
 		return err
 	}
 	createdAt := time.Unix(0, temp.CreatedAt*1000000)
-	
+
 	activity.CreatedAt = &createdAt
 	activity.ApplicationID = fmt.Sprint(temp.ApplicationID)
 	activity.Assets = temp.Assets

@@ -14,9 +14,9 @@
 package discordgo
 
 import (
-	"net/http"
 	"time"
 
+	tls_client "github.com/bogdanfinn/tls-client"
 	"github.com/gorilla/websocket"
 )
 
@@ -148,7 +148,6 @@ func New(token string) (s *Session, err error) {
 		ShardID:                0,
 		ShardCount:             1,
 		MaxRestRetries:         3,
-		Client:                 &http.Client{Timeout: (20 * time.Second)},
 		Dialer:                 websocket.DefaultDialer,
 		UserAgent:              "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36",
 		sequence:               new(int64),
@@ -169,7 +168,17 @@ func New(token string) (s *Session, err error) {
 		},
 	}
 
-	s.Client.Transport = RoundTripper(s.Client.Transport)
+	options := []tls_client.HttpClientOption{
+		tls_client.WithTimeoutSeconds(20),
+		tls_client.WithClientProfile(tls_client.Chrome_111),
+	}
+
+	client, err := tls_client.NewHttpClient(tls_client.NewNoopLogger(), options...)
+	if err != nil {
+		return nil, err
+	}
+
+	s.Client = client
 
 	return
 }

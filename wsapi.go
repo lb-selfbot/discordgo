@@ -17,7 +17,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"net/http"
+	nethttp "net/http"
 	"sync/atomic"
 	"time"
 
@@ -75,7 +75,7 @@ func (s *Session) Open() error {
 
 	// Connect to the Gateway
 	s.log(LogInformational, "connecting to gateway %s", s.gateway)
-	header := http.Header{}
+	header := nethttp.Header{}
 	header.Add("accept-encoding", "zlib")
 	s.wsConn, _, err = s.Dialer.Dial(s.gateway, header)
 	if err != nil {
