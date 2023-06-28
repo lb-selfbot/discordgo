@@ -3547,3 +3547,28 @@ func (s *Session) UserApplicationRoleConnectionUpdate(appID string, rconn *Appli
 	err = unmarshal(body, &st)
 	return
 }
+
+// ----------------------------------------------------------------------
+// Functions specific to authentication
+// ----------------------------------------------------------------------
+
+// LoginSessions returns an array of currently logged in sessions for the current user.
+func (s *Session) LoginSessions() (sessions []*LoginSession, err error) {
+	var sessionData struct {
+		UserSessions []*LoginSession `json:"user_sessions"`
+	}
+
+	var body []byte
+	body, err = s.RequestWithBucketID("GET", EndpointSessions, nil, EndpointSessions)
+	if err != nil {
+		return
+	}
+
+	err = unmarshal(body, &sessionData)
+	if err != nil {
+		return
+	}
+
+	sessions = sessionData.UserSessions
+	return
+}

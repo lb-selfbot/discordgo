@@ -2398,20 +2398,55 @@ type ClientState struct {
 	APICodeVersion           int               `json:"api_code_version,omitempty"`
 }
 
-// DiscordSessionClientInfo holds information about the client used for a Discord session.
-type DiscordSessionClientInfo struct {
-	Version int    `json:"version"`
+// SessionClientInfo holds information about the client used for a Discord session.
+type SessionClientInfo struct {
+	// Gateway Session
 	OS      string `json:"os"`
+	Version int    `json:"version"`
 	Client  string `json:"client"`
+
+	// From API
+	Platform string `json:"platform"`
+	Location string `json:"location"`
 }
 
-// DiscordSession holds information about a Discord session.
-type DiscordSession struct {
-	Status     string                   `json:"status"`
-	SessionID  string                   `json:"session_id"`
-	ClientInfo DiscordSessionClientInfo `json:"client_info"`
-	Activities []*Activity              `json:"activities"`
-	Active     bool                     `json:"active"`
+// GatewaySession holds information about a Discord session.
+type GatewaySession struct {
+	Status     string            `json:"status"`
+	SessionID  string            `json:"session_id"`
+	ClientInfo SessionClientInfo `json:"client_info"`
+	Activities []*Activity       `json:"activities"`
+	Active     bool              `json:"active"`
+}
+
+// LoginSession holds information about a Discord login session.
+type LoginSession struct {
+	IDHash     string            `json:"id_hash"`
+	ClientInfo SessionClientInfo `json:"client_info"`
+
+	LastUsedTime time.Time
+}
+
+// Parse the time string into a time.Time object when a session is unmarshalled
+func (u *LoginSession) UnmarshalJSON(data []byte) error {
+	type Alias LoginSession
+	aux := &struct {
+		ApproxLastUsedTime string `json:"approx_last_used_time"`
+		*Alias
+	}{Alias: (*Alias)(u)}
+
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+
+	parsedTime, err := time.Parse(time.RFC3339, aux.ApproxLastUsedTime)
+	if err != nil {
+		return err
+	}
+
+	u.LastUsedTime = parsedTime
+
+	return nil
 }
 
 // StageInstance holds information about a live stage.

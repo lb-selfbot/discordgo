@@ -33,6 +33,7 @@ var (
 	EndpointWebhooks       = EndpointAPI + "webhooks/"
 	EndpointStickers       = EndpointAPI + "stickers/"
 	EndpointStageInstances = EndpointAPI + "stage-instances"
+	EndpointAuth           = EndpointAPI + "auth/"
 
 	EndpointCDN             = "https://cdn.discordapp.com/"
 	EndpointCDNAttachments  = EndpointCDN + "attachments/"
@@ -68,7 +69,7 @@ var (
 	EndpointUserSettings                  = func(uID string) string { return EndpointUsers + uID + "/settings" }
 	EndpointUserConnections               = func(uID string) string { return EndpointUsers + uID + "/connections" }
 	EndpointUserRelationships             = func(uID string) string { return EndpointUsers + uID + "/relationships" }
-	EndpointUserRelationship              = func(uID string) string { return EndpointUserRelationships("@me") + "/" + uID  }
+	EndpointUserRelationship              = func(uID string) string { return EndpointUserRelationships("@me") + "/" + uID }
 	EndpointUserProfile                   = func(uID string) string { return EndpointUsers + uID + "/profile" }
 	EndpointUserInvites                   = func(uID string) string { return EndpointUsers + uID + "/invites" }
 
@@ -218,6 +219,8 @@ var (
 	EndpointOAuth2Application       = func(aID string) string { return EndpointOAuth2Applications + "/" + aID }
 	EndpointOAuth2ApplicationsBot   = func(aID string) string { return EndpointOAuth2Applications + "/" + aID + "/bot" }
 	EndpointOAuth2ApplicationAssets = func(aID string) string { return EndpointOAuth2Applications + "/" + aID + "/assets" }
+
+	EndpointSessions = EndpointAuth + "sessions"
 
 	// TODO: Deprecated, remove in the next release
 	EndpointOauth2                  = EndpointOAuth2

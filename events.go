@@ -43,7 +43,7 @@ type Ready struct {
 	ReadState         []*ReadState         `json:"read_state"`
 	PrivateChannels   []*Channel           `json:"private_channels"`
 	Guilds            []*Guild             `json:"guilds"`
-	Sessions          []*DiscordSession    `json:"sessions"`
+	Sessions          []*GatewaySession    `json:"sessions"`
 	UserGuildSettings []*UserGuildSettings `json:"user_guild_settings"`
 	Relationships     []*Relationship      `json:"relationships"`
 }
@@ -56,7 +56,7 @@ func (r *Ready) UnmarshalJSON(data []byte) error {
 		User              *User                  `json:"user"`
 		Users             []*User                `json:"users"`
 		Guilds            []*Guild               `json:"guilds"`
-		Sessions          []*DiscordSession      `json:"sessions"`
+		Sessions          []*GatewaySession      `json:"sessions"`
 		ReadState         *ReadStateData         `json:"read_state"`
 		Relationships     []*Relationship        `json:"relationships"`
 		PrivateChannels   []*Channel             `json:"private_channels"`
@@ -237,7 +237,7 @@ type GuildMembersChunk struct {
 	Members    []*Member   `json:"members"`
 	ChunkIndex int         `json:"chunk_index"`
 	ChunkCount int         `json:"chunk_count"`
-	NotFound   []int    `json:"not_found,omitempty"`
+	NotFound   []int       `json:"not_found,omitempty"`
 	Presences  []*Presence `json:"presences,omitempty"`
 	Nonce      string      `json:"nonce,omitempty"`
 }
@@ -516,11 +516,11 @@ type AutoModerationActionExecution struct {
 }
 
 type SessionsReplace struct {
-	Sessions []*DiscordSession `json:"sessions"`
+	Sessions []*GatewaySession `json:"sessions"`
 }
 
 func (s *SessionsReplace) UnmarshalJSON(data []byte) error {
-	var sessions []*DiscordSession
+	var sessions []*GatewaySession
 
 	if err := json.Unmarshal(data, &sessions); err != nil {
 		fmt.Println("Error unmarshaling rawSessionsReplace:", err)
