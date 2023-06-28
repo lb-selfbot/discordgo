@@ -12,6 +12,7 @@ package discordgo
 
 import (
 	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -2131,11 +2132,14 @@ func (s *Session) InviteWithCounts(inviteID string) (st *Invite, err error) {
 //	guildScheduledEventID     : If specified, includes specified guild scheduled event.
 //	withCounts                : Whether to include approximate member counts or not
 //	withExpiration            : Whether to include expiration time or not
-func (s *Session) InviteComplex(inviteID, guildScheduledEventID string, withCounts, withExpiration bool) (st *Invite, err error) {
+func (s *Session) InviteComplex(inviteID, guildScheduledEventID, inputValue string, withCounts, withExpiration bool) (st *Invite, err error) {
 	endpoint := EndpointInvite(inviteID)
 	v := url.Values{}
 	if guildScheduledEventID != "" {
 		v.Set("guild_scheduled_event_id", guildScheduledEventID)
+	}
+	if inputValue != "" {
+		v.Set("inputValue", inputValue)
 	}
 	if withCounts {
 		v.Set("with_counts", "true")
@@ -2172,9 +2176,21 @@ func (s *Session) InviteDelete(inviteID string) (st *Invite, err error) {
 
 // InviteAccept accepts an Invite to a Guild or Channel
 // inviteID : The invite code
-func (s *Session) InviteAccept(inviteID string) (st *Invite, err error) {
+func (s *Session) InviteAccept(inviteID, guildID, channelID string, channelType int) (st *Invite, err error) {
 
-	body, err := s.RequestWithBucketID("POST", EndpointInvite(inviteID), nil, EndpointInvite(""))
+	contextProperties := "{\"location\":\"Join Guild\",\"location_guild_id\":\"%s\",\"location_channel_id\":\"%s\",\"location_channel_type\":%d}"
+
+	contextProperties = fmt.Sprintf(contextProperties, guildID, channelID, channelType)
+
+	headers := map[string]string{
+		"x-context-properties": base64.StdEncoding.EncodeToString([]byte(contextProperties)),
+	}
+
+	data := map[string]string{
+		"session_id": s.State.SessionID,
+	}
+
+	body, err := s.RequestWithBucketID("POST", EndpointInvite(inviteID), data, EndpointInvite(""), headers)
 	if err != nil {
 		return
 	}
