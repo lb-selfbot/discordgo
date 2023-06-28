@@ -59,6 +59,7 @@ const (
 	relationshipAddEventType                     = "RELATIONSHIP_ADD"
 	relationshipRemoveEventType                  = "RELATIONSHIP_REMOVE"
 	resumedEventType                             = "RESUMED"
+	sessionsReplaceEventType                     = "SESSIONS_REPLACE"
 	stageInstanceEventCreateEventType            = "STAGE_INSTANCE_EVENT_CREATE"
 	stageInstanceEventDeleteEventType            = "STAGE_INSTANCE_EVENT_DELETE"
 	stageInstanceEventUpdateEventType            = "STAGE_INSTANCE_EVENT_UPDATE"
@@ -1095,6 +1096,26 @@ func (eh resumedEventHandler) Handle(s *Session, i interface{}) {
 	}
 }
 
+// sessionsReplaceEventHandler is an event handler for SessionsReplace events.
+type sessionsReplaceEventHandler func(*Session, *SessionsReplace)
+
+// Type returns the event type for SessionsReplace events.
+func (eh sessionsReplaceEventHandler) Type() string {
+	return sessionsReplaceEventType
+}
+
+// New returns a new instance of SessionsReplace.
+func (eh sessionsReplaceEventHandler) New() interface{} {
+	return &SessionsReplace{}
+}
+
+// Handle is the handler for SessionsReplace events.
+func (eh sessionsReplaceEventHandler) Handle(s *Session, i interface{}) {
+	if t, ok := i.(*SessionsReplace); ok {
+		eh(s, t)
+	}
+}
+
 // stageInstanceEventCreateEventHandler is an event handler for StageInstanceEventCreate events.
 type stageInstanceEventCreateEventHandler func(*Session, *StageInstanceEventCreate)
 
@@ -1483,6 +1504,8 @@ func handlerForInterface(handler interface{}) EventHandler {
 		return relationshipRemoveEventHandler(v)
 	case func(*Session, *Resumed):
 		return resumedEventHandler(v)
+	case func(*Session, *SessionsReplace):
+		return sessionsReplaceEventHandler(v)
 	case func(*Session, *StageInstanceEventCreate):
 		return stageInstanceEventCreateEventHandler(v)
 	case func(*Session, *StageInstanceEventDelete):
@@ -1565,6 +1588,7 @@ func init() {
 	registerInterfaceProvider(relationshipAddEventHandler(nil))
 	registerInterfaceProvider(relationshipRemoveEventHandler(nil))
 	registerInterfaceProvider(resumedEventHandler(nil))
+	registerInterfaceProvider(sessionsReplaceEventHandler(nil))
 	registerInterfaceProvider(stageInstanceEventCreateEventHandler(nil))
 	registerInterfaceProvider(stageInstanceEventDeleteEventHandler(nil))
 	registerInterfaceProvider(stageInstanceEventUpdateEventHandler(nil))

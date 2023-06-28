@@ -514,3 +514,20 @@ type AutoModerationActionExecution struct {
 	MatchedKeyword       string                        `json:"matched_keyword"`
 	MatchedContent       string                        `json:"matched_content"`
 }
+
+type SessionsReplace struct {
+	Sessions []*DiscordSession `json:"sessions"`
+}
+
+func (s *SessionsReplace) UnmarshalJSON(data []byte) error {
+	var sessions []*DiscordSession
+
+	if err := json.Unmarshal(data, &sessions); err != nil {
+		fmt.Println("Error unmarshaling rawSessionsReplace:", err)
+		return err
+	}
+
+	s.Sessions = sessions
+
+	return nil
+}
