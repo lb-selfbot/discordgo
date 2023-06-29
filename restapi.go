@@ -3328,6 +3328,7 @@ func (s *Session) Interact(interactData *InteractData) error {
 }
 
 // InteractionClick sends a click interaction.
+// DEPRECATED: Use Interact instead.
 func (s *Session) InteractionClick(button *Button, message *Message) error {
 	appID := message.Author.ID
 
@@ -3354,6 +3355,7 @@ func (s *Session) InteractionClick(button *Button, message *Message) error {
 	return err
 }
 
+// DEPRECATED: Use Interact instead.
 func (s *Session) InteractionSubmitModal(message *Message, modal *InteractionModalCreate, customID, value string) error {
 	data := ModalSubmit{
 		Type:          InteractionModalSubmit,
