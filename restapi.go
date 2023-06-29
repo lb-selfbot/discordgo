@@ -2155,7 +2155,6 @@ func (s *Session) ChannelApplicationCommandsSearch(searchParams *ApplicationComm
 	var response struct {
 		ApplicationCommands []*ApplicationCommand `json:"application_commands"`
 		Applications        []*Application        `json:"applications"`
-		Cursor              map[string]string     `json:"cursor"`
 	}
 
 	endpoint := EndpointChannelApplicationCommandsSearch(searchParams.ChannelID)
