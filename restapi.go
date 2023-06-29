@@ -2096,6 +2096,88 @@ func (s *Session) ChannelRecipientRemove(channelID, userID string) (err error) {
 	return
 }
 
+type ApplicationCommandsSearchParams struct {
+	// The ID of the channel to search for commands in
+	ChannelID string
+
+	// The type of search to use (1)
+	Type int
+
+	// The limit of commands to search for (10)
+	Limit int
+
+	// The query to search for
+	Query string
+
+	// The cursor
+	Cursor string
+
+	// The IDs of the commands to search for
+	CommandIDs []string
+
+	// The ID of the application to search for
+	ApplicationID string
+
+	// Whether to include applications in the response
+	IncludeApplications bool
+}
+
+func (s *Session) ChannelApplicationCommandsSearch(searchParams *ApplicationCommandsSearchParams) (commands []*ApplicationCommand, applications []*Application, err error) {
+	params := url.Values{}
+	params.Set("type", strconv.Itoa(searchParams.Type))
+
+	if searchParams.IncludeApplications {
+		params.Set("include_applications", "true")
+	} else {
+		params.Set("include_applications", "false")
+	}
+
+	if searchParams.Limit > 0 {
+		params.Set("limit", strconv.Itoa(searchParams.Limit))
+	}
+
+	if searchParams.Query != "" {
+		params.Set("query", searchParams.Query)
+	}
+
+	if searchParams.Cursor != "" {
+		params.Set("cursor", searchParams.Cursor)
+	}
+
+	if len(searchParams.CommandIDs) > 0 {
+		params.Set("command_ids", strings.Join(searchParams.CommandIDs, ","))
+	}
+
+	if searchParams.ApplicationID != "" {
+		params.Set("application_id", searchParams.ApplicationID)
+	}
+
+	var response struct {
+		ApplicationCommands []*ApplicationCommand `json:"application_commands"`
+		Applications        []*Application        `json:"applications"`
+		Cursor              map[string]string     `json:"cursor"`
+	}
+
+	endpoint := EndpointChannelApplicationCommandsSearch(searchParams.ChannelID)
+
+	var data []byte
+	data, err = s.RequestWithBucketID("GET", endpoint+"?"+params.Encode(), nil, EndpointChannelApplicationCommandsSearch(""))
+	if err != nil {
+		return
+	}
+
+	err = unmarshal(data, &response)
+	if err != nil {
+		return
+	}
+
+	commands = response.ApplicationCommands
+	applications = response.Applications
+
+	return
+
+}
+
 // ------------------------------------------------------------------------------------------------
 // Functions specific to Discord Invites
 // ------------------------------------------------------------------------------------------------

@@ -139,6 +139,8 @@ var (
 	EndpointChannelMessageCrosspost             = func(cID, mID string) string { return EndpointChannel(cID) + "/messages/" + mID + "/crosspost" }
 	EndpointChannelFollow                       = func(cID string) string { return EndpointChannel(cID) + "/followers" }
 	EndpointChannelRecipient                    = func(cID, uID string) string { return EndpointChannel(cID) + "/recipients/" + uID }
+	EndpointChannelApplicationCommands          = func(cID string) string { return EndpointChannel(cID) + "/application-commands" }
+	EndpointChannelApplicationCommandsSearch    = func(cID string) string { return EndpointChannelApplicationCommands(cID) + "/search" }
 	EndpointThreadMembers                       = func(tID string) string { return EndpointChannel(tID) + "/thread-members" }
 	EndpointThreadMember                        = func(tID, mID string) string { return EndpointThreadMembers(tID) + "/" + mID }
 
