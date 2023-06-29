@@ -3276,6 +3276,57 @@ func (s *Session) FollowupMessageDelete(interaction *Interaction, messageID stri
 	return s.WebhookMessageDelete(interaction.AppID, interaction.Token, messageID)
 }
 
+type InteractData struct {
+	// The type of interaction.
+	Type int
+
+	// The data to send with the interaction.
+	Data any
+
+	// The channel ID
+	ChannelID string
+
+	// The guild ID
+	GuildID string
+
+	// The message of the interaction.
+	Message *Message
+
+	// The application ID
+	ApplicationID string
+}
+
+// Interact creates a new interaction.
+func (s *Session) Interact(interactData *InteractData) error {
+	payload := map[string]any{
+		"application_id": interactData.ApplicationID,
+		"channel_id":     interactData.ChannelID,
+		"data":           interactData.Data,
+		"nonce":          GenerateNonce(),
+		"session_id":     s.State.SessionID,
+		"type":           interactData.Type,
+	}
+
+	if interactData.GuildID != "" {
+		payload["guild_id"] = interactData.GuildID
+	}
+
+	if interactData.Message != nil {
+		msg := interactData.Message
+		payload["application_id"] = msg.Author.ID
+		payload["channel_id"] = msg.ChannelID
+		payload["message_flags"] = int(msg.Flags)
+		payload["message_id"] = msg.ID
+
+		if msg.GuildID != "" {
+			payload["guild_id"] = msg.GuildID
+		}
+	}
+
+	_, err := s.RequestWithBucketID("POST", EndpointInteractions, payload, EndpointInteractions)
+	return err
+}
+
 // InteractionClick sends a click interaction.
 func (s *Session) InteractionClick(button *Button, message *Message) error {
 	appID := message.Author.ID
