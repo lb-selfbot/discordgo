@@ -123,6 +123,9 @@ type ApplicationCommandOption struct {
 	MinLength *int `json:"min_length,omitempty"`
 	// Maximum length of string option.
 	MaxLength int `json:"max_length,omitempty"`
+
+	// Value of the option
+	Value interface{} `json:"value,omitempty"`
 }
 
 // ApplicationCommandOptionChoice represents a slash command option choice.
