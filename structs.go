@@ -72,6 +72,9 @@ type Session struct {
 	// Should the session subscribe to guilds.
 	ShouldSubscribeGuilds bool
 
+	// Max member count for subscribing to guilds.
+	MaxGuildSubscriptionMembers int
+
 	// Whether or not to call event handlers synchronously.
 	// e.g. false = launch event handlers in their own goroutines.
 	SyncEvents bool

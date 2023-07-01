@@ -213,6 +213,11 @@ func (s *Session) subscribeGuilds(wsConn *websocket.Conn, listening <-chan inter
 	s.log(LogInformational, "subscribing to guilds")
 
 	for _, guild := range s.State.Guilds {
+		if guild.MemberCount > s.MaxGuildSubscriptionMembers && s.MaxGuildSubscriptionMembers != 0 {
+			s.log(LogInformational, "skipping guild %s due to member count %d > %d", guild.ID, guild.MemberCount, s.MaxGuildSubscriptionMembers)
+			continue
+		}
+		
 		s.log(LogInformational, "subscribing to guild %s", guild.ID)
 
 		_, _ = s.FetchGuildMembers(NewFetchGuildMembersParams(guild.ID))
