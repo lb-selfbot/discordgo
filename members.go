@@ -97,6 +97,10 @@ func (s *Session) FetchGuildMembers(params FetchGuildMembersParams) ([]*Member, 
 		self = membersList[0]
 	}
 
+	if len(guild.Channels) == 0 {
+		return nil, fmt.Errorf("guild has no channels")
+	}
+
 	permissions := memberPermissions(guild, guild.Channels[0], self.User.ID, self.Roles)
 
 	kickMembers := permissions&PermissionKickMembers != 0
