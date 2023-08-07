@@ -2137,7 +2137,7 @@ type UserGuildSettings struct {
 	MobilePush           bool                                `json:"mobile_push"`
 	MessageNotifications int                                 `json:"message_notifications"`
 	HideMutedChannels    bool                                `json:"hide_muted_channels"`
-	GuildID              string                              `json:"guild_id"`
+	GuildID              json.Number                         `json:"guild_id"`
 	ChannelOverrides     []*UserGuildSettingsChannelOverride `json:"channel_overrides"`
 }
 
