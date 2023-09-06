@@ -153,6 +153,7 @@ type Application struct {
 	Icon                string   `json:"icon,omitempty"`
 	Description         string   `json:"description,omitempty"`
 	RPCOrigins          []string `json:"rpc_origins,omitempty"`
+	Bot                 *User    `json:"bot,omitempty"`
 	BotPublic           bool     `json:"bot_public,omitempty"`
 	BotRequireCodeGrant bool     `json:"bot_require_code_grant,omitempty"`
 	TermsOfServiceURL   string   `json:"terms_of_service_url"`
