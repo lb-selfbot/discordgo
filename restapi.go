@@ -2173,6 +2173,14 @@ func (s *Session) ChannelApplicationCommandsSearch(searchParams *ApplicationComm
 	commands = response.ApplicationCommands
 	applications = response.Applications
 
+	for _, application := range applications {
+		for _, command := range commands {
+			if command.ApplicationID == application.ID {
+				command.BotUserID = application.Bot.ID
+			}
+		}
+	}
+
 	return
 
 }

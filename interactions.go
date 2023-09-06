@@ -34,6 +34,7 @@ const (
 type ApplicationCommand struct {
 	ID                string                 `json:"id,omitempty"`
 	ApplicationID     string                 `json:"application_id,omitempty"`
+	BotUserID         string                 `json:"-"`
 	GuildID           string                 `json:"guild_id,omitempty"`
 	Version           string                 `json:"version,omitempty"`
 	Type              ApplicationCommandType `json:"type,omitempty"`
