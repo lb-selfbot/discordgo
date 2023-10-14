@@ -2310,8 +2310,10 @@ func (activity *Activity) UnmarshalJSON(b []byte) error {
 	}
 	createdAt := time.Unix(0, temp.CreatedAt*1000000)
 
+	appID := fmt.Sprint(temp.ApplicationID)
+
 	activity.CreatedAt = &createdAt
-	activity.ApplicationID = fmt.Sprint(temp.ApplicationID)
+	activity.ApplicationID = &appID
 	activity.Assets = temp.Assets
 	activity.Details = temp.Details
 	activity.Emoji = temp.Emoji
