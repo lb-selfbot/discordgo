@@ -23,25 +23,28 @@ import (
 // VERSION of DiscordGo, follows Semantic Versioning. (http://semver.org/)
 const VERSION = "0.26.5"
 
+var UserAgentMobile = "Discord-Android/206016;RNA"
+var UserAgentDesktop = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9024 Chrome/108.0.5359.215 Electron/22.3.26 Safari/537.36"
+var UserAgentWeb = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"
+
 var UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.5563.147 Safari/537.36"
 var BrowserVersion = "111.0.5563.147"
 
 var IdentifyMobile = Identify{
-	Properties: IdentifyProperties{
+	Properties: IdentifyPropertiesMobile{
 		OS:                     "Android",
 		Browser:                "Discord Android",
 		Device:                 "Android",
 		SystemLocale:           "en-US",
-		BrowserUserAgent:       UserAgent,
-		BrowserVersion:         BrowserVersion,
-		OSVersion:              "10",
-		Referrer:               "https://www.google.com/",
-		ReferringDomain:        "google.com",
-		ReferrerCurrent:        "",
-		ReferringDomainCurrent: "",
-		ReleaseChannel:         "stable",
-		ClientBuildNumber:      0,
+		ClientVersion:          "206.16 - rn",
+		ReleaseChannel:         "googleRelease",
+		DeviceVendorID:         "7101a8f5-a3cd-4788-ad14-e6ef5295c6a8",
+		BrowserUserAgent:       "",
+		BrowserVersion:         "",
+		OSVersion:              "31",
+		ClientBuildNumber:      206016,
 		ClientEventSource:      nil,
+		DesignID:               1,
 	},
 	Compress:     true,
 	Capabilities: 8189,
@@ -57,19 +60,23 @@ var IdentifyMobile = Identify{
 		Activities: []*Activity{},
 		AFK:        true,
 	},
+	UserAgent: UserAgentMobile,
 }
 
 var IdentifyDiscordClient = Identify{
-	Properties: IdentifyProperties{
+	Properties: IdentifyPropertiesDesktop{
 		OS:                "Windows",
 		Browser:           "Discord Client",
 		ReleaseChannel:    "stable",
-		ClientVersion:     "1.0.9012",
+		ClientVersion:     "1.0.9024",
 		OSVersion:         "10.0.22621",
 		OSArch:            "x64",
+		AppArch:           "ia32",
 		SystemLocale:      "en-US",
-		ClientBuildNumber: 0,
-		NativeBuildNumber: 32020,
+		BrowserUserAgent:  UserAgentDesktop,
+		BrowserVersion:    "22.3.26",
+		ClientBuildNumber: 249561,
+		NativeBuildNumber: 40010,
 		ClientEventSource: nil,
 	},
 	Compress:     true,
@@ -89,25 +96,25 @@ var IdentifyDiscordClient = Identify{
 		Activities: []*Activity{},
 		AFK:        true,
 	},
+	UserAgent: UserAgentDesktop,
 }
 
 var IdentifyWeb = Identify{
-	Properties: IdentifyProperties{
+	Properties: IdentifyPropertiesWeb{
 		OS:                     "Windows",
 		Browser:                "Chrome",
 		Device:                 "",
 		SystemLocale:           "en-US",
-		BrowserUserAgent:       UserAgent,
-		BrowserVersion:         BrowserVersion,
+		BrowserUserAgent:       UserAgentWeb,
+		BrowserVersion:         "119.0.0.0",
 		OSVersion:              "10",
 		Referrer:               "",
 		ReferringDomain:        "",
 		ReferrerCurrent:        "",
 		ReferringDomainCurrent: "",
 		ReleaseChannel:         "stable",
-		ClientBuildNumber:      0,
+		ClientBuildNumber:      249561,
 		ClientEventSource:      nil,
-		DesignID:               0,
 	},
 	Compress:     true,
 	Capabilities: 8189,
@@ -123,6 +130,7 @@ var IdentifyWeb = Identify{
 		Activities: []*Activity{},
 		AFK:        true,
 	},
+	UserAgent: UserAgentWeb,
 }
 
 // New creates a new Discord session with provided token.
@@ -150,7 +158,7 @@ func New(token string) (s *Session, err error) {
 		ShardCount:                  1,
 		MaxRestRetries:              3,
 		Dialer:                      websocket.DefaultDialer,
-		UserAgent:                   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36",
+		UserAgent:                   "",
 		sequence:                    new(int64),
 		LastHeartbeatAck:            time.Now().UTC(),
 		Headers: map[string]string{
@@ -189,7 +197,11 @@ func New(token string) (s *Session, err error) {
 func (s *Session) SetIdentify(i Identify) {
 	s.Identify = i
 	s.Identify.Token = s.Token
-	s.Identify.Properties.ClientBuildNumber = s.GetBuildNumber()
+	s.UserAgent = i.UserAgent
+
+	if i != IdentifyMobile {
+		s.Identify.Properties.ClientBuildNumber = s.GetBuildNumber()
+	}
 
 	s.SuperProperties = s.GetSuperProperties()
 

@@ -2362,12 +2362,14 @@ const (
 // https://discord.com/developers/docs/topics/gateway#identify
 type Identify struct {
 	Token          string              `json:"token"`
-	Properties     IdentifyProperties  `json:"properties"`
+	Properties     any                 `json:"properties"`
 	Compress       bool                `json:"compress"`
 	Capabilities   int                 `json:"capabilities"`
 	LargeThreshold int                 `json:"large_threshold"`
 	ClientState    ClientState         `json:"client_state"`
 	Presence       GatewayStatusUpdate `json:"presence,omitempty"`
+
+	UserAgent string `json:"-"`
 }
 
 // IdentifyProperties contains the "properties" portion of an Identify packet
@@ -2391,6 +2393,55 @@ type IdentifyProperties struct {
 	ReleaseChannel         string `json:"release_channel"`               // "stable"
 	SystemLocale           string `json:"system_locale"`                 // "en-US"
 	DesignID               int    `json:"design_id"`                     // 0
+}
+
+type IdentifyPropertiesMobile struct {
+	OS                string `json:"os"`
+	Browser           string `json:"browser"`
+	Device            string `json:"device"`
+	SystemLocale      string `json:"system_locale"`
+	ClientVersion     string `json:"client_version"`
+	ReleaseChannel    string `json:"release_channel"`
+	DeviceVendorID    string `json:"device_vendor_id"`
+	BrowserUserAgent  string `json:"browser_user_agent"`
+	BrowserVersion    string `json:"browser_version"`
+	OSVersion         string `json:"os_version"`
+	ClientBuildNumber int    `json:"client_build_number"`
+	ClientEventSource any    `json:"client_event_source"`
+	DesignID          int    `json:"design_id"`
+}
+
+type IdentifyPropertiesDesktop struct {
+	OS                string `json:"os"`
+	Browser           string `json:"browser"`
+	ReleaseChannel    string `json:"release_channel"`
+	ClientVersion     string `json:"client_version"`
+	OSVersion         string `json:"os_version"`
+	OSArch            string `json:"os_arch"`
+	AppArch           string `json:"app_arch"`
+	SystemLocale      string `json:"system_locale"`
+	BrowserUserAgent  string `json:"browser_user_agent"`
+	BrowserVersion    string `json:"browser_version"`
+	ClientBuildNumber int    `json:"client_build_number"`
+	NativeBuildNumber int    `json:"native_build_number"`
+	ClientEventSource any    `json:"client_event_source"`
+}
+
+type IdentifyPropertiesWeb struct {
+	OS                     string `json:"os"`
+	Browser                string `json:"browser"`
+	Device                 string `json:"device"`
+	SystemLocale           string `json:"system_locale"`
+	BrowserUserAgent       string `json:"browser_user_agent"`
+	BrowserVersion         string `json:"browser_version"`
+	OSVersion              string `json:"os_version"`
+	Referrer               string `json:"referrer"`
+	ReferringDomain        string `json:"referring_domain"`
+	ReferrerCurrent        string `json:"referrer_current"`
+	ReferringDomainCurrent string `json:"referring_domain_current"`
+	ReleaseChannel         string `json:"release_channel"`
+	ClientBuildNumber      int    `json:"client_build_number"`
+	ClientEventSource      any    `json:"client_event_source"`
 }
 
 // ClientState contains the "client_state" portion of an Identify packet
