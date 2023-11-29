@@ -172,7 +172,7 @@ func New(token string) (s *Session, err error) {
 			"sec-fetch-site":     "same-origin",
 			"user-agent":         "",
 			"x-debug-options":    "bugReporterEnabled",
-			"x-discord-locale":   "",
+			"x-discord-locale":   "en-US",
 			"x-super-properties": "",
 		},
 	}
@@ -199,13 +199,8 @@ func (s *Session) SetIdentify(i Identify) {
 	s.Identify.Token = s.Token
 	s.UserAgent = i.UserAgent
 
-	if i != IdentifyMobile {
-		s.Identify.Properties.ClientBuildNumber = s.GetBuildNumber()
-	}
-
 	s.SuperProperties = s.GetSuperProperties()
 
 	s.Headers["user-agent"] = s.UserAgent
-	s.Headers["x-discord-locale"] = s.Identify.Properties.SystemLocale
 	s.Headers["x-super-properties"] = s.SuperProperties
 }
