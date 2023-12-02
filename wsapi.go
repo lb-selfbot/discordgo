@@ -180,7 +180,7 @@ func (s *Session) Open() error {
 		// This is not fatal, but it does not follow their API documentation.
 		s.log(LogWarning, "Expected READY/RESUMED, instead got:\n%#v\n", e)
 	}
-	s.log(LogInformational, "First Packet:\n%#v\n", e)
+	// s.log(LogInformational, "First Packet:\n%#v\n", e)
 
 	s.log(LogInformational, "We are now connected to Discord, emitting connect event")
 	s.handleEvent(connectEventType, &Connect{})
