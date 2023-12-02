@@ -211,6 +211,14 @@ func (s *Session) QueryGuildMembers(params QueryGuildMembersParams) ([]*Member, 
 			return
 		}
 
+		for _, member := range event.Members {
+			for _, presence := range event.Presences {
+				if presence.User.ID == member.User.ID {
+					member.Presence = presence
+				}
+			}
+		}
+
 		members = append(members, event.Members...)
 
 		if event.ChunkIndex == event.ChunkCount-1 {
