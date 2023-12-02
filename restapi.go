@@ -1636,9 +1636,18 @@ func (s *Session) ChannelEditComplex(channelID string, data *ChannelEdit) (st *C
 
 // ChannelDelete deletes the given channel
 // channelID  : The ID of a Channel
-func (s *Session) ChannelDelete(channelID string) (st *Channel, err error) {
+// silent     : If deleting the channel should be done silently (for group DMs)
+func (s *Session) ChannelDelete(channelID string, silent ...bool) (st *Channel, err error) {
 
-	body, err := s.RequestWithBucketID("DELETE", EndpointChannel(channelID), nil, EndpointChannel(channelID))
+	uri := EndpointChannel(channelID)
+
+	if len(silent) > 0 {
+		v := url.Values{}
+		v.Set("silent", strconv.FormatBool(silent[0]))
+		uri += "?" + v.Encode()
+	}
+
+	body, err := s.RequestWithBucketID("DELETE", uri, nil, EndpointChannel(channelID))
 	if err != nil {
 		return
 	}
