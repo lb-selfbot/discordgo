@@ -84,7 +84,7 @@ type User struct {
 
 	// The type of Nitro subscription on a user's account.
 	// Only available when the request is authorized via a Bearer token.
-	PremiumType int `json:"premium_type"`
+	PremiumType PremiumTier `json:"premium_type"`
 
 	// Whether the user is an Official Discord System user (part of the urgent message system).
 	System bool `json:"system"`
