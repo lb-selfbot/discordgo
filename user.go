@@ -24,7 +24,7 @@ const (
 	UserFlagDiscordCertifiedModerator UserFlags = 1 << 18
 	UserFlagBotHTTPInteractions       UserFlags = 1 << 19
 	UserFlagSpammer                   UserFlags = 1 << 20
-	UserActiveDeveloper               UserFlags = 1 << 22
+	UserFlagActiveDeveloper           UserFlags = 1 << 22
 )
 
 // A User stores all data for an individual Discord user.
