@@ -416,12 +416,23 @@ func (s *State) Member(guildID, userID string) (*Member, error) {
 		return nil, ErrStateNotFound
 	}
 
-	m, ok := members[userID]
-	if ok {
-		return m, nil
+	g, ok := s.guildMap[guildID]
+	if !ok {
+		return nil, ErrStateNotFound
 	}
 
-	return nil, ErrStateNotFound
+	m, ok := members[userID]
+	if !ok {
+		return nil, ErrStateNotFound
+	}
+
+	for _, p := range g.Presences {
+		if p.User.ID == userID {
+			m.Presence = p
+		}
+	}
+
+	return m, nil
 }
 
 // RoleAdd adds a role to the current world state, or
