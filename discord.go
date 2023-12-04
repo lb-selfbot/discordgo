@@ -17,6 +17,7 @@ import (
 	"time"
 
 	tls_client "github.com/bogdanfinn/tls-client"
+	"github.com/bogdanfinn/tls-client/profiles"
 	"github.com/gorilla/websocket"
 )
 
@@ -27,24 +28,21 @@ var UserAgentMobile = "Discord-Android/206016;RNA"
 var UserAgentDesktop = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9024 Chrome/108.0.5359.215 Electron/22.3.26 Safari/537.36"
 var UserAgentWeb = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"
 
-var UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.5563.147 Safari/537.36"
-var BrowserVersion = "111.0.5563.147"
-
 var IdentifyMobile = Identify{
 	Properties: IdentifyPropertiesMobile{
-		OS:                     "Android",
-		Browser:                "Discord Android",
-		Device:                 "Android",
-		SystemLocale:           "en-US",
-		ClientVersion:          "206.16 - rn",
-		ReleaseChannel:         "googleRelease",
-		DeviceVendorID:         "7101a8f5-a3cd-4788-ad14-e6ef5295c6a8",
-		BrowserUserAgent:       "",
-		BrowserVersion:         "",
-		OSVersion:              "31",
-		ClientBuildNumber:      206016,
-		ClientEventSource:      nil,
-		DesignID:               1,
+		OS:                "Android",
+		Browser:           "Discord Android",
+		Device:            "Android",
+		SystemLocale:      "en-US",
+		ClientVersion:     "206.16 - rn",
+		ReleaseChannel:    "googleRelease",
+		DeviceVendorID:    "7101a8f5-a3cd-4788-ad14-e6ef5295c6a8",
+		BrowserUserAgent:  "",
+		BrowserVersion:    "",
+		OSVersion:         "31",
+		ClientBuildNumber: 206016,
+		ClientEventSource: nil,
+		DesignID:          1,
 	},
 	Compress:     true,
 	Capabilities: 8189,
@@ -179,7 +177,7 @@ func New(token string) (s *Session, err error) {
 
 	options := []tls_client.HttpClientOption{
 		tls_client.WithTimeoutSeconds(20),
-		tls_client.WithClientProfile(tls_client.Chrome_111),
+		tls_client.WithClientProfile(profiles.Chrome_117),
 		tls_client.WithCookieJar(tls_client.NewCookieJar()),
 		tls_client.WithRandomTLSExtensionOrder(),
 	}
