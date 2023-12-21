@@ -156,7 +156,7 @@ type Message struct {
 	StickerItems []*Sticker `json:"sticker_items"`
 
 	// An array of gift codes
-	GiftCodes []string `json:"giftCodes,omitempty"`
+	GiftCodes []string `json:"gift_codes,omitempty"`
 }
 
 // UnmarshalJSON is a helper function to unmarshal the Message.
