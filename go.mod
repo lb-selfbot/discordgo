@@ -7,6 +7,8 @@ require (
 	golang.org/x/crypto v0.16.0
 )
 
+require github.com/goccy/go-json v0.10.2 // indirect
+
 require (
 	github.com/andybalholm/brotli v1.0.6 // indirect
 	github.com/bogdanfinn/fhttp v0.5.24
