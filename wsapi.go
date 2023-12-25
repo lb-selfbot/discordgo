@@ -13,13 +13,14 @@ package discordgo
 import (
 	"bytes"
 	"compress/zlib"
-	"github.com/goccy/go-json"
 	"errors"
 	"fmt"
 	"io"
 	nethttp "net/http"
 	"sync/atomic"
 	"time"
+
+	"github.com/goccy/go-json"
 
 	"github.com/gorilla/websocket"
 )
@@ -213,11 +214,14 @@ func (s *Session) subscribeGuilds(wsConn *websocket.Conn, listening <-chan inter
 	s.log(LogInformational, "subscribing to guilds")
 
 	for _, guild := range s.State.Guilds {
-		if guild.MemberCount > s.MaxGuildSubscriptionMembers && s.MaxGuildSubscriptionMembers != 0 {
-			s.log(LogInformational, "skipping guild %s due to member count %d > %d", guild.ID, guild.MemberCount, s.MaxGuildSubscriptionMembers)
-			continue
-		}
-		
+		params := NewFetchGuildMembersParams(guild.ID)
+		params.Limit = s.MaxGuildSubscriptionMembers
+
+		// if guild.MemberCount > s.MaxGuildSubscriptionMembers && s.MaxGuildSubscriptionMembers != 0 {
+		// 	s.log(LogInformational, "skipping guild %s due to member count %d > %d", guild.ID, guild.MemberCount, s.MaxGuildSubscriptionMembers)
+		// 	continue
+		// }
+
 		s.log(LogInformational, "subscribing to guild %s", guild.ID)
 
 		_, _ = s.FetchGuildMembers(NewFetchGuildMembersParams(guild.ID))

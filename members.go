@@ -60,6 +60,7 @@ type FetchGuildMembersParams struct {
 	Cache         bool
 	ForceScraping bool
 	Delay         time.Duration
+	Limit         int
 }
 
 func NewFetchGuildMembersParams(guildID string) FetchGuildMembersParams {
@@ -69,6 +70,7 @@ func NewFetchGuildMembersParams(guildID string) FetchGuildMembersParams {
 		Cache:         true,
 		ForceScraping: false,
 		Delay:         time.Second,
+		Limit:         0,
 	}
 }
 
@@ -110,20 +112,14 @@ func (s *Session) FetchGuildMembers(params FetchGuildMembersParams) ([]*Member, 
 	hasAnyPermission := kickMembers || banMembers || manageRoles
 
 	if !params.ForceScraping && hasAnyPermission {
-		params := NewQueryGuildMembersParams(guild.ID)
-		params.Limit = 0
-		params.Query = ""
+		queryParams := NewQueryGuildMembersParams(guild.ID)
+		queryParams.Limit = params.Limit
+		queryParams.Cache = params.Cache
+		queryParams.Query = ""
 
-		members, err := s.QueryGuildMembers(params)
+		members, err := s.QueryGuildMembers(queryParams)
 		if err != nil {
 			return nil, err
-		}
-
-		if params.Cache {
-			for _, member := range members {
-				member.GuildID = guild.ID
-				s.State.MemberAdd(member)
-			}
 		}
 
 		return members, nil
@@ -134,6 +130,7 @@ func (s *Session) FetchGuildMembers(params FetchGuildMembersParams) ([]*Member, 
 		Guild:   guild,
 		Self:    self,
 		Delay:   params.Delay,
+		Limit:   params.Limit,
 	}
 
 	members, err := memberSidebar.GetMembers()
