@@ -202,3 +202,13 @@ func (s *Session) SetIdentify(i Identify) {
 	s.Headers["user-agent"] = s.UserAgent
 	s.Headers["x-super-properties"] = s.SuperProperties
 }
+
+func (s *Session) ErrorChecker() {
+	if err := recover(); err != nil {
+		s.log(LogError, "Panic recovered: %s", err)
+
+		if s.ErrorHandler != nil {
+			s.ErrorHandler(s, err)
+		}
+	}
+}

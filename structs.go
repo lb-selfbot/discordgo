@@ -122,6 +122,8 @@ type Session struct {
 	// used to deal with rate limits
 	Ratelimiter *RateLimiter
 
+	ErrorHandler func(session *Session, err any)
+
 	// Event handlers
 	handlersMu   sync.RWMutex
 	handlers     map[string][]*eventHandlerInstance

@@ -167,7 +167,11 @@ func (s *Session) handle(t string, i interface{}) {
 		if s.SyncEvents {
 			eh.eventHandler.Handle(s, i)
 		} else {
-			go eh.eventHandler.Handle(s, i)
+			go func(eh *eventHandlerInstance) {
+				defer s.ErrorChecker()
+
+				eh.eventHandler.Handle(s, i)
+			}(eh)
 		}
 	}
 
@@ -176,7 +180,11 @@ func (s *Session) handle(t string, i interface{}) {
 			if s.SyncEvents {
 				eh.eventHandler.Handle(s, i)
 			} else {
-				go eh.eventHandler.Handle(s, i)
+				go func(eh *eventHandlerInstance) {
+					defer s.ErrorChecker()
+
+					eh.eventHandler.Handle(s, i)
+				}(eh)
 			}
 		}
 		s.onceHandlers[t] = nil
