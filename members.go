@@ -565,6 +565,12 @@ func (m *MemberSidebar) GetMembers() ([]*Member, error) {
 	for {
 		if time.Since(m.LastSync) > time.Second*3 {
 			if !m.SubscribingStarted {
+				if m.Limit == 0 {
+					m.Limit = m.GetLimit()
+					if m.Limit == 0 {
+						m.Limit = 10000
+					}
+				}
 				go m.StartSubscribing()
 			}
 
