@@ -259,14 +259,15 @@ type MemberSidebar struct {
 	OnlineCount int
 	RoleCount   int
 
-	Members         map[string]*Member
-	MembersMutex    sync.Mutex
-	Ranges          [][]int
-	Channels        []string
-	SubscribingDone bool
-	LastSync        time.Time
-	Safe            bool
-	Limit           int
+	Members            map[string]*Member
+	MembersMutex       sync.Mutex
+	Ranges             [][]int
+	Channels           []string
+	SubscribingStarted bool
+	SubscribingDone    bool
+	LastSync           time.Time
+	Safe               bool
+	Limit              int
 }
 
 func (m *MemberSidebar) GetKnownGoodChannels() []string {
@@ -461,6 +462,7 @@ func (m *MemberSidebar) GetCurrentRanges() map[string][][]int {
 }
 
 func (m *MemberSidebar) StartSubscribing() {
+	m.SubscribingStarted = true
 	m.Ranges = m.GetRanges()
 
 	for {
@@ -562,6 +564,13 @@ func (m *MemberSidebar) GetMembers() ([]*Member, error) {
 
 	for {
 		if time.Since(m.LastSync) > time.Second*3 {
+			if !m.SubscribingStarted {
+				go m.StartSubscribing()
+			}
+
+			if !m.SubscribingDone {
+				continue
+			}
 			break
 		}
 
