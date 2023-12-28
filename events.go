@@ -1,7 +1,7 @@
 package discordgo
 
 import (
-	"github.com/goccy/go-json"
+	"encoding/json"
 	"fmt"
 )
 

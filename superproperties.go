@@ -2,7 +2,7 @@ package discordgo
 
 import (
 	"encoding/base64"
-	"github.com/goccy/go-json"
+	"encoding/json"
 )
 
 // Get super properties

@@ -11,7 +11,7 @@ package discordgo
 
 import (
 	"encoding/binary"
-	"github.com/goccy/go-json"
+	"encoding/json"
 	"fmt"
 	"net"
 	"strconv"
@@ -76,7 +76,8 @@ type VoiceSpeakingUpdateHandler func(vc *VoiceConnection, vs *VoiceSpeakingUpdat
 // Speaking sends a speaking notification to Discord over the voice websocket.
 // This must be sent as true prior to sending audio and should be set to false
 // once finished sending audio.
-//  b  : Send true if speaking, false if not.
+//
+//	b  : Send true if speaking, false if not.
 func (v *VoiceConnection) Speaking(b bool) (err error) {
 
 	v.log(LogDebug, "called (%t)", b)

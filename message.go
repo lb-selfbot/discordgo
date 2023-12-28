@@ -10,12 +10,12 @@
 package discordgo
 
 import (
-	"github.com/goccy/go-json"
+	"encoding/json"
+	"fmt"
 	"io"
 	"regexp"
 	"strings"
 	"time"
-	"fmt"
 )
 
 // MessageType is the type of Message
@@ -238,13 +238,13 @@ type MessageSend struct {
 	Embeds          []*MessageEmbed         `json:"embeds,omitempty"`
 	Activity        *MessageActivity        `json:"activity,omitempty"`
 	TTS             bool                    `json:"tts"`
-	Components      []*MessageComponent      `json:"components,omitempty"`
+	Components      []*MessageComponent     `json:"components,omitempty"`
 	Files           []*File                 `json:"-"`
 	AllowedMentions *MessageAllowedMentions `json:"allowed_mentions,omitempty"`
 	Reference       *MessageReference       `json:"message_reference,omitempty"`
 
-	Flags           int                     `json:"flags"`
-	Nonce           string                  `json:"nonce,omitempty"`
+	Flags int    `json:"flags"`
+	Nonce string `json:"nonce,omitempty"`
 
 	// TODO: Remove this when compatibility is not required.
 	File *File `json:"-"`

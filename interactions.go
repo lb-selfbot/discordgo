@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"crypto/ed25519"
 	"encoding/hex"
-	"github.com/goccy/go-json"
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"

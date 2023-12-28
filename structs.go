@@ -12,7 +12,7 @@
 package discordgo
 
 import (
-	"github.com/goccy/go-json"
+	"encoding/json"
 	"fmt"
 	"math"
 	"regexp"
@@ -2273,7 +2273,7 @@ type Activity struct {
 	Type          ActivityType      `json:"type"`
 	URL           string            `json:"url,omitempty"`
 	CreatedAt     *time.Time        `json:"created_at,omitempty"`
-	ApplicationID *string            `json:"application_id"`
+	ApplicationID *string           `json:"application_id"`
 	State         string            `json:"state,omitempty"`
 	Details       string            `json:"details,omitempty"`
 	Timestamps    *TimeStamps       `json:"timestamps,omitempty"`

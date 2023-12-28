@@ -6,8 +6,6 @@ github.com/bogdanfinn/tls-client v1.6.1 h1:GTIqQssFoIvLaDf4btoYRzDhUzudLqYD4axvf
 github.com/bogdanfinn/tls-client v1.6.1/go.mod h1:FtwQ3DndVZ0xAOO704v4iNAgbHOcEc5kPk9tjICTNQ0=
 github.com/bogdanfinn/utls v1.5.16 h1:NhhWkegEcYETBMj9nvgO4lwvc6NcLH+znrXzO3gnw4M=
 github.com/bogdanfinn/utls v1.5.16/go.mod h1:mHeRCi69cUiEyVBkKONB1cAbLjRcZnlJbGzttmiuK4o=
-github.com/goccy/go-json v0.10.2 h1:CrxCmQqYDkv1z7lO7Wbh2HN93uovUHgrECaO5ZrCXAU=
-github.com/goccy/go-json v0.10.2/go.mod h1:6MelG93GURQebXPDq3khkgXZkazVtN9CRI+MGFi0w8I=
 github.com/gorilla/websocket v1.5.1 h1:gmztn0JnHVt9JZquRuzLw3g4wouNVzKL15iLr/zn/QY=
 github.com/gorilla/websocket v1.5.1/go.mod h1:x3kM2JMyaluk02fnUJpQuwD2dCS5NDG2ZHL0uE0tcaY=
 github.com/klauspost/compress v1.17.4 h1:Ej5ixsIri7BrIjBkRZLTo6ghwrEtHFk7ijlczPW4fZ4=
