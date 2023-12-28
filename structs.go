@@ -146,6 +146,10 @@ type Session struct {
 
 	// used to make sure gateway websocket writes do not happen concurrently
 	wsMutex sync.Mutex
+
+	// currently active guild subscriptions
+	activeGuildSubscriptions      map[string]bool
+	activeGuildSubscriptionsMutex sync.Mutex
 }
 
 // Application stores values for a Discord Application

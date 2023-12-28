@@ -173,6 +173,7 @@ func New(token string) (s *Session, err error) {
 			"x-discord-locale":   "en-US",
 			"x-super-properties": "",
 		},
+		activeGuildSubscriptions: make(map[string]bool),
 	}
 
 	options := []tls_client.HttpClientOption{

@@ -217,14 +217,9 @@ func (s *Session) subscribeGuilds(wsConn *websocket.Conn, listening <-chan inter
 		params := NewFetchGuildMembersParams(guild.ID)
 		params.Limit = s.MaxGuildSubscriptionMembers
 
-		// if guild.MemberCount > s.MaxGuildSubscriptionMembers && s.MaxGuildSubscriptionMembers != 0 {
-		// 	s.log(LogInformational, "skipping guild %s due to member count %d > %d", guild.ID, guild.MemberCount, s.MaxGuildSubscriptionMembers)
-		// 	continue
-		// }
-
 		s.log(LogInformational, "subscribing to guild %s", guild.ID)
 
-		_, _ = s.FetchGuildMembers(NewFetchGuildMembersParams(guild.ID))
+		_, _ = s.FetchGuildMembers(params)
 
 		time.Sleep(100 * time.Millisecond)
 	}
@@ -694,6 +689,10 @@ func (s *Session) onEvent(messageType int, message []byte) (*Event, error) {
 	// Store the message sequence
 	atomic.StoreInt64(s.sequence, e.Sequence)
 
+	// if e.Type == "GUILD_MEMBER_LIST_UPDATE" && s.activeGuildSubscriptions == 0 {
+	// 	return e, nil
+	// }
+
 	// Map event to registered event handlers and pass it along to any registered handlers.
 	if eh, ok := registeredInterfaceProviders[e.Type]; ok {
 		e.Struct = eh.New()
@@ -701,6 +700,22 @@ func (s *Session) onEvent(messageType int, message []byte) (*Event, error) {
 		// Attempt to unmarshal our event.
 		if err = json.Unmarshal(e.RawData, e.Struct); err != nil {
 			s.log(LogError, "error unmarshalling %s event, %s", e.Type, err)
+		}
+
+		if update, ok := e.Struct.(*GuildMemberListUpdate); ok {
+			hasSync := false
+			for _, op := range update.Ops {
+				if op.Op == "SYNC" {
+					hasSync = true
+					break
+				}
+			}
+
+			isActive, ok := s.activeGuildSubscriptions[update.GuildID]
+			if !hasSync || !ok || !isActive {
+				e.Struct = nil
+				return e, nil
+			}
 		}
 
 		// Send event to any registered event handlers for it's type.
