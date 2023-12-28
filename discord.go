@@ -148,7 +148,7 @@ func New(token string) (s *Session, err error) {
 		Ratelimiter:                 NewRatelimiter(),
 		StateEnabled:                true,
 		ShouldSubscribeGuilds:       true,
-		MaxGuildSubscriptionMembers: 1000,
+		MaxGuildSubscriptionMembers: 100,
 		Compress:                    true,
 		ShouldReconnectOnError:      true,
 		ShouldRetryOnRateLimit:      true,
