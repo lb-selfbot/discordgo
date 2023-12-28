@@ -536,6 +536,10 @@ func (m *MemberSidebar) GetMembers() ([]*Member, error) {
 		initialRanges = [][]int{{0, 299}, {300, 599}, {600, 899}}
 	}
 
+	m.Session.activeGuildSubscriptionsMutex.Lock()
+	m.Session.activeGuildSubscriptions[m.Guild.ID] = true
+	m.Session.activeGuildSubscriptionsMutex.Unlock()
+
 	removeHandler := m.Session.AddHandler(func(_ *Session, event *GuildMemberListUpdate) {
 		if event.GuildID != m.Guild.ID {
 			return
@@ -575,6 +579,10 @@ func (m *MemberSidebar) GetMembers() ([]*Member, error) {
 	}
 
 	removeHandler()
+
+	m.Session.activeGuildSubscriptionsMutex.Lock()
+	m.Session.activeGuildSubscriptions[m.Guild.ID] = false
+	m.Session.activeGuildSubscriptionsMutex.Unlock()
 
 	members := make([]*Member, 0, len(m.Members))
 
