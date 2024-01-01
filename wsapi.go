@@ -214,7 +214,14 @@ func (s *Session) Open() error {
 func (s *Session) subscribeGuilds(wsConn *websocket.Conn, listening <-chan interface{}) {
 	s.log(LogInformational, "subscribing to guilds")
 
+	first := true
+
 	for _, guild := range s.State.Guilds {
+		if !guild.Unavailable || !guild.Large {
+			s.log(LogInformational, "skipping guild subscription for %s", guild.ID)
+			continue
+		}
+
 		s.log(LogInformational, "subscribing to guild %s", guild.ID)
 
 		// Get self
@@ -249,8 +256,7 @@ func (s *Session) subscribeGuilds(wsConn *websocket.Conn, listening <-chan inter
 			continue
 		}
 
-		// Subscribe to guild
-		s.RequestLazyGuild(RequestLazyGuildData{
+		data := RequestLazyGuildData{
 			GuildID: guild.ID,
 			Channels: map[string][][]int{
 				channels[0]: {{0, 1}},
@@ -258,7 +264,16 @@ func (s *Session) subscribeGuilds(wsConn *websocket.Conn, listening <-chan inter
 			Typing:     true,
 			Threads:    true,
 			Activities: true,
-		})
+		}
+
+		if first {
+			data.Members = &[]string{}
+			data.ThreadMemberLists = &[]string{}
+			first = false
+		}
+
+		// Subscribe to guild
+		s.RequestLazyGuild(data)
 
 		time.Sleep(2 * time.Second)
 	}
@@ -596,9 +611,9 @@ type RequestLazyGuildData struct {
 	Typing            bool               `json:"typing"`
 	Threads           bool               `json:"threads"`
 	Activities        bool               `json:"activities"`
-	Members           []string           `json:"members"`
+	Members           *[]string          `json:"members,omitempty"`
 	Channels          map[string][][]int `json:"channels"`
-	ThreadMemberLists []string           `json:"thread_member_lists"`
+	ThreadMemberLists *[]string          `json:"thread_member_lists,omitempty"`
 }
 
 type requestLazyGuildOp struct {

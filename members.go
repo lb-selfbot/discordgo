@@ -476,7 +476,7 @@ func (m *MemberSidebar) StartSubscribing() {
 			GuildID:    m.Guild.ID,
 			Channels:   currentRanges,
 			Typing:     true,
-			Threads:    true,
+			Threads:    false,
 			Activities: true,
 		})
 
@@ -555,9 +555,11 @@ func (m *MemberSidebar) GetMembers() ([]*Member, error) {
 		Channels: map[string][][]int{
 			m.Channels[0]: initialRanges,
 		},
-		Typing:     true,
-		Threads:    true,
-		Activities: true,
+		Typing:            true,
+		Threads:           false,
+		Activities:        true,
+		Members:           &[]string{},
+		ThreadMemberLists: &[]string{},
 	})
 
 	m.LastSync = time.Now()
