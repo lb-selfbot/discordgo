@@ -260,7 +260,7 @@ func (s *Session) subscribeGuilds(wsConn *websocket.Conn, listening <-chan inter
 			Activities: true,
 		})
 
-		time.Sleep(100 * time.Millisecond)
+		time.Sleep(2 * time.Second)
 	}
 
 	s.log(LogInformational, "subscribed to guilds")
