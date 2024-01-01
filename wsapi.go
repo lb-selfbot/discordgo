@@ -253,7 +253,7 @@ func (s *Session) subscribeGuilds(wsConn *websocket.Conn, listening <-chan inter
 		s.RequestLazyGuild(RequestLazyGuildData{
 			GuildID: guild.ID,
 			Channels: map[string][][]int{
-				channels[0]: [][]int{{0, 1}},
+				channels[0]: {{0, 1}},
 			},
 			Typing:     true,
 			Threads:    true,
