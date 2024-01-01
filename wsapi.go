@@ -17,6 +17,7 @@ import (
 	"fmt"
 	"io"
 	nethttp "net/http"
+	"strconv"
 	"sync/atomic"
 	"time"
 
@@ -214,12 +215,50 @@ func (s *Session) subscribeGuilds(wsConn *websocket.Conn, listening <-chan inter
 	s.log(LogInformational, "subscribing to guilds")
 
 	for _, guild := range s.State.Guilds {
-		params := NewFetchGuildMembersParams(guild.ID)
-		params.Limit = s.MaxGuildSubscriptionMembers
-
 		s.log(LogInformational, "subscribing to guild %s", guild.ID)
 
-		_, _ = s.FetchGuildMembers(params)
+		// Get self
+		self, err := s.State.Member(guild.ID, s.State.User.ID)
+		if err != nil {
+			params := NewQueryGuildMembersParams(guild.ID)
+
+			idInt, _ := strconv.Atoi(s.State.User.ID)
+			params.UserIDs = []int{idInt}
+
+			membersList, err := s.QueryGuildMembers(params)
+			if err != nil {
+				continue
+			}
+
+			if len(membersList) == 0 {
+				continue
+			}
+
+			self = membersList[0]
+		}
+
+		// Get channels
+		memberSidebar := MemberSidebar{
+			Session: s,
+			Guild:   guild,
+			Self:    self,
+		}
+
+		channels := memberSidebar.GetChannels()
+		if len(channels) == 0 {
+			continue
+		}
+
+		// Subscribe to guild
+		s.RequestLazyGuild(RequestLazyGuildData{
+			GuildID: guild.ID,
+			Channels: map[string][][]int{
+				channels[0]: [][]int{{0, 1}},
+			},
+			Typing:     true,
+			Threads:    true,
+			Activities: true,
+		})
 
 		time.Sleep(100 * time.Millisecond)
 	}
