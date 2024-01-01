@@ -217,7 +217,7 @@ func (s *Session) subscribeGuilds(wsConn *websocket.Conn, listening <-chan inter
 	first := true
 
 	for _, guild := range s.State.Guilds {
-		if !guild.Unavailable || !guild.Large {
+		if !(guild.Large || guild.Lazy || guild.Unavailable) {
 			s.log(LogInformational, "skipping guild subscription for %s", guild.ID)
 			continue
 		}
