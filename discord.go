@@ -24,8 +24,8 @@ import (
 // VERSION of DiscordGo, follows Semantic Versioning. (http://semver.org/)
 const VERSION = "0.26.5"
 
-var UserAgentMobile = "Discord-Android/206016;RNA"
-var UserAgentDesktop = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9024 Chrome/108.0.5359.215 Electron/22.3.26 Safari/537.36"
+var UserAgentMobile = "Discord-Android/221016;RNA"
+var UserAgentDesktop = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9037 Chrome/108.0.5359.215 Electron/22.3.26 Safari/537.36"
 var UserAgentWeb = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"
 
 var IdentifyMobile = Identify{
@@ -34,15 +34,15 @@ var IdentifyMobile = Identify{
 		Browser:           "Discord Android",
 		Device:            "Android",
 		SystemLocale:      "en-US",
-		ClientVersion:     "206.16 - rn",
+		ClientVersion:     "221.16 - rn",
 		ReleaseChannel:    "googleRelease",
 		DeviceVendorID:    "7101a8f5-a3cd-4788-ad14-e6ef5295c6a8",
 		BrowserUserAgent:  "",
 		BrowserVersion:    "",
 		OSVersion:         "31",
-		ClientBuildNumber: 206016,
+		ClientBuildNumber: 22101600160222,
 		ClientEventSource: nil,
-		DesignID:          1,
+		DesignID:          2,
 	},
 	Compress:     true,
 	Capabilities: 8189,
@@ -66,15 +66,15 @@ var IdentifyDiscordClient = Identify{
 		OS:                "Windows",
 		Browser:           "Discord Client",
 		ReleaseChannel:    "stable",
-		ClientVersion:     "1.0.9024",
+		ClientVersion:     "1.0.9037",
 		OSVersion:         "10.0.22621",
 		OSArch:            "x64",
 		AppArch:           "ia32",
 		SystemLocale:      "en-US",
 		BrowserUserAgent:  UserAgentDesktop,
 		BrowserVersion:    "22.3.26",
-		ClientBuildNumber: 249561,
-		NativeBuildNumber: 40010,
+		ClientBuildNumber: 277953,
+		NativeBuildNumber: 45369,
 		ClientEventSource: nil,
 	},
 	Compress:     true,
@@ -111,7 +111,7 @@ var IdentifyWeb = Identify{
 		ReferrerCurrent:        "",
 		ReferringDomainCurrent: "",
 		ReleaseChannel:         "stable",
-		ClientBuildNumber:      249561,
+		ClientBuildNumber:      277953,
 		ClientEventSource:      nil,
 	},
 	Compress:     true,
