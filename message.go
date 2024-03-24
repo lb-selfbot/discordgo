@@ -232,6 +232,37 @@ type File struct {
 	Reader      io.Reader
 }
 
+// Poll stores info about polls you send in messages.
+type Poll struct {
+	Question         PollQuestion `json:"question"`
+	Answers          []PollAnswer `json:"answers`
+	AllowMultiselect bool         `json:"allow_multiselect"`
+	Duration         int          `json:"duration"`
+	LayoutType       int          `json:"layout_type"`
+}
+
+// PollQuestion stores info about poll questions.
+type PollQuestion struct {
+	Text string `json:"text"`
+}
+
+// PollAnswer stores info about poll answers.
+type PollAnswer struct {
+	Media PollMedia `json:"poll_media"`
+}
+
+// PollMedia stores info about poll media.
+type PollMedia struct {
+	Text  string     `json:"text"`
+	Emoji *PollEmoji `json:"emoji,omitempty"`
+}
+
+// PollEmoji stores info about poll emojis.
+type PollEmoji struct {
+	ID   string `json:"id,omitempty"`
+	Name string `json:"name"`
+}
+
 // MessageSend stores all parameters you can send with ChannelMessageSendComplex.
 type MessageSend struct {
 	Content         string                  `json:"content,omitempty"`
@@ -242,6 +273,7 @@ type MessageSend struct {
 	Files           []*File                 `json:"-"`
 	AllowedMentions *MessageAllowedMentions `json:"allowed_mentions,omitempty"`
 	Reference       *MessageReference       `json:"message_reference,omitempty"`
+	Poll            *Poll                   `json:"poll,omitempty"`
 
 	Flags int    `json:"flags"`
 	Nonce string `json:"nonce,omitempty"`
