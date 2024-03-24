@@ -235,7 +235,7 @@ type File struct {
 // Poll stores info about polls you send in messages.
 type Poll struct {
 	Question         PollQuestion `json:"question"`
-	Answers          []PollAnswer `json:"answers`
+	Answers          []PollAnswer `json:"answers"`
 	AllowMultiselect bool         `json:"allow_multiselect"`
 	Duration         int          `json:"duration"`
 	LayoutType       int          `json:"layout_type"`
