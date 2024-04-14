@@ -199,7 +199,7 @@ func (m *Message) GetCustomEmojis() []*Emoji {
 
 // GetLink gets the link pointing to a message.
 func (m *Message) GetLink() string {
-	link := "https://discord.com/"
+	link := "https://discord.com/channels/"
 	
 	if m.GuildID == "" {
 		link += "@me"
