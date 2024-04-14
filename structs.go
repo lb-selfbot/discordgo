@@ -162,6 +162,7 @@ type Application struct {
 	Bot                 *User    `json:"bot,omitempty"`
 	BotPublic           bool     `json:"bot_public,omitempty"`
 	BotRequireCodeGrant bool     `json:"bot_require_code_grant,omitempty"`
+	BotID               string   `json:"bot_id,omitempty"`
 	TermsOfServiceURL   string   `json:"terms_of_service_url"`
 	PrivacyProxyURL     string   `json:"privacy_policy_url"`
 	Owner               *User    `json:"owner"`
