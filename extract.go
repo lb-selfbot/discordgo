@@ -8,6 +8,8 @@ import (
 	"reflect"
 )
 
+var Symbols = map[string]map[string]reflect.Value{}
+
 func init() {
 	Symbols["github.com/LightningDev1/discordgo/discordgo"] = map[string]reflect.Value{
 		// function, constant and variable definitions
