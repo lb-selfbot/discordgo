@@ -208,6 +208,8 @@ func (m *Message) GetLink() string {
 	}
 
 	link += "/" + m.ChannelID + "/" + m.ID
+
+	return link
 }
 
 // MessageFlags is the flags of "message" (see MessageFlags* consts)
