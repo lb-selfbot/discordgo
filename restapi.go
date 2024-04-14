@@ -1596,6 +1596,27 @@ func (s *Session) GuildAck(guildID string) (err error) {
 	return
 }
 
+// GuildApplicationCommandIndex gets the application command index of a guild
+func (s *Session) GuildApplicationCommandIndex(guildID string) ([]*ApplicationCommand, []*Application, error) {
+	var data []byte
+	data, err := s.RequestWithBucketID("GET", EndpointGuildApplicationCommandIndex(guildID), nil, EndpointGuildApplicationCommandIndex(""))
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var response struct {
+		ApplicationCommands []*ApplicationCommand `json:"application_commands"`
+		Applications        []*Application        `json:"applications"`
+	}
+
+	err = unmarshal(data, &response)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return response.ApplicationCommands, response.Applications, nil
+}
+
 // ------------------------------------------------------------------------------------------------
 // Functions specific to Discord Channels
 // ------------------------------------------------------------------------------------------------
@@ -2103,6 +2124,97 @@ func (s *Session) ChannelRecipientRemove(channelID, userID string) (err error) {
 
 	_, err = s.RequestWithBucketID("DELETE", EndpointChannelRecipient(channelID, userID), nil, EndpointChannelRecipient(channelID, ""))
 	return
+}
+
+type ApplicationCommandsSearchParams struct {
+	// The ID of the channel to search for commands in
+	ChannelID string
+
+	// The type of search to use (1)
+	Type int
+
+	// The limit of commands to search for (10)
+	Limit int
+
+	// The query to search for
+	Query string
+
+	// The cursor
+	Cursor string
+
+	// The IDs of the commands to search for
+	CommandIDs []string
+
+	// The ID of the application to search for
+	ApplicationID string
+
+	// Whether to include applications in the response
+	IncludeApplications bool
+}
+
+func (s *Session) ChannelApplicationCommandsSearch(searchParams *ApplicationCommandsSearchParams) (commands []*ApplicationCommand, applications []*Application, err error) {
+	params := url.Values{}
+	params.Set("type", strconv.Itoa(searchParams.Type))
+
+	if searchParams.IncludeApplications {
+		params.Set("include_applications", "true")
+	} else {
+		params.Set("include_applications", "false")
+	}
+
+	if searchParams.Limit > 0 {
+		params.Set("limit", strconv.Itoa(searchParams.Limit))
+	}
+
+	if searchParams.Query != "" {
+		params.Set("query", searchParams.Query)
+	}
+
+	if searchParams.Cursor != "" {
+		params.Set("cursor", searchParams.Cursor)
+	}
+
+	if len(searchParams.CommandIDs) > 0 {
+		params.Set("command_ids", strings.Join(searchParams.CommandIDs, ","))
+	}
+
+	if searchParams.ApplicationID != "" {
+		params.Set("application_id", searchParams.ApplicationID)
+	}
+
+	var response struct {
+		ApplicationCommands []*ApplicationCommand `json:"application_commands"`
+		Applications        []*Application        `json:"applications"`
+	}
+
+	endpoint := EndpointChannelApplicationCommandsSearch(searchParams.ChannelID)
+
+	var data []byte
+	data, err = s.RequestWithBucketID("GET", endpoint+"?"+params.Encode(), nil, EndpointChannelApplicationCommandsSearch(""))
+	if err != nil {
+		return
+	}
+
+	fmt.Println(string(data))
+
+	err = unmarshal(data, &response)
+	if err != nil {
+		return
+	}
+
+	commands = response.ApplicationCommands
+	applications = response.Applications
+
+	for _, application := range applications {
+		for _, command := range commands {
+			if command.ApplicationID == application.ID {
+				command.BotUserID = application.Bot.ID
+			}
+		}
+	}
+
+	return
+
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -3208,20 +3320,23 @@ type InteractData struct {
 	// The type of interaction.
 	Type int
 
-	// The data to send with the interaction.
-	Data any
-
-	// The channel ID
-	ChannelID string
+	// The application ID
+	ApplicationID string
 
 	// The guild ID
 	GuildID string
 
+	// The channel ID
+	ChannelID string
+
 	// The message of the interaction.
 	Message *Message
 
-	// The application ID
-	ApplicationID string
+	// The data to send with the interaction.
+	Data any
+
+	// Whether the interaction is a slash command.
+	IsSlash bool
 }
 
 // Interact creates a new interaction.
@@ -3249,6 +3364,10 @@ func (s *Session) Interact(interactData *InteractData) error {
 		if msg.GuildID != "" {
 			payload["guild_id"] = msg.GuildID
 		}
+	}
+
+	if interactData.IsSlash {
+		payload["analytics_location"] = "slash_ui"
 	}
 
 	_, err := s.RequestWithBucketID("POST", EndpointInteractions, payload, EndpointInteractions)

@@ -39,6 +39,7 @@ type ApplicationCommand struct {
 	Version           string                 `json:"version,omitempty"`
 	Type              ApplicationCommandType `json:"type,omitempty"`
 	Name              string                 `json:"name"`
+	NameLocalized     string                 `json:"name_localized,omitempty"`
 	NameLocalizations *map[Locale]string     `json:"name_localizations,omitempty"`
 	// NOTE: DefaultPermission will be soon deprecated. Use DefaultMemberPermissions and DMPermission instead.
 	DefaultPermission        *bool  `json:"default_permission,omitempty"`
@@ -48,7 +49,10 @@ type ApplicationCommand struct {
 	// NOTE: Chat commands only. Otherwise it mustn't be set.
 
 	Description              string                      `json:"description,omitempty"`
+	DescriptionLocalized     string                      `json:"description_localized,omitempty"`
 	DescriptionLocalizations *map[Locale]string          `json:"description_localizations,omitempty"`
+	IntegrationTypes         []int                       `json:"integration_types,omitempty"`
+	GlobalPopularityRank     int                         `json:"global_popularity_rank,omitempty"`
 	Options                  []*ApplicationCommandOption `json:"options"`
 }
 
