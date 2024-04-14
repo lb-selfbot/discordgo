@@ -197,6 +197,19 @@ func (m *Message) GetCustomEmojis() []*Emoji {
 	return toReturn
 }
 
+// GetLink gets the link pointing to a message.
+func (m *Message) GetLink() string {
+	link := "https://discord.com/"
+	
+	if m.GuildID == "" {
+		link += "@me"
+	} else {
+		link += m.GuildID
+	}
+
+	link += "/" + m.ChannelID + "/" + m.ID
+}
+
 // MessageFlags is the flags of "message" (see MessageFlags* consts)
 // https://discord.com/developers/docs/resources/channel#message-object-message-flags
 type MessageFlags int
