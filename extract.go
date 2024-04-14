@@ -3,7 +3,6 @@
 package discordgo
 
 import (
-	"github.com/LightningDev1/discordgo"
 	"go/constant"
 	"go/token"
 	"reflect"
