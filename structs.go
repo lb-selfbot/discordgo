@@ -2413,7 +2413,7 @@ type IdentifyPropertiesMobile struct {
 	BrowserUserAgent  string `json:"browser_user_agent"`
 	BrowserVersion    string `json:"browser_version"`
 	OSVersion         string `json:"os_version"`
-	ClientBuildNumber int    `json:"client_build_number"`
+	ClientBuildNumber int64  `json:"client_build_number"`
 	ClientEventSource any    `json:"client_event_source"`
 	DesignID          int    `json:"design_id"`
 }
