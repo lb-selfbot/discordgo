@@ -756,6 +756,8 @@ func (s *Session) onEvent(messageType int, message []byte) (*Event, error) {
 			s.log(LogError, "error unmarshalling %s event, %s", e.Type, err)
 		}
 
+		e.RawData = nil
+
 		if update, ok := e.Struct.(*GuildMemberListUpdate); ok {
 			hasSync := false
 			for _, op := range update.Ops {
