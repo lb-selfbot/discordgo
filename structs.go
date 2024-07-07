@@ -1674,9 +1674,10 @@ type Settings struct {
 
 // ClientStatus stores the online, offline, idle, or dnd status of each device of a Guild member.
 type ClientStatus struct {
-	Desktop Status `json:"desktop"`
-	Mobile  Status `json:"mobile"`
-	Web     Status `json:"web"`
+	Desktop  Status `json:"desktop"`
+	Mobile   Status `json:"mobile"`
+	Web      Status `json:"web"`
+	Embedded Status `json:"embedded"`
 }
 
 // Status type definition
