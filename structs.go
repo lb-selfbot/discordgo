@@ -2291,6 +2291,8 @@ type Activity struct {
 	Flags         int               `json:"flags,omitempty"`
 	Buttons       []string          `json:"buttons,omitempty"`
 	Metadata      *ActivityMetadata `json:"metadata,omitempty"`
+	Platform      string            `json:"platform,omitempty"`
+	ID            string            `json:"id,omitempty"`
 }
 
 // UnmarshalJSON is a custom unmarshaljson to make CreatedAt a time.Time instead of an int
