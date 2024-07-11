@@ -2322,7 +2322,8 @@ func (activity *Activity) UnmarshalJSON(b []byte) error {
 
 	var appID *string
 	if temp.ApplicationID != nil {
-		appID = fmt.Sprint(temp.ApplicationID)
+		rawAppID := fmt.Sprint(temp.ApplicationID)
+		appID = &rawAppID
 	}
 
 	activity.CreatedAt = &createdAt
