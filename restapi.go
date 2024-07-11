@@ -2765,7 +2765,7 @@ func (s *Session) MessageUnack(channelID, messageID string, mentionCount int) er
 	data := map[string]any{"manual": true, "mention_count": mentionCount}
 
 	_, err := s.RequestWithBucketID("POST", EndpointMessageAck(channelID, messageID), data, EndpointMessageAck(channelID, ""))
-	return e
+	return err
 }
 
 // ------------------------------------------------------------------------------------------------
