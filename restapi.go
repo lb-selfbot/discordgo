@@ -2754,8 +2754,18 @@ func (s *Session) MessageReactions(channelID, messageID, emojiID string, limit i
 
 // MessageAck acknowledges a message.
 func (s *Session) MessageAck(channelID, messageID string) error {
-	_, err := s.RequestWithBucketID("POST", EndpointMessageAck(channelID, messageID), struct{}{}, EndpointMessageAck(channelID, ""))
+	data := map[string]any{"token": nil}
+
+	_, err := s.RequestWithBucketID("POST", EndpointMessageAck(channelID, messageID), data, EndpointMessageAck(channelID, ""))
 	return err
+}
+
+// MessageUnack unacknowledges a message.
+func (s *Session) MessageUnack(channelID, messageID string, mentionCount int) error {
+	data := map[string]any{"manual": true, "mention_count": mentionCount}
+
+	_, err := s.RequestWithBucketID("POST", EndpointMessageAck(channelID, messageID), data, EndpointMessageAck(channelID, ""))
+	return e
 }
 
 // ------------------------------------------------------------------------------------------------
