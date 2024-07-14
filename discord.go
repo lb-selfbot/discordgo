@@ -25,6 +25,7 @@ import (
 const VERSION = "0.26.5"
 
 var UserAgentMobile = "Discord-Android/221016;RNA"
+var UserAgentEmbedded = "Mozilla/5.0 (PlayStation 5/SmartTV) AppleWebKit/605.1.15 (KHTML, like Gecko)"
 var UserAgentDesktop = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9037 Chrome/108.0.5359.215 Electron/22.3.26 Safari/537.36"
 var UserAgentWeb = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"
 
@@ -59,6 +60,29 @@ var IdentifyMobile = Identify{
 		AFK:        true,
 	},
 	UserAgent: UserAgentMobile,
+}
+var IdentifyEmbedded = Identify{
+	Properties: IdentifyPropertiesMobile{
+		OS:                "Orbis",
+		Browser:           "Discord Embedded",
+		Device:            "PlayStation 5",
+		SystemLocale:      "en-US",
+	},
+	Compress:     true,
+	Capabilities: 8189,
+	ClientState: ClientState{
+		GuildHashes:              map[string]string{},
+		HighestLastMessageID:     "0",
+		ReadStateVersion:         0,
+		UserGuildSettingsVersion: -1,
+	},
+	Presence: GatewayStatusUpdate{
+		Since:      0,
+		Status:     "unknown",
+		Activities: []*Activity{},
+		AFK:        true,
+	},
+	UserAgent: UserAgentEmbedded,
 }
 
 var IdentifyDiscordClient = Identify{

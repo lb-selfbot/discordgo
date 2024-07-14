@@ -2422,7 +2422,7 @@ type IdentifyPropertiesMobile struct {
 	OSVersion         string `json:"os_version"`
 	ClientBuildNumber int64  `json:"client_build_number"`
 	ClientEventSource any    `json:"client_event_source"`
-	DesignID          int    `json:"design_id"`
+	DesignID          int    `json:"design_id,omitempty"`
 }
 
 type IdentifyPropertiesDesktop struct {
