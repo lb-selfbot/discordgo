@@ -497,7 +497,12 @@ func (m *MemberSidebar) HandleMemberListUpdate(event *GuildMemberListUpdate) {
 
 	if m.Limit == 0 {
 		m.Limit = m.GetLimit()
-		go m.StartSubscribing()
+		
+		go func() {
+			defer m.Session.ErrorChecker()
+					
+			m.StartSubscribing()
+		}()
 	}
 
 	for _, op := range event.Ops {
@@ -573,7 +578,12 @@ func (m *MemberSidebar) GetMembers() ([]*Member, error) {
 						m.Limit = 10000
 					}
 				}
-				go m.StartSubscribing()
+				
+				go func() {
+					defer m.Session.ErrorChecker()
+							
+					m.StartSubscribing()
+				}()
 			}
 
 			if !m.SubscribingDone {

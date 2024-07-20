@@ -200,11 +200,23 @@ func (s *Session) Open() error {
 	s.listening = make(chan interface{})
 
 	// Start sending heartbeats and reading messages from Discord.
-	go s.heartbeat(s.wsConn, s.listening, h.HeartbeatInterval)
-	go s.listen(s.wsConn, s.listening)
+	go func() {
+		defer s.ErrorChecker()
+					
+		s.heartbeat(s.wsConn, s.listening, h.HeartbeatInterval)
+	}()
+	go func() {
+		defer s.ErrorChecker()
+					
+		s.listen(s.wsConn, s.listening)
+	}()
 
 	if s.ShouldSubscribeGuilds {
-		go s.subscribeGuilds(s.wsConn, s.listening)
+		go func() {
+			defer s.ErrorChecker()
+					
+			s.subscribeGuilds(s.wsConn, s.listening)
+		}()
 	}
 
 	s.log(LogInformational, "exiting")
@@ -1003,7 +1015,11 @@ func (s *Session) reconnect() {
 				for _, v := range s.VoiceConnections {
 
 					s.log(LogInformational, "reconnecting voice connection to guild %s", v.GuildID)
-					go v.reconnect()
+					go func() {
+						defer s.ErrorChecker()
+								
+						v.reconnect()
+					}()
 
 					// This is here just to prevent violently spamming the
 					// voice reconnects

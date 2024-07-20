@@ -333,7 +333,11 @@ func (v *VoiceConnection) open() (err error) {
 	}
 
 	v.close = make(chan struct{})
-	go v.wsListen(v.wsConn, v.close)
+	go func() {
+		defer v.session.ErrorChecker()
+
+		v.wsListen(v.wsConn, v.close)
+	}()
 
 	// add loop/check for Ready bool here?
 	// then return false if not ready?
@@ -400,7 +404,11 @@ func (v *VoiceConnection) wsListen(wsConn *websocket.Conn, close <-chan struct{}
 				v.log(LogError, "voice endpoint %s websocket closed unexpectantly, %s", v.endpoint, err)
 
 				// Start reconnect goroutine then exit.
-				go v.reconnect()
+				go func() {
+					defer v.session.ErrorChecker()
+			
+					v.reconnect()
+				}()
 			}
 			return
 		}
@@ -410,7 +418,11 @@ func (v *VoiceConnection) wsListen(wsConn *websocket.Conn, close <-chan struct{}
 		case <-close:
 			return
 		default:
-			go v.onEvent(message)
+			go func() {
+				defer v.session.ErrorChecker()
+		
+				v.onEvent(message)
+			}()
 		}
 	}
 }
@@ -437,7 +449,11 @@ func (v *VoiceConnection) onEvent(message []byte) {
 		}
 
 		// Start the voice websocket heartbeat to keep the connection alive
-		go v.wsHeartbeat(v.wsConn, v.close, v.op2.HeartbeatInterval)
+		go func() {
+			defer v.session.ErrorChecker()
+	
+			v.wsHeartbeat(v.wsConn, v.close, v.op2.HeartbeatInterval)
+		}()
 		// TODO monitor a chan/bool to verify this was successful
 
 		// Start the UDP connection
@@ -452,7 +468,11 @@ func (v *VoiceConnection) onEvent(message []byte) {
 		if v.OpusSend == nil {
 			v.OpusSend = make(chan []byte, 2)
 		}
-		go v.opusSender(v.udpConn, v.close, v.OpusSend, 48000, 960)
+		go func() {
+			defer v.session.ErrorChecker()
+	
+			v.opusSender(v.udpConn, v.close, v.OpusSend, 48000, 960)
+		}()
 
 		// Start the opusReceiver
 		if !v.deaf {
@@ -460,7 +480,11 @@ func (v *VoiceConnection) onEvent(message []byte) {
 				v.OpusRecv = make(chan *Packet, 2)
 			}
 
-			go v.opusReceiver(v.udpConn, v.close, v.OpusRecv)
+			go func() {
+				defer v.session.ErrorChecker()
+		
+				v.opusReceiver(v.udpConn, v.close, v.OpusRecv)
+			}()
 		}
 
 		return
@@ -654,7 +678,11 @@ func (v *VoiceConnection) udpOpen() (err error) {
 	}
 
 	// start udpKeepAlive
-	go v.udpKeepAlive(v.udpConn, v.close, 5*time.Second)
+	go func() {
+		defer v.session.ErrorChecker()
+		
+		v.udpKeepAlive(v.udpConn, v.close, 5*time.Second)
+	}()
 	// TODO: find a way to check that it fired off okay
 
 	return
@@ -828,7 +856,11 @@ func (v *VoiceConnection) opusReceiver(udpConn *net.UDPConn, close <-chan struct
 				v.log(LogError, "udp read error, %s, %s", v.endpoint, err)
 				v.log(LogDebug, "voice struct: %#v\n", v)
 
-				go v.reconnect()
+				go func() {
+					defer v.session.ErrorChecker()
+					
+					v.reconnect()
+				}()
 			}
 			return
 		}
