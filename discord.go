@@ -24,10 +24,10 @@ import (
 // VERSION of DiscordGo, follows Semantic Versioning. (http://semver.org/)
 const VERSION = "0.26.5"
 
-var UserAgentMobile = "Discord-Android/221016;RNA"
+var UserAgentMobile = "Discord-Android/239010;RNA"
 var UserAgentEmbedded = "Mozilla/5.0 (PlayStation 5/SmartTV) AppleWebKit/605.1.15 (KHTML, like Gecko)"
-var UserAgentDesktop = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9037 Chrome/108.0.5359.215 Electron/22.3.26 Safari/537.36"
-var UserAgentWeb = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"
+var UserAgentDesktop = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9154 Chrome/124.0.6367.243 Electron/30.1.0 Safari/537.36"
+var UserAgentWeb = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
 
 var IdentifyMobile = Identify{
 	Properties: IdentifyPropertiesMobile{
@@ -35,13 +35,13 @@ var IdentifyMobile = Identify{
 		Browser:           "Discord Android",
 		Device:            "Android",
 		SystemLocale:      "en-US",
-		ClientVersion:     "221.16 - rn",
+		ClientVersion:     "239.10 - rn",
 		ReleaseChannel:    "googleRelease",
 		DeviceVendorID:    "7101a8f5-a3cd-4788-ad14-e6ef5295c6a8",
 		BrowserUserAgent:  "",
 		BrowserVersion:    "",
 		OSVersion:         "31",
-		ClientBuildNumber: 22101600160222,
+		ClientBuildNumber: 23901000100222,
 		ClientEventSource: nil,
 		DesignID:          2,
 	},
@@ -90,15 +90,15 @@ var IdentifyDiscordClient = Identify{
 		OS:                "Windows",
 		Browser:           "Discord Client",
 		ReleaseChannel:    "stable",
-		ClientVersion:     "1.0.9037",
-		OSVersion:         "10.0.22621",
+		ClientVersion:     "1.0.9154",
+		OSVersion:         "10.0.22631",
 		OSArch:            "x64",
-		AppArch:           "ia32",
+		AppArch:           "x64",
 		SystemLocale:      "en-US",
 		BrowserUserAgent:  UserAgentDesktop,
-		BrowserVersion:    "22.3.26",
-		ClientBuildNumber: 277953,
-		NativeBuildNumber: 45369,
+		BrowserVersion:    "30.1.0",
+		ClientBuildNumber: 310927,
+		NativeBuildNumber: 49586,
 		ClientEventSource: nil,
 	},
 	Compress:     true,
@@ -128,14 +128,14 @@ var IdentifyWeb = Identify{
 		Device:                 "",
 		SystemLocale:           "en-US",
 		BrowserUserAgent:       UserAgentWeb,
-		BrowserVersion:         "119.0.0.0",
+		BrowserVersion:         "126.0.0.0",
 		OSVersion:              "10",
 		Referrer:               "",
 		ReferringDomain:        "",
 		ReferrerCurrent:        "",
 		ReferringDomainCurrent: "",
 		ReleaseChannel:         "stable",
-		ClientBuildNumber:      277953,
+		ClientBuildNumber:      310927,
 		ClientEventSource:      nil,
 	},
 	Compress:     true,
