@@ -2460,13 +2460,7 @@ type IdentifyPropertiesWeb struct {
 
 // ClientState contains the "client_state" portion of an Identify packet
 type ClientState struct {
-	GuildHashes              map[string]string `json:"guild_hashes"`
-	HighestLastMessageID     string            `json:"highest_last_message_id"`
-	ReadStateVersion         int               `json:"read_state_version"`
-	UserGuildSettingsVersion int               `json:"user_guild_settings_version"`
-	UserSettingsVersion      int               `json:"user_settings_version,omitempty"`
-	PrivateChannelsVersion   string            `json:"private_channels_version,omitempty"`
-	APICodeVersion           int               `json:"api_code_version,omitempty"`
+	GuildVersions map[string]any `json:"guild_versions"`
 }
 
 // SessionClientInfo holds information about the client used for a Discord session.
