@@ -2379,7 +2379,6 @@ type Identify struct {
 	Properties     any                 `json:"properties"`
 	Compress       bool                `json:"compress"`
 	Capabilities   int                 `json:"capabilities"`
-	LargeThreshold int                 `json:"large_threshold"`
 	ClientState    ClientState         `json:"client_state"`
 	Presence       GatewayStatusUpdate `json:"presence,omitempty"`
 
@@ -2460,7 +2459,7 @@ type IdentifyPropertiesWeb struct {
 
 // ClientState contains the "client_state" portion of an Identify packet
 type ClientState struct {
-	GuildVersions map[string]any `json:"guild_versions"`
+	GuildVersions map[string]string `json:"guild_versions"`
 }
 
 // SessionClientInfo holds information about the client used for a Discord session.

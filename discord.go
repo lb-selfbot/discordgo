@@ -47,7 +47,9 @@ var IdentifyMobile = Identify{
 	},
 	Compress:     true,
 	Capabilities: 30717,
-	ClientState: ClientState{},
+	ClientState: ClientState{
+		GuildVersions: map[string]string{},
+	},
 	Presence: GatewayStatusUpdate{
 		Since:      0,
 		Status:     "unknown",
@@ -65,7 +67,9 @@ var IdentifyEmbedded = Identify{
 	},
 	Compress:     true,
 	Capabilities: 30717,
-	ClientState: ClientState{},
+	ClientState: ClientState{
+		GuildVersions: map[string]string{},
+	},
 	Presence: GatewayStatusUpdate{
 		Since:      0,
 		Status:     "unknown",
@@ -93,7 +97,9 @@ var IdentifyDiscordClient = Identify{
 	},
 	Compress:     true,
 	Capabilities: 30717,
-	ClientState: ClientState{},
+	ClientState: ClientState{
+		GuildVersions: map[string]string{},
+	},
 	Presence: GatewayStatusUpdate{
 		Since:      0,
 		Status:     "unknown",
@@ -122,7 +128,9 @@ var IdentifyWeb = Identify{
 	},
 	Compress:     true,
 	Capabilities: 30717,
-	ClientState: ClientState{},
+	ClientState: ClientState{
+		GuildVersions: map[string]string{},
+	},
 	Presence: GatewayStatusUpdate{
 		Since:      0,
 		Status:     "unknown",
