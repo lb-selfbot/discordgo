@@ -25,7 +25,6 @@ import (
 const VERSION = "0.26.5"
 
 var UserAgentMobile = "Discord-Android/239010;RNA"
-var UserAgentEmbedded = "Mozilla/5.0 (PlayStation 5/SmartTV) AppleWebKit/605.1.15 (KHTML, like Gecko)"
 var UserAgentDesktop = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9154 Chrome/124.0.6367.243 Electron/30.1.0 Safari/537.36"
 var UserAgentWeb = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
 
@@ -58,12 +57,22 @@ var IdentifyMobile = Identify{
 	},
 	UserAgent: UserAgentMobile,
 }
+
 var IdentifyEmbedded = Identify{
-	Properties: IdentifyPropertiesMobile{
-		OS:                "Orbis",
+	Properties: IdentifyPropertiesDesktop{
+		OS:                "Windows",
 		Browser:           "Discord Embedded",
-		Device:            "PlayStation 5",
+		ReleaseChannel:    "stable",
+		ClientVersion:     "1.0.9154",
+		OSVersion:         "10.0.22631",
+		OSArch:            "x64",
+		AppArch:           "x64",
 		SystemLocale:      "en-US",
+		BrowserUserAgent:  UserAgentDesktop,
+		BrowserVersion:    "30.1.0",
+		ClientBuildNumber: 310927,
+		NativeBuildNumber: 49586,
+		ClientEventSource: nil,
 	},
 	Compress:     true,
 	Capabilities: 30717,
@@ -76,7 +85,7 @@ var IdentifyEmbedded = Identify{
 		Activities: []*Activity{},
 		AFK:        true,
 	},
-	UserAgent: UserAgentEmbedded,
+	UserAgent: UserAgentDesktop,
 }
 
 var IdentifyDiscordClient = Identify{
@@ -169,18 +178,18 @@ func New(token string) (s *Session, err error) {
 		sequence:                    new(int64),
 		LastHeartbeatAck:            time.Now().UTC(),
 		Headers: map[string]string{
-			"accept":             "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
-			"accept-encoding":    "",
-			"accept-language":    "en-US,en;q=0.5",
-			"referer":            "https://discord.com/",
-			"origin":             "https://discord.com",
-			"sec-fetch-dest":     "empty",
-			"sec-fetch-mode":     "cors",
-			"sec-fetch-site":     "same-origin",
-			"user-agent":         "",
-			"x-debug-options":    "bugReporterEnabled",
-			"x-discord-locale":   "en-US",
-			"x-super-properties": "",
+			"Accept":             "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+			"Accept-Encoding":    "",
+			"Accept-Language":    "en-US,en;q=0.5",
+			"Referer":            "https://discord.com/",
+			"Origin":             "https://discord.com",
+			"Sec-Fetch-Dest":     "empty",
+			"Sec-Fetch-Mode":     "cors",
+			"Sec-Fetch-Site":     "same-origin",
+			"User-Agent":         "",
+			"X-Debug-Options":    "bugReporterEnabled",
+			"X-Discord-Locale":   "en-US",
+			"X-Super-Properties": "",
 		},
 		activeGuildSubscriptions: make(map[string]bool),
 	}
@@ -209,8 +218,8 @@ func (s *Session) SetIdentify(i Identify) {
 
 	s.SuperProperties = s.GetSuperProperties()
 
-	s.Headers["user-agent"] = s.UserAgent
-	s.Headers["x-super-properties"] = s.SuperProperties
+	s.Headers["User-Agent"] = s.UserAgent
+	s.Headers["X-Super-Properties"] = s.SuperProperties
 }
 
 func (s *Session) ErrorChecker() {
