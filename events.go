@@ -3,6 +3,9 @@ package discordgo
 import (
 	"encoding/json"
 	"fmt"
+
+	"github.com/LightningDev1/discordgo/protos"
+	"google.golang.org/protobuf/proto"
 )
 
 // This file contains all the possible structs that can be
@@ -46,6 +49,8 @@ type Ready struct {
 	Sessions          []*GatewaySession    `json:"sessions"`
 	UserGuildSettings []*UserGuildSettings `json:"user_guild_settings"`
 	Relationships     []*Relationship      `json:"relationships"`
+
+	UserSettings protos.PreloadedUserSettings `json:"-"`
 }
 
 func (r *Ready) UnmarshalJSON(data []byte) error {
@@ -61,6 +66,7 @@ func (r *Ready) UnmarshalJSON(data []byte) error {
 		Relationships     []*Relationship        `json:"relationships"`
 		PrivateChannels   []*Channel             `json:"private_channels"`
 		UserGuildSettings *UserGuildSettingsData `json:"user_guild_settings"`
+		UserSettingsProto string                 `json:"user_settings"`
 		ConnectedAccounts []*UserConnection      `json:"connected_accounts"`
 	}
 
@@ -80,6 +86,12 @@ func (r *Ready) UnmarshalJSON(data []byte) error {
 	r.UserGuildSettings = ready.UserGuildSettings.Entries
 	r.Relationships = ready.Relationships
 	r.Guilds = ready.Guilds
+
+	err := proto.Unmarshal([]byte(ready.UserSettingsProto), &r.UserSettings)
+	if err != nil {
+		fmt.Println("Error unmarshaling UserSettings:", err)
+		return err
+	}
 
 	return nil
 }

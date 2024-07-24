@@ -10,6 +10,7 @@ require (
 require (
 	github.com/cloudflare/circl v1.3.9 // indirect
 	github.com/quic-go/quic-go v0.45.1 // indirect
+	google.golang.org/protobuf v1.34.2 // indirect
 )
 
 require (
