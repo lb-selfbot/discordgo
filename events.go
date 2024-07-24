@@ -93,6 +93,7 @@ func (r *Ready) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
+	r.UserSettings = &protos.PreloadedUserSettings{}
 	err = proto.Unmarshal(rawSettings, r.UserSettings)
 	if err != nil {
 		fmt.Println("Error unmarshaling UserSettings:", err)
@@ -580,6 +581,7 @@ func (u *UserSettingsProtoUpdate) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
+	u.UserSettings = &protos.PreloadedUserSettings{}
 	err = proto.Unmarshal(rawSettings, u.UserSettings)
 	if err != nil {
 		fmt.Println("Error unmarshaling UserSettingsProtoUpdate.UserSettings:", err)
