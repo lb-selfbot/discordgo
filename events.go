@@ -67,7 +67,7 @@ func (r *Ready) UnmarshalJSON(data []byte) error {
 		Relationships     []*Relationship        `json:"relationships"`
 		PrivateChannels   []*Channel             `json:"private_channels"`
 		UserGuildSettings *UserGuildSettingsData `json:"user_guild_settings"`
-		UserSettingsProto string                 `json:"user_settings"`
+		UserSettingsProto string                 `json:"user_settings_proto"`
 		ConnectedAccounts []*UserConnection      `json:"connected_accounts"`
 	}
 
