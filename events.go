@@ -1,6 +1,7 @@
 package discordgo
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 
@@ -87,7 +88,12 @@ func (r *Ready) UnmarshalJSON(data []byte) error {
 	r.Relationships = ready.Relationships
 	r.Guilds = ready.Guilds
 
-	err := proto.Unmarshal([]byte(ready.UserSettingsProto), r.UserSettings)
+	rawSettings, err := base64.StdEncoding.DecodeString(ready.UserSettingsProto)
+	if err != nil {
+		return err
+	}
+
+	err = proto.Unmarshal(rawSettings, r.UserSettings)
 	if err != nil {
 		fmt.Println("Error unmarshaling UserSettings:", err)
 		return err
@@ -547,7 +553,8 @@ func (s *SessionsReplace) UnmarshalJSON(data []byte) error {
 type UserSettingsProtoUpdate struct {
 	Partial bool             `json:"partial"`
 	Type    UserSettingsType `json:"type"`
-	Proto   string           `json:"proto"`
+
+	UserSettings *protos.PreloadedUserSettings `json:"-"`
 }
 
 func (u *UserSettingsProtoUpdate) UnmarshalJSON(data []byte) error {
@@ -567,7 +574,17 @@ func (u *UserSettingsProtoUpdate) UnmarshalJSON(data []byte) error {
 
 	u.Partial = rawUpdate.Partial
 	u.Type = UserSettingsType(rawUpdate.Settings.Type)
-	u.Proto = rawUpdate.Settings.Proto
+
+	rawSettings, err := base64.StdEncoding.DecodeString(rawUpdate.Settings.Proto)
+	if err != nil {
+		return err
+	}
+
+	err = proto.Unmarshal(rawSettings, u.UserSettings)
+	if err != nil {
+		fmt.Println("Error unmarshaling UserSettingsProtoUpdate.UserSettings:", err)
+		return err
+	}
 
 	return nil
 }

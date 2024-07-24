@@ -13,12 +13,10 @@
 package discordgo
 
 import (
-	"encoding/base64"
 	"errors"
 	"sort"
 	"sync"
 
-	"github.com/LightningDev1/discordgo/protos"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -1205,21 +1203,10 @@ func (s *State) OnInterface(se *Session, i interface{}) (err error) {
 			break
 		}
 
-		rawSettings, err := base64.StdEncoding.DecodeString(t.Proto)
-		if err != nil {
-			return err
-		}
-
-		var settings *protos.PreloadedUserSettings
-		err = proto.Unmarshal(rawSettings, settings)
-		if err != nil {
-			return err
-		}
-
 		if t.Partial {
-			proto.Merge(s.UserSettings, settings)
+			proto.Merge(s.UserSettings, t.UserSettings)
 		} else {
-			s.UserSettings = settings
+			s.UserSettings = t.UserSettings
 		}
 	}
 
