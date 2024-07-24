@@ -324,6 +324,7 @@ func (s *Session) UserUpdate(username, avatar string) (st *User, err error) {
 }
 
 // UserSettings returns the user's settings
+// DEPRECATED: Use session.Ready.UserSettings instead
 func (s *Session) UserSettings() (settings map[string]any, err error) {
 	response, err := s.RequestWithBucketID("GET", EndpointUserSettings("@me"), nil, EndpointUserSettings("@me"))
 	if err != nil {
