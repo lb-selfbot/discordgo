@@ -27,7 +27,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/LightningDev1/discordgo/protos"
 	http "github.com/bogdanfinn/fhttp"
+	"google.golang.org/protobuf/proto"
 )
 
 // All error constants
@@ -337,6 +339,37 @@ func (s *Session) UserSettings() (settings map[string]any, err error) {
 	}
 
 	return
+}
+
+// UserSettingsProtoUpdate updates the user's settings with an encoded protobuf
+func (s *Session) UserSettingsProtoUpdate(sType, settings string, reqDataVersion *int) (err error) {
+	data := struct {
+		Settings            string `json:"settings"`
+		RequiredDataVersion *int   `json:"required_data_version,omitempty"`
+	}{settings, reqDataVersion}
+
+	_, err = s.RequestWithBucketID("PATCH", EndpointUserSettingsProto(sType), data, EndpointUserSettingsProto(sType))
+
+	return
+}
+
+// UserSettingsUpdate updates the user's settings
+func (s *Session) UserSettingsUpdate(settings *protos.PreloadedUserSettings, requireVersion bool) (err error) {
+	rawSettings, err := proto.Marshal(settings)
+	if err != nil {
+		return
+	}
+
+	encodedSettings := base64.StdEncoding.EncodeToString(rawSettings)
+
+	var dataVersion *int
+
+	if requireVersion {
+		settingsDataVersion := int(settings.GetVersions().GetDataVersion())
+		dataVersion = &settingsDataVersion
+	}
+
+	return s.UserSettingsProtoUpdate("1", encodedSettings, dataVersion)
 }
 
 // UserConnections returns the user's connections

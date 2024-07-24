@@ -70,6 +70,7 @@ const (
 	threadMembersUpdateEventType                 = "THREAD_MEMBERS_UPDATE"
 	threadUpdateEventType                        = "THREAD_UPDATE"
 	typingStartEventType                         = "TYPING_START"
+	userSettingsProtoUpdateEventType             = "USER_SETTINGS_PROTO_UPDATE"
 	userUpdateEventType                          = "USER_UPDATE"
 	voiceServerUpdateEventType                   = "VOICE_SERVER_UPDATE"
 	voiceStateUpdateEventType                    = "VOICE_STATE_UPDATE"
@@ -1316,6 +1317,26 @@ func (eh typingStartEventHandler) Handle(s *Session, i interface{}) {
 	}
 }
 
+// userSettingsProtoUpdateEventHandler is an event handler for UserSettingsProtoUpdate events.
+type userSettingsProtoUpdateEventHandler func(*Session, *UserSettingsProtoUpdate)
+
+// Type returns the event type for UserSettingsProtoUpdate events.
+func (eh userSettingsProtoUpdateEventHandler) Type() string {
+	return userSettingsProtoUpdateEventType
+}
+
+// New returns a new instance of UserSettingsProtoUpdate.
+func (eh userSettingsProtoUpdateEventHandler) New() interface{} {
+	return &UserSettingsProtoUpdate{}
+}
+
+// Handle is the handler for UserSettingsProtoUpdate events.
+func (eh userSettingsProtoUpdateEventHandler) Handle(s *Session, i interface{}) {
+	if t, ok := i.(*UserSettingsProtoUpdate); ok {
+		eh(s, t)
+	}
+}
+
 // userUpdateEventHandler is an event handler for UserUpdate events.
 type userUpdateEventHandler func(*Session, *UserUpdate)
 
@@ -1526,6 +1547,8 @@ func handlerForInterface(handler interface{}) EventHandler {
 		return threadUpdateEventHandler(v)
 	case func(*Session, *TypingStart):
 		return typingStartEventHandler(v)
+	case func(*Session, *UserSettingsProtoUpdate):
+		return userSettingsProtoUpdateEventHandler(v)
 	case func(*Session, *UserUpdate):
 		return userUpdateEventHandler(v)
 	case func(*Session, *VoiceServerUpdate):
@@ -1599,6 +1622,7 @@ func init() {
 	registerInterfaceProvider(threadMembersUpdateEventHandler(nil))
 	registerInterfaceProvider(threadUpdateEventHandler(nil))
 	registerInterfaceProvider(typingStartEventHandler(nil))
+	registerInterfaceProvider(userSettingsProtoUpdateEventHandler(nil))
 	registerInterfaceProvider(userUpdateEventHandler(nil))
 	registerInterfaceProvider(voiceServerUpdateEventHandler(nil))
 	registerInterfaceProvider(voiceStateUpdateEventHandler(nil))

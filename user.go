@@ -39,6 +39,16 @@ const (
 	UserPremiumTypeNitroBasic   UserPremiumType = 3
 )
 
+// UserSettingsType is the type of user settings (see UserSettingsType* consts)
+type UserSettingsType int
+
+// Valid UserSettingsType values
+const (
+	UserSettingsTypePreloadedUserSettings UserSettingsType = 1
+	UserSettingsTypeFrecencyUserSettings  UserSettingsType = 2
+	UserSettingsTypeTestSettings          UserSettingsType = 3
+)
+
 // A User stores all data for an individual Discord user.
 type User struct {
 	// The ID of the user.

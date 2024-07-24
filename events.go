@@ -50,7 +50,7 @@ type Ready struct {
 	UserGuildSettings []*UserGuildSettings `json:"user_guild_settings"`
 	Relationships     []*Relationship      `json:"relationships"`
 
-	UserSettings protos.PreloadedUserSettings `json:"-"`
+	UserSettings *protos.PreloadedUserSettings `json:"-"`
 }
 
 func (r *Ready) UnmarshalJSON(data []byte) error {
@@ -87,7 +87,7 @@ func (r *Ready) UnmarshalJSON(data []byte) error {
 	r.Relationships = ready.Relationships
 	r.Guilds = ready.Guilds
 
-	err := proto.Unmarshal([]byte(ready.UserSettingsProto), &r.UserSettings)
+	err := proto.Unmarshal([]byte(ready.UserSettingsProto), r.UserSettings)
 	if err != nil {
 		fmt.Println("Error unmarshaling UserSettings:", err)
 		return err
@@ -540,6 +540,34 @@ func (s *SessionsReplace) UnmarshalJSON(data []byte) error {
 	}
 
 	s.Sessions = sessions
+
+	return nil
+}
+
+type UserSettingsProtoUpdate struct {
+	Partial bool             `json:"partial"`
+	Type    UserSettingsType `json:"type"`
+	Proto   string           `json:"proto"`
+}
+
+func (u *UserSettingsProtoUpdate) UnmarshalJSON(data []byte) error {
+	var rawUpdate struct {
+		Partial  bool `json:"partial"`
+		Settings struct {
+			Proto string `json:"proto"`
+			Type  int    `json:"type"`
+		} `json:"settings"`
+	}
+
+	err := json.Unmarshal(data, &rawUpdate)
+	if err != nil {
+		fmt.Println("Error unmarshaling UserSettingsProtoUpdate:", err)
+		return err
+	}
+
+	u.Partial = rawUpdate.Partial
+	u.Type = UserSettingsType(rawUpdate.Settings.Type)
+	u.Proto = rawUpdate.Settings.Proto
 
 	return nil
 }
