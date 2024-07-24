@@ -1,6 +1,6 @@
 module github.com/LightningDev1/discordgo
 
-go 1.18
+go 1.22
 
 require (
 	github.com/gorilla/websocket v1.5.1
