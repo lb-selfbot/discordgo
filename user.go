@@ -167,8 +167,5 @@ type Profile struct {
 		Nickname string `json:"nick"`
 	} `json:"mutual_guilds"`
 
-	UserProfile struct {
-		Bio         string `json:"bio"`
-		AccentColor int    `json:"accent_color"`
-	} `json:"user_profile"`
+	UserProfile any `json:"user_profile"`
 }
