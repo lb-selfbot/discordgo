@@ -167,5 +167,5 @@ type Profile struct {
 		Nickname string `json:"nick"`
 	} `json:"mutual_guilds"`
 
-	UserProfile any `json:"user_profile"`
+	UserProfile map[string]any `json:"user_profile"`
 }
