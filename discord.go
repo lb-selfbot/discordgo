@@ -196,9 +196,8 @@ func New(token string) (s *Session, err error) {
 
 	options := []tls_client.HttpClientOption{
 		tls_client.WithTimeoutSeconds(20),
-		tls_client.WithClientProfile(profiles.Chrome_117),
+		tls_client.WithClientProfile(profiles.Chrome_124),
 		tls_client.WithCookieJar(tls_client.NewCookieJar()),
-		tls_client.WithRandomTLSExtensionOrder(),
 	}
 
 	client, err := tls_client.NewHttpClient(tls_client.NewNoopLogger(), options...)
