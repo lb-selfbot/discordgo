@@ -26,7 +26,7 @@ const VERSION = "0.26.5"
 
 var UserAgentMobile = "Discord-Android/239010;RNA"
 var UserAgentDesktop = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9158 Chrome/124.0.6367.243 Electron/30.2.0 Safari/537.36"
-var UserAgentWeb = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
+var UserAgentWeb = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36"
 
 var IdentifyMobile = Identify{
 	Properties: IdentifyPropertiesMobile{
@@ -63,15 +63,15 @@ var IdentifyEmbedded = Identify{
 		OS:                "Windows",
 		Browser:           "Discord Embedded",
 		ReleaseChannel:    "stable",
-		ClientVersion:     "1.0.9154",
+		ClientVersion:     "1.0.9158",
 		OSVersion:         "10.0.22631",
 		OSArch:            "x64",
 		AppArch:           "x64",
 		SystemLocale:      "en-US",
 		BrowserUserAgent:  UserAgentDesktop,
-		BrowserVersion:    "30.1.0",
-		ClientBuildNumber: 310927,
-		NativeBuildNumber: 49586,
+		BrowserVersion:    "30.2.0",
+		ClientBuildNumber: 318966,
+		NativeBuildNumber: 50841,
 		ClientEventSource: nil,
 	},
 	Compress:     true,
@@ -125,14 +125,14 @@ var IdentifyWeb = Identify{
 		Device:                 "",
 		SystemLocale:           "en-US",
 		BrowserUserAgent:       UserAgentWeb,
-		BrowserVersion:         "126.0.0.0",
+		BrowserVersion:         "127.0.0.0",
 		OSVersion:              "10",
 		Referrer:               "",
 		ReferringDomain:        "",
 		ReferrerCurrent:        "",
 		ReferringDomainCurrent: "",
 		ReleaseChannel:         "stable",
-		ClientBuildNumber:      310927,
+		ClientBuildNumber:      318966,
 		ClientEventSource:      nil,
 	},
 	Compress:     true,
