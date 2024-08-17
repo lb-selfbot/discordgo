@@ -2382,6 +2382,7 @@ type Identify struct {
 	ClientState    ClientState         `json:"client_state"`
 	Presence       GatewayStatusUpdate `json:"presence,omitempty"`
 
+	Headers map[string]string `json:"-"`
 	UserAgent string `json:"-"`
 }
 

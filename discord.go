@@ -56,6 +56,7 @@ var IdentifyMobile = Identify{
 		AFK:        true,
 	},
 	UserAgent: UserAgentMobile,
+	Headers:   map[string]string{},
 }
 
 var IdentifyEmbedded = Identify{
@@ -86,6 +87,14 @@ var IdentifyEmbedded = Identify{
 		AFK:        true,
 	},
 	UserAgent: UserAgentDesktop,
+	Headers: map[string]string{
+		"Accept":         "*/*",
+		"Referer":        "https://discord.com/",
+		"Origin":         "https://discord.com",
+		"Sec-Fetch-Dest": "empty",
+		"Sec-Fetch-Mode": "cors",
+		"Sec-Fetch-Site": "same-origin",
+	},
 }
 
 var IdentifyDiscordClient = Identify{
@@ -116,6 +125,14 @@ var IdentifyDiscordClient = Identify{
 		AFK:        true,
 	},
 	UserAgent: UserAgentDesktop,
+	Headers: map[string]string{
+		"Accept":         "*/*",
+		"Referer":        "https://discord.com/",
+		"Origin":         "https://discord.com",
+		"Sec-Fetch-Dest": "empty",
+		"Sec-Fetch-Mode": "cors",
+		"Sec-Fetch-Site": "same-origin",
+	},
 }
 
 var IdentifyWeb = Identify{
@@ -147,6 +164,14 @@ var IdentifyWeb = Identify{
 		AFK:        true,
 	},
 	UserAgent: UserAgentWeb,
+	Headers: map[string]string{
+		"Accept":         "*/*",
+		"Referer":        "https://discord.com/",
+		"Origin":         "https://discord.com",
+		"Sec-Fetch-Dest": "empty",
+		"Sec-Fetch-Mode": "cors",
+		"Sec-Fetch-Site": "same-origin",
+	},
 }
 
 // New creates a new Discord session with provided token.
@@ -178,18 +203,10 @@ func New(token string) (s *Session, err error) {
 		sequence:                    new(int64),
 		LastHeartbeatAck:            time.Now().UTC(),
 		Headers: map[string]string{
-			"Accept":             "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
 			"Accept-Language":    "en-US",
-			"Referer":            "https://discord.com/",
-			"Origin":             "https://discord.com",
-			"Sec-Fetch-Dest":     "empty",
-			"Sec-Fetch-Mode":     "cors",
-			"Sec-Fetch-Site":     "same-origin",
-			"User-Agent":         "",
 			"X-Debug-Options":    "bugReporterEnabled",
 			"X-Discord-Locale":   "en-US",
 			"X-Discord-Timezone": "GMT",
-			"X-Super-Properties": "",
 		},
 		activeGuildSubscriptions: make(map[string]bool),
 	}
@@ -220,6 +237,10 @@ func (s *Session) SetIdentify(i Identify) {
 
 	s.Headers["User-Agent"] = s.UserAgent
 	s.Headers["X-Super-Properties"] = s.SuperProperties
+
+	for k, v := range i.Headers {
+		s.Headers[k] = v
+	}
 }
 
 func (s *Session) ErrorChecker() {
