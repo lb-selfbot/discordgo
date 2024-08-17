@@ -2093,15 +2093,18 @@ func (s *Session) ChannelInvites(channelID string) (st []*Invite, err error) {
 
 // ChannelInviteCreate creates a new invite for the given channel.
 // channelID   : The ID of a Channel
-// i           : An Invite struct with the values MaxAge, MaxUses and Temporary defined.
-func (s *Session) ChannelInviteCreate(channelID string, i Invite) (st *Invite, err error) {
+// maxAge	   : Duration of invite in seconds before expiry, or 0 for never.
+// maxUses	   : Maximum number of uses or 0 for unlimited.
+// temp		   : Whether this invite only grants temporary membership.
+func (s *Session) ChannelInviteCreate(channelID string, maxAge, maxUses int, temp bool) (st *Invite, err error) {
 
 	data := struct {
-		MaxAge    int  `json:"max_age"`
-		MaxUses   int  `json:"max_uses"`
-		Temporary bool `json:"temporary"`
-		Unique    bool `json:"unique"`
-	}{i.MaxAge, i.MaxUses, i.Temporary, i.Unique}
+		Flags      int  `json:"flags"`
+		MaxAge     int  `json:"max_age"`
+		MaxUses    int  `json:"max_uses"`
+		TargetType any  `json:"target_type"`
+		Temporary  bool `json:"temporary"`
+	}{0, maxAge, maxUses, nil, temp}
 
 	body, err := s.RequestWithBucketID("POST", EndpointChannelInvites(channelID), data, EndpointChannelInvites(channelID), map[string]string{
 		"x-context-properties": "eyJsb2NhdGlvbiI6Ikd1aWxkIEhlYWRlciJ9",
