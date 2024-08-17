@@ -39,7 +39,7 @@ var IdentifyMobile = Identify{
 		DeviceVendorID:    "91de7152-0a7e-45f7-9ca9-7b33290b391a",
 		BrowserUserAgent:  "",
 		BrowserVersion:    "",
-		OSVersion:         "31",
+		OSVersion:         "33",
 		ClientBuildNumber: 242020,
 		ClientEventSource: nil,
 		DesignID:          2,
