@@ -24,7 +24,7 @@ import (
 // VERSION of DiscordGo, follows Semantic Versioning. (http://semver.org/)
 const VERSION = "0.26.5"
 
-var UserAgentMobile = "Discord-Android/239010;RNA"
+var UserAgentMobile = "Discord-Android/242020;RNA"
 var UserAgentDesktop = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9158 Chrome/124.0.6367.243 Electron/30.2.0 Safari/537.36"
 var UserAgentWeb = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36"
 
@@ -32,20 +32,20 @@ var IdentifyMobile = Identify{
 	Properties: IdentifyPropertiesMobile{
 		OS:                "Android",
 		Browser:           "Discord Android",
-		Device:            "Android",
+		Device:            "vbox86p",
 		SystemLocale:      "en-US",
-		ClientVersion:     "239.10 - rn",
+		ClientVersion:     "242.20 - rn",
 		ReleaseChannel:    "googleRelease",
-		DeviceVendorID:    "7101a8f5-a3cd-4788-ad14-e6ef5295c6a8",
+		DeviceVendorID:    "91de7152-0a7e-45f7-9ca9-7b33290b391a",
 		BrowserUserAgent:  "",
 		BrowserVersion:    "",
 		OSVersion:         "31",
-		ClientBuildNumber: 23901000100222,
+		ClientBuildNumber: 242020,
 		ClientEventSource: nil,
 		DesignID:          2,
 	},
 	Compress:     true,
-	Capabilities: 30717,
+	Capabilities: 30719,
 	ClientState: ClientState{
 		GuildVersions: map[string]string{},
 	},
@@ -179,8 +179,7 @@ func New(token string) (s *Session, err error) {
 		LastHeartbeatAck:            time.Now().UTC(),
 		Headers: map[string]string{
 			"Accept":             "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
-			"Accept-Encoding":    "",
-			"Accept-Language":    "en-US,en;q=0.5",
+			"Accept-Language":    "en-US",
 			"Referer":            "https://discord.com/",
 			"Origin":             "https://discord.com",
 			"Sec-Fetch-Dest":     "empty",
@@ -189,6 +188,7 @@ func New(token string) (s *Session, err error) {
 			"User-Agent":         "",
 			"X-Debug-Options":    "bugReporterEnabled",
 			"X-Discord-Locale":   "en-US",
+			"X-Discord-Timezone": "GMT",
 			"X-Super-Properties": "",
 		},
 		activeGuildSubscriptions: make(map[string]bool),
