@@ -352,7 +352,6 @@ func init() {
 		"EndpointUserProfile":                                             reflect.ValueOf(&EndpointUserProfile).Elem(),
 		"EndpointUserRelationship":                                        reflect.ValueOf(&EndpointUserRelationship).Elem(),
 		"EndpointUserRelationships":                                       reflect.ValueOf(&EndpointUserRelationships).Elem(),
-		"EndpointUserSettings":                                            reflect.ValueOf(&EndpointUserSettings).Elem(),
 		"EndpointUsers":                                                   reflect.ValueOf(&EndpointUsers).Elem(),
 		"EndpointVoice":                                                   reflect.ValueOf(&EndpointVoice).Elem(),
 		"EndpointVoiceRegions":                                            reflect.ValueOf(&EndpointVoiceRegions).Elem(),

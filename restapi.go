@@ -325,22 +325,6 @@ func (s *Session) UserUpdate(username, avatar string) (st *User, err error) {
 	return
 }
 
-// UserSettings returns the user's settings
-// DEPRECATED: Use session.Ready.UserSettings instead
-func (s *Session) UserSettings() (settings map[string]any, err error) {
-	response, err := s.RequestWithBucketID("GET", EndpointUserSettings("@me"), nil, EndpointUserSettings("@me"))
-	if err != nil {
-		return nil, err
-	}
-
-	err = unmarshal(response, &settings)
-	if err != nil {
-		return
-	}
-
-	return
-}
-
 // UserSettingsProtoUpdate updates the user's settings with an encoded protobuf
 func (s *Session) UserSettingsProtoUpdate(sType, settings string, reqDataVersion *int) (err error) {
 	data := struct {
@@ -349,6 +333,36 @@ func (s *Session) UserSettingsProtoUpdate(sType, settings string, reqDataVersion
 	}{settings, reqDataVersion}
 
 	_, err = s.RequestWithBucketID("PATCH", EndpointUserSettingsProto(sType), data, EndpointUserSettingsProto(sType))
+
+	return
+}
+
+// UserFrecencySettings returns the user's frecency settings
+func (s *Session) UserFrecencySettings() (settings *protos.FrecencyUserSettings, err error) {
+	body, err := s.RequestWithBucketID("GET", EndpointUserSettingsProto("2"), nil, EndpointUserSettingsProto("2"))
+	if err != nil {
+		return nil, err
+	}
+
+	var response struct {
+		Settings string `json:"settings"`
+	}
+
+	err = unmarshal(body, &response)
+	if err != nil {
+		return nil, err
+	}
+
+	rawSettings, err := base64.StdEncoding.DecodeString(response.Settings)
+	if err != nil {
+		return nil, err
+	}
+
+	settings = &protos.FrecencyUserSettings{}
+	err = proto.Unmarshal(rawSettings, settings)
+	if err != nil {
+		return nil, err
+	}
 
 	return
 }
@@ -370,6 +384,25 @@ func (s *Session) UserSettingsUpdate(settings *protos.PreloadedUserSettings, req
 	}
 
 	return s.UserSettingsProtoUpdate("1", encodedSettings, dataVersion)
+}
+
+// FrecencySettingsUpdate updates the user's frecency settings
+func (s *Session) FrecencySettingsUpdate(settings *protos.FrecencyUserSettings, requireVersion bool) (err error) {
+	rawSettings, err := proto.Marshal(settings)
+	if err != nil {
+		return
+	}
+
+	encodedSettings := base64.StdEncoding.EncodeToString(rawSettings)
+
+	var dataVersion *int
+
+	if requireVersion {
+		settingsDataVersion := int(settings.GetVersions().GetDataVersion())
+		dataVersion = &settingsDataVersion
+	}
+
+	return s.UserSettingsProtoUpdate("2", encodedSettings, dataVersion)
 }
 
 // UserConnections returns the user's connections
