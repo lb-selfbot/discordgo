@@ -1664,7 +1664,7 @@ func (s *Session) GuildAck(guildID string) (err error) {
 }
 
 // GuildApplicationCommandIndex gets the application command index of a guild
-func (s *Session) GuildApplicationCommandIndex(guildID string) ([]*ApplicationCommand, []*Application, error) {
+func (s *Session) GuildApplicationCommandIndex(guildID string) ([]*ApplicationCommand, []*ApplicationCommandApplication, error) {
 	var data []byte
 	data, err := s.RequestWithBucketID("GET", EndpointGuildApplicationCommandIndex(guildID), nil, EndpointGuildApplicationCommandIndex(""))
 	if err != nil {
@@ -1672,8 +1672,8 @@ func (s *Session) GuildApplicationCommandIndex(guildID string) ([]*ApplicationCo
 	}
 
 	var response struct {
-		ApplicationCommands []*ApplicationCommand `json:"application_commands"`
-		Applications        []*Application        `json:"applications"`
+		ApplicationCommands []*ApplicationCommand            `json:"application_commands"`
+		Applications        []*ApplicationCommandApplication `json:"applications"`
 	}
 
 	err = unmarshal(data, &response)

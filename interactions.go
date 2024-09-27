@@ -182,6 +182,13 @@ const (
 	ApplicationCommandPermissionTypeChannel ApplicationCommandPermissionType = 3
 )
 
+// ApplicationCommandApplication represents an application command's application.
+type ApplicationCommandApplication struct {
+	BotID string `json:"bot_id"`
+	ID    string `json:"id"`
+	Name  string `json:"name"`
+}
+
 // InteractionType indicates the type of an interaction event.
 type InteractionType uint8
 
