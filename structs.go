@@ -124,6 +124,8 @@ type Session struct {
 
 	ErrorHandler func(session *Session, err any)
 
+	ForceSubscribeGuildIDs []string
+
 	// Event handlers
 	handlersMu   sync.RWMutex
 	handlers     map[string][]*eventHandlerInstance

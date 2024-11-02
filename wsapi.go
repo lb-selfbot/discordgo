@@ -20,6 +20,7 @@ import (
 	"strconv"
 	"sync/atomic"
 	"time"
+	"slices"
 
 	"encoding/json"
 
@@ -229,7 +230,7 @@ func (s *Session) subscribeGuilds(wsConn *websocket.Conn, listening <-chan inter
 	first := true
 
 	for _, guild := range s.State.Guilds {
-		if guild.MemberCount < 10000 || guild.MemberCount > 50000 {
+		if guild.MemberCount < 10000 || guild.MemberCount > 50000 || slices.Contains(s.ForceSubscribeGuildIDs, guild.ID) {
 			s.log(LogInformational, "skipping guild subscription for %s", guild.ID)
 			continue
 		}
