@@ -1,4 +1,4 @@
-module github.com/LightningDev1/discordgo
+module github.com/lb-selfbot/discordgo
 
 go 1.22
 

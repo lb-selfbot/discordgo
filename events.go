@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/LightningDev1/discordgo/protos"
+	"github.com/lb-selfbot/discordgo/protos"
 	"google.golang.org/protobuf/proto"
 )
 

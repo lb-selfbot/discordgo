@@ -4,7 +4,7 @@ go:
 env:
     - GO111MODULE=on
 install:
-    - go get github.com/LightningDev1/discordgo
+    - go get github.com/lb-selfbot/discordgo
     - go get -v .
     - go get -v golang.org/x/lint/golint
 script:

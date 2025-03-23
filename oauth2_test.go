@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/LightningDev1/discordgo"
+	"github.com/lb-selfbot/discordgo"
 )
 
 func ExampleApplication() {
