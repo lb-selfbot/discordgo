@@ -1210,7 +1210,7 @@ func (s *State) OnInterface(se *Session, i interface{}) (err error) {
 		}
 	}
 
-	return
+	return err
 }
 
 // UserChannelPermissions returns the permission of a user in a channel.

@@ -4,12 +4,12 @@ import (
 	"bytes"
 	"crypto/ed25519"
 	"encoding/hex"
-	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"strconv"
 	"time"
+
+	"github.com/goccy/go-json"
 
 	http "github.com/bogdanfinn/fhttp"
 )
@@ -655,7 +655,7 @@ func VerifyInteraction(r *http.Request, key ed25519.PublicKey) bool {
 
 	// at the end of the function, copy the original body back into the request
 	defer func() {
-		r.Body = ioutil.NopCloser(&body)
+		r.Body = io.NopCloser(&body)
 	}()
 
 	// copy body into buffers

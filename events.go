@@ -2,7 +2,7 @@ package discordgo
 
 import (
 	"encoding/base64"
-	"encoding/json"
+	"github.com/goccy/go-json"
 	"fmt"
 
 	"github.com/lb-selfbot/discordgo/protos"

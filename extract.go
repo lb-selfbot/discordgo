@@ -1120,61 +1120,61 @@ func init() {
 		"WebhooksUpdate":                            reflect.ValueOf((*WebhooksUpdate)(nil)),
 
 		// interface wrapper definitions
-		"_EventHandler":           reflect.ValueOf((*_github_com_lb-selfbot_discordgo_EventHandler)(nil)),
-		"_EventInterfaceProvider": reflect.ValueOf((*_github_com_lb-selfbot_discordgo_EventInterfaceProvider)(nil)),
-		"_InteractionData":        reflect.ValueOf((*_github_com_lb-selfbot_discordgo_InteractionData)(nil)),
-		"_MessageComponent":       reflect.ValueOf((*_github_com_lb-selfbot_discordgo_MessageComponent)(nil)),
+		"_EventHandler":           reflect.ValueOf((*_github_com_lb_selfbot_discordgo_EventHandler)(nil)),
+		"_EventInterfaceProvider": reflect.ValueOf((*_github_com_lb_selfbot_discordgo_EventInterfaceProvider)(nil)),
+		"_InteractionData":        reflect.ValueOf((*_github_com_lb_selfbot_discordgo_InteractionData)(nil)),
+		"_MessageComponent":       reflect.ValueOf((*_github_com_lb_selfbot_discordgo_MessageComponent)(nil)),
 	}
 }
 
 // _github_com_lb-selfbot_discordgo_EventHandler is an interface wrapper for EventHandler type
-type _github_com_lb-selfbot_discordgo_EventHandler struct {
+type _github_com_lb_selfbot_discordgo_EventHandler struct {
 	IValue  interface{}
 	WHandle func(a0 *Session, a1 interface{})
 	WType   func() string
 }
 
-func (W _github_com_lb-selfbot_discordgo_EventHandler) Handle(a0 *Session, a1 interface{}) {
+func (W _github_com_lb_selfbot_discordgo_EventHandler) Handle(a0 *Session, a1 interface{}) {
 	W.WHandle(a0, a1)
 }
-func (W _github_com_lb-selfbot_discordgo_EventHandler) Type() string {
+func (W _github_com_lb_selfbot_discordgo_EventHandler) Type() string {
 	return W.WType()
 }
 
 // _github_com_lb-selfbot_discordgo_EventInterfaceProvider is an interface wrapper for EventInterfaceProvider type
-type _github_com_lb-selfbot_discordgo_EventInterfaceProvider struct {
+type _github_com_lb_selfbot_discordgo_EventInterfaceProvider struct {
 	IValue interface{}
 	WNew   func() interface{}
 	WType  func() string
 }
 
-func (W _github_com_lb-selfbot_discordgo_EventInterfaceProvider) New() interface{} {
+func (W _github_com_lb_selfbot_discordgo_EventInterfaceProvider) New() interface{} {
 	return W.WNew()
 }
-func (W _github_com_lb-selfbot_discordgo_EventInterfaceProvider) Type() string {
+func (W _github_com_lb_selfbot_discordgo_EventInterfaceProvider) Type() string {
 	return W.WType()
 }
 
 // _github_com_lb-selfbot_discordgo_InteractionData is an interface wrapper for InteractionData type
-type _github_com_lb-selfbot_discordgo_InteractionData struct {
+type _github_com_lb_selfbot_discordgo_InteractionData struct {
 	IValue interface{}
 	WType  func() InteractionType
 }
 
-func (W _github_com_lb-selfbot_discordgo_InteractionData) Type() InteractionType {
+func (W _github_com_lb_selfbot_discordgo_InteractionData) Type() InteractionType {
 	return W.WType()
 }
 
 // _github_com_lb-selfbot_discordgo_MessageComponent is an interface wrapper for MessageComponent type
-type _github_com_lb-selfbot_discordgo_MessageComponent struct {
+type _github_com_lb_selfbot_discordgo_MessageComponent struct {
 	IValue       interface{}
 	WMarshalJSON func() ([]byte, error)
 	WType        func() ComponentType
 }
 
-func (W _github_com_lb-selfbot_discordgo_MessageComponent) MarshalJSON() ([]byte, error) {
+func (W _github_com_lb_selfbot_discordgo_MessageComponent) MarshalJSON() ([]byte, error) {
 	return W.WMarshalJSON()
 }
-func (W _github_com_lb-selfbot_discordgo_MessageComponent) Type() ComponentType {
+func (W _github_com_lb_selfbot_discordgo_MessageComponent) Type() ComponentType {
 	return W.WType()
 }
