@@ -12,13 +12,14 @@
 package discordgo
 
 import (
-	"github.com/goccy/go-json"
 	"fmt"
 	"math"
 	"regexp"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/goccy/go-json"
 
 	tls_client "github.com/bogdanfinn/tls-client"
 	"github.com/gorilla/websocket"
@@ -1648,7 +1649,6 @@ func (m *Member) AvatarURL(size string) string {
 	// The default/empty avatar case should be handled by the above condition
 	return avatarURL(m.Avatar, "", EndpointGuildMemberAvatar(m.GuildID, m.User.ID, m.Avatar),
 		EndpointGuildMemberAvatarAnimated(m.GuildID, m.User.ID, m.Avatar), size)
-
 }
 
 // A Settings stores data for a specific users Discord client settings.
@@ -2373,15 +2373,15 @@ const (
 // Identify is sent during initial handshake with the discord gateway.
 // https://discord.com/developers/docs/topics/gateway#identify
 type Identify struct {
-	Token          string              `json:"token"`
-	Properties     any                 `json:"properties"`
-	Compress       bool                `json:"compress"`
-	Capabilities   int                 `json:"capabilities"`
-	ClientState    ClientState         `json:"client_state"`
-	Presence       GatewayStatusUpdate `json:"presence,omitempty"`
+	Token        string              `json:"token"`
+	Properties   any                 `json:"properties"`
+	Compress     bool                `json:"compress"`
+	Capabilities int                 `json:"capabilities"`
+	ClientState  ClientState         `json:"client_state"`
+	Presence     GatewayStatusUpdate `json:"presence,omitempty"`
 
-	Headers map[string]string `json:"-"`
-	UserAgent string `json:"-"`
+	Headers   map[string]string `json:"-"`
+	UserAgent string            `json:"-"`
 }
 
 // IdentifyProperties contains the "properties" portion of an Identify packet
@@ -2454,6 +2454,7 @@ type IdentifyPropertiesWeb struct {
 	ReleaseChannel         string `json:"release_channel"`
 	ClientBuildNumber      int    `json:"client_build_number"`
 	ClientEventSource      any    `json:"client_event_source"`
+	HasClientMods          bool   `json:"has_client_mods"`
 }
 
 // ClientState contains the "client_state" portion of an Identify packet

@@ -24,9 +24,11 @@ import (
 // VERSION of DiscordGo, follows Semantic Versioning. (http://semver.org/)
 const VERSION = "0.26.5"
 
-var UserAgentMobile = "Discord-Android/242020;RNA"
-var UserAgentDesktop = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9158 Chrome/124.0.6367.243 Electron/30.2.0 Safari/537.36"
-var UserAgentWeb = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36"
+var (
+	UserAgentMobile  = "Discord-Android/273080;RNA"
+	UserAgentDesktop = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) discord/0.0.342 Chrome/124.0.6367.243 Electron/33.4.0 Safari/537.36"
+	UserAgentWeb     = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"
+)
 
 var IdentifyMobile = Identify{
 	Properties: IdentifyPropertiesMobile{
@@ -34,18 +36,18 @@ var IdentifyMobile = Identify{
 		Browser:           "Discord Android",
 		Device:            "vbox86p",
 		SystemLocale:      "en-US",
-		ClientVersion:     "242.20 - rn",
+		ClientVersion:     "273.80 - rn",
 		ReleaseChannel:    "googleRelease",
 		DeviceVendorID:    "91de7152-0a7e-45f7-9ca9-7b33290b391a",
 		BrowserUserAgent:  "",
 		BrowserVersion:    "",
 		OSVersion:         "33",
-		ClientBuildNumber: 242020,
+		ClientBuildNumber: 273080,
 		ClientEventSource: nil,
 		DesignID:          2,
 	},
 	Compress:     true,
-	Capabilities: 30719,
+	Capabilities: 161789,
 	ClientState: ClientState{
 		GuildVersions: map[string]string{},
 	},
@@ -76,7 +78,7 @@ var IdentifyEmbedded = Identify{
 		ClientEventSource: nil,
 	},
 	Compress:     true,
-	Capabilities: 30717,
+	Capabilities: 161789,
 	ClientState: ClientState{
 		GuildVersions: map[string]string{},
 	},
@@ -102,19 +104,19 @@ var IdentifyDiscordClient = Identify{
 		OS:                "Windows",
 		Browser:           "Discord Client",
 		ReleaseChannel:    "stable",
-		ClientVersion:     "1.0.9158",
+		ClientVersion:     "0.0.342",
 		OSVersion:         "10.0.22631",
 		OSArch:            "x64",
 		AppArch:           "x64",
 		SystemLocale:      "en-US",
 		BrowserUserAgent:  UserAgentDesktop,
 		BrowserVersion:    "30.2.0",
-		ClientBuildNumber: 318966,
+		ClientBuildNumber: 383453,
 		NativeBuildNumber: 50841,
 		ClientEventSource: nil,
 	},
 	Compress:     true,
-	Capabilities: 30717,
+	Capabilities: 161789,
 	ClientState: ClientState{
 		GuildVersions: map[string]string{},
 	},
@@ -142,18 +144,19 @@ var IdentifyWeb = Identify{
 		Device:                 "",
 		SystemLocale:           "en-US",
 		BrowserUserAgent:       UserAgentWeb,
-		BrowserVersion:         "127.0.0.0",
+		BrowserVersion:         "134.0.0.0",
 		OSVersion:              "10",
 		Referrer:               "",
 		ReferringDomain:        "",
 		ReferrerCurrent:        "",
 		ReferringDomainCurrent: "",
 		ReleaseChannel:         "stable",
-		ClientBuildNumber:      318966,
+		ClientBuildNumber:      383453,
 		ClientEventSource:      nil,
+		HasClientMods:          false,
 	},
 	Compress:     true,
-	Capabilities: 30717,
+	Capabilities: 161789,
 	ClientState: ClientState{
 		GuildVersions: map[string]string{},
 	},
@@ -183,7 +186,6 @@ var IdentifyWeb = Identify{
 //
 //	e.g. "Bearer ..."
 func New(token string) (s *Session, err error) {
-
 	// Create an empty Session interface.
 	s = &Session{
 		Token:                       token,
