@@ -4,3 +4,6 @@
 
 # Environment variables. Useful for examples.
 .env
+
+# macOS metadata
+.DS_Store

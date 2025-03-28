@@ -200,7 +200,7 @@ func (s *Session) RequestWithLockedBucket(method, urlStr, contentType string, b 
 	}
 
 	if sequence > s.MaxRestRetries {
-		err = fmt.Errorf("Exceeded Max retries HTTP %s, %s", resp.Status, response)
+		err = fmt.Errorf("exceeded max retries HTTP %s, %s", resp.Status, response)
 		return
 	}
 
@@ -225,7 +225,7 @@ func (s *Session) RequestWithLockedBucket(method, urlStr, contentType string, b 
 			s.handleEvent(rateLimitEventType, &RateLimit{TooManyRequests: &rl, URL: urlStr})
 
 			if rl.RetryAfter == 0 {
-				err = fmt.Errorf("Possible global rate limit! HTTP %s, %s", resp.Status, response)
+				err = fmt.Errorf("possible global rate limit! HTTP %s, %s", resp.Status, response)
 				return
 			}
 
@@ -750,7 +750,7 @@ func (s *Session) GuildEdit(guildID string, g *GuildParams) (st *Guild, err erro
 			for _, r := range regions {
 				valid = append(valid, r.ID)
 			}
-			err = fmt.Errorf("Region not a valid region (%q)", valid)
+			err = fmt.Errorf("region not a valid region (%q)", valid)
 			return
 		}
 	}

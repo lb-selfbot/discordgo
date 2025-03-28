@@ -203,9 +203,9 @@ func (s *State) presenceAdd(guildID string, presence *Presence) error {
 
 	for i, p := range guild.Presences {
 		if p.User.ID == presence.User.ID {
-			//guild.Presences[i] = presence
+			// guild.Presences[i] = presence
 
-			//Update status
+			// Update status
 			guild.Presences[i].Activities = presence.Activities
 			if presence.Status != "" {
 				guild.Presences[i].Status = presence.Status
@@ -223,8 +223,8 @@ func (s *State) presenceAdd(guildID string, presence *Presence) error {
 				guild.Presences[i].ClientStatus.Embedded = presence.ClientStatus.Embedded
 			}
 
-			//Update the optionally sent user information
-			//ID Is a mandatory field so you should not need to check if it is empty
+			// Update the optionally sent user information
+			// ID Is a mandatory field so you should not need to check if it is empty
 			guild.Presences[i].User.ID = presence.User.ID
 
 			if presence.User.Avatar != "" {
@@ -792,13 +792,13 @@ func (s *State) MessageAdd(message *Message) error {
 		return ErrNilState
 	}
 
-	c, err := s.Channel(message.ChannelID)
-	if err != nil {
-		return err
-	}
-
 	s.Lock()
 	defer s.Unlock()
+
+	c, ok := s.channelMap[message.ChannelID]
+	if !ok {
+		return ErrStateNotFound
+	}
 
 	// If the message exists, merge in the new message contents.
 	for _, m := range c.Messages {

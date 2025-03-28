@@ -11,13 +11,14 @@ package discordgo
 
 import (
 	"encoding/binary"
-	"github.com/goccy/go-json"
 	"fmt"
 	"net"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/goccy/go-json"
 
 	"github.com/gorilla/websocket"
 	"golang.org/x/crypto/nacl/secretbox"
@@ -56,9 +57,6 @@ type VoiceConnection struct {
 
 	// Used to send a close signal to goroutines
 	close chan struct{}
-
-	// Used to allow blocking until connected
-	connected chan bool
 
 	// Used to pass the sessionid from onVoiceStateUpdate
 	// sessionRecv chan string UNUSED ATM
@@ -812,7 +810,7 @@ func (v *VoiceConnection) opusSender(udpConn *net.UDPConn, close <-chan struct{}
 			sequence++
 		}
 
-		if (timestamp + uint32(size)) >= 0xFFFFFFFF {
+		if (timestamp + uint32(size)) < timestamp {
 			timestamp = 0
 		} else {
 			timestamp += uint32(size)
@@ -949,7 +947,7 @@ func (v *VoiceConnection) reconnect() {
 			wait = 600
 		}
 
-		if v.session.DataReady == false || v.session.wsConn == nil {
+		if !v.session.DataReady || v.session.wsConn == nil {
 			v.log(LogInformational, "cannot reconnect to channel %s with unready session", v.ChannelID)
 			continue
 		}
