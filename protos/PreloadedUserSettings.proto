@@ -22,6 +22,7 @@ message PreloadedUserSettings {
     INBOX_TAB_FOR_YOU = 4;
     INBOX_TAB_GAME_INVITES = 5;
     INBOX_TAB_BOOKMARKS = 6;
+    INBOX_TAB_SCHEDULED = 7;
   }
 
   message InboxSettings {
@@ -66,6 +67,7 @@ message PreloadedUserSettings {
     bool disable_raid_alert_push = 8;
     bool disable_raid_alert_nag = 9;
     optional CustomNotificationSoundConfig custom_notification_sound_config = 10;
+    bool leaderboards_disabled = 11;
   }
 
   message AllGuildSettings {
@@ -74,6 +76,7 @@ message PreloadedUserSettings {
 
   message RecurringDismissibleContentState {
     uint32 last_dismissed_version = 1;
+    uint64 last_dismissed_at_ms = 2;
   }
 
   message UserContentSettings {
@@ -108,6 +111,8 @@ message PreloadedUserSettings {
     optional google.protobuf.BoolValue stream_notifications_enabled = 7;
     optional google.protobuf.BoolValue native_phone_integration_enabled = 8;
     optional SoundboardSettings soundboard_settings = 9;
+    optional google.protobuf.BoolValue disable_stream_previews = 10;
+    optional google.protobuf.FloatValue soundmoji_volume = 11;
   }
 
   enum DmSpamFilterV2 {
@@ -141,8 +146,8 @@ message PreloadedUserSettings {
     optional google.protobuf.BoolValue use_rich_chat_input = 2;
     optional google.protobuf.BoolValue use_thread_sidebar = 3;
     optional google.protobuf.StringValue render_spoilers = 4;
-    repeated string emoji_picker_collapsed_sections = 5;
-    repeated string sticker_picker_collapsed_sections = 6;
+    repeated string emoji_picker_collapsed_sections = 5 [packed = false];
+    repeated string sticker_picker_collapsed_sections = 6 [packed = false];
     optional google.protobuf.BoolValue view_image_descriptions = 7;
     optional google.protobuf.BoolValue show_command_suggestions = 8;
     optional google.protobuf.BoolValue inline_attachment_media = 9;
@@ -160,12 +165,19 @@ message PreloadedUserSettings {
     optional google.protobuf.BoolValue expression_suggestions_enabled = 22;
     optional google.protobuf.BoolValue view_nsfw_commands = 23;
     optional google.protobuf.BoolValue use_legacy_chat_input = 24;
-    repeated string soundboard_picker_collapsed_sections = 25;
+    repeated string soundboard_picker_collapsed_sections = 25 [packed = false];
     optional google.protobuf.UInt32Value dm_spam_filter = 26;
     DmSpamFilterV2 dm_spam_filter_v2 = 27;
     optional google.protobuf.BoolValue include_stickers_in_autocomplete = 28;
     optional ExplicitContentSettings explicit_content_settings = 29;
     optional KeywordFilterSettings keyword_filter_settings = 30;
+    optional google.protobuf.BoolValue include_soundmoji_in_autocomplete = 31;
+  }
+
+  enum ReactionNotificationType {
+    REACTION_NOTIFICATION_TYPE_NOTIFICATIONS_ENABLED = 0;
+    REACTION_NOTIFICATION_TYPE_ONLY_DMS = 1;
+    REACTION_NOTIFICATION_TYPE_NOTIFICATIONS_DISABLED = 2;
   }
 
   message NotificationSettings {
@@ -175,11 +187,25 @@ message PreloadedUserSettings {
     optional google.protobuf.BoolValue enable_burst_reaction_notifications = 4;
     optional google.protobuf.BoolValue quiet_mode = 5;
     fixed64 focus_mode_expires_at_ms = 6;
+    ReactionNotificationType reaction_notifications = 7;
   }
 
   enum GuildActivityStatusRestrictionDefault {
     GUILD_ACTIVITY_STATUS_RESTRICTION_DEFAULT_OFF = 0;
     GUILD_ACTIVITY_STATUS_RESTRICTION_DEFAULT_ON_FOR_LARGE_GUILDS = 1;
+    GUILD_ACTIVITY_STATUS_RESTRICTION_DEFAULT_ON = 2;
+  }
+
+  enum GuildsLeaderboardOptOutDefault {
+    GUILDS_LEADERBOARD_OPT_OUT_DEFAULT_OFF_FOR_NEW_GUILDS = 0;
+    GUILDS_LEADERBOARD_OPT_OUT_DEFAULT_ON_FOR_NEW_GUILDS = 1;
+  }
+
+  enum SlayerSDKReceiveInGameDMs {
+    SLAYER_SDK_RECEIVE_IN_GAME_DMS_UNSET = 0;
+    SLAYER_SDK_RECEIVE_IN_GAME_DMS_ALL = 1;
+    SLAYER_SDK_RECEIVE_IN_GAME_DMS_USERS_WITH_GAME = 2;
+    SLAYER_SDK_RECEIVE_IN_GAME_DMS_NONE = 3;
   }
 
   message PrivacySettings {
@@ -205,6 +231,10 @@ message PreloadedUserSettings {
     optional google.protobuf.BoolValue hide_legacy_username = 22;
     optional google.protobuf.BoolValue inappropriate_conversation_warnings = 23;
     optional google.protobuf.BoolValue recent_games_enabled = 24;
+    GuildsLeaderboardOptOutDefault guilds_leaderboard_opt_out_default = 25;
+    optional google.protobuf.BoolValue allow_game_friend_dms_in_discord = 26;
+    optional google.protobuf.BoolValue default_guilds_restricted_v2 = 27;
+    SlayerSDKReceiveInGameDMs slayer_sdk_receive_dms_in_game = 28;
   }
 
   message DebugSettings {
@@ -249,6 +279,33 @@ message PreloadedUserSettings {
     optional google.protobuf.UInt32Value background_gradient_preset_id = 2;
   }
 
+  enum TimestampHourCycle {
+    TIMESTAMP_HOUR_CYCLE_AUTO = 0;
+    TIMESTAMP_HOUR_CYCLE_H12 = 1;
+    TIMESTAMP_HOUR_CYCLE_H23 = 2;
+  }
+
+  enum LaunchPadMode {
+    LAUNCH_PAD_MODE_LAUNCH_PAD_DISABLED = 0;
+    LAUNCH_PAD_MODE_LAUNCH_PAD_GESTURE_FULL_SCREEN = 1;
+    LAUNCH_PAD_MODE_LAUNCH_PAD_GESTURE_RIGHT_EDGE = 2;
+    LAUNCH_PAD_MODE_LAUNCH_PAD_PULL_TAB = 3;
+  }
+
+  enum UIDensity {
+    UI_DENSITY_UNSET_UI_DENSITY = 0;
+    UI_DENSITY_COMPACT = 1;
+    UI_DENSITY_COZY = 2;
+    UI_DENSITY_RESPONSIVE = 3;
+    UI_DENSITY_DEFAULT = 4;
+  }
+
+  enum SwipeRightToLeftMode {
+    SWIPE_RIGHT_TO_LEFT_MODE_SWIPE_RIGHT_TO_LEFT_UNSET = 0;
+    SWIPE_RIGHT_TO_LEFT_MODE_SWIPE_RIGHT_TO_LEFT_CHANNEL_DETAILS = 1;
+    SWIPE_RIGHT_TO_LEFT_MODE_SWIPE_RIGHT_TO_LEFT_REPLY = 2;
+  }
+
   message AppearanceSettings {
     Theme theme = 1;
     bool developer_mode = 2;
@@ -257,6 +314,11 @@ message PreloadedUserSettings {
     optional google.protobuf.StringValue channel_list_layout = 6;
     optional google.protobuf.StringValue message_previews = 7;
     optional google.protobuf.BoolValue search_result_exact_count_enabled = 8;
+    TimestampHourCycle timestamp_hour_cycle = 9;
+    optional google.protobuf.BoolValue happening_now_cards_disabled = 10;
+    LaunchPadMode launch_pad_mode = 11;
+    UIDensity ui_density = 12;
+    SwipeRightToLeftMode swipe_right_to_left_mode = 13;
   }
 
   message GuildFolder {
@@ -337,10 +399,23 @@ message PreloadedUserSettings {
 
   message SafetySettings {
     SafetySettingsPresetType safety_settings_preset = 1;
+    bool ignore_profile_speedbump_disabled = 2;
   }
 
   message ICYMISettings {
     fixed64 feed_generated_at = 1;
+  }
+
+  message ApplicationDMSettings {
+    bool dm_disabled = 1;
+  }
+
+  message ApplicationSettings {
+    optional ApplicationDMSettings app_dm_settings = 1;
+  }
+
+  message AllApplicationSettings {
+    map<fixed64, ApplicationSettings> app_settings = 1;
   }
 
   optional Versions versions = 1;
@@ -365,4 +440,5 @@ message PreloadedUserSettings {
   optional ForLaterSettings for_later = 20;
   optional SafetySettings safety_settings = 21;
   optional ICYMISettings icymi_settings = 22;
+  optional AllApplicationSettings applications = 23;
 }
