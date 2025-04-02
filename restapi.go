@@ -279,6 +279,18 @@ func (s *Session) User(userID string) (st *User, err error) {
 	return
 }
 
+// UserWithFallback returns a User from state if available, otherwise
+// it will make a request to the API to get the user.
+// userID    : A user ID or "@me" which is a shortcut of current user ID
+func (s *Session) UserWithFallback(userID string) (*User, error) {
+	user, err := s.State.GetUser(userID)
+	if err == nil {
+		return user, nil
+	}
+
+	return s.User(userID)
+}
+
 // UserAvatar is deprecated. Please use UserAvatarDecode
 // userID    : A user ID or "@me" which is a shortcut of current user ID
 func (s *Session) UserAvatar(userID string) (img image.Image, err error) {
