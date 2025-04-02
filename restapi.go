@@ -1738,6 +1738,25 @@ func (s *Session) ChannelTyping(channelID string) (err error) {
 	return
 }
 
+// ChannelTypingDuration broadcasts to all members that authenticated user is typing in
+// the given channel for a specific duration.
+// channelID  : The ID of a Channel
+// duration   : The duration to broadcast typing for
+func (s *Session) ChannelTypingDuration(channelID string, duration time.Duration) (err error) {
+	const interval = 5 * time.Second
+
+	iterations := int(duration/interval) + 1
+	for range iterations {
+		if err := s.ChannelTyping(channelID); err != nil {
+			return err
+		}
+
+		time.Sleep(interval)
+	}
+
+	return nil
+}
+
 // ChannelMessages returns an array of Message structures for messages within
 // a given channel.
 // channelID : The ID of a Channel.
