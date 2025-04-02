@@ -201,50 +201,50 @@ func (s *State) presenceAdd(guildID string, presence *Presence) error {
 		return ErrStateNotFound
 	}
 
-	for i, p := range guild.Presences {
-		if p.User.ID == presence.User.ID {
-			// guild.Presences[i] = presence
-
-			// Update status
-			guild.Presences[i].Activities = presence.Activities
-			if presence.Status != "" {
-				guild.Presences[i].Status = presence.Status
-			}
-			if presence.ClientStatus.Desktop != "" {
-				guild.Presences[i].ClientStatus.Desktop = presence.ClientStatus.Desktop
-			}
-			if presence.ClientStatus.Mobile != "" {
-				guild.Presences[i].ClientStatus.Mobile = presence.ClientStatus.Mobile
-			}
-			if presence.ClientStatus.Web != "" {
-				guild.Presences[i].ClientStatus.Web = presence.ClientStatus.Web
-			}
-			if presence.ClientStatus.Embedded != "" {
-				guild.Presences[i].ClientStatus.Embedded = presence.ClientStatus.Embedded
-			}
-
-			// Update the optionally sent user information
-			// ID Is a mandatory field so you should not need to check if it is empty
-			guild.Presences[i].User.ID = presence.User.ID
-
-			if presence.User.Avatar != "" {
-				guild.Presences[i].User.Avatar = presence.User.Avatar
-			}
-			if presence.User.Discriminator != "" {
-				guild.Presences[i].User.Discriminator = presence.User.Discriminator
-			}
-			if presence.User.Email != "" {
-				guild.Presences[i].User.Email = presence.User.Email
-			}
-			if presence.User.Token != "" {
-				guild.Presences[i].User.Token = presence.User.Token
-			}
-			if presence.User.Username != "" {
-				guild.Presences[i].User.Username = presence.User.Username
-			}
-
-			return nil
+	for _, savedPresence := range guild.Presences {
+		if savedPresence.User.ID != presence.User.ID {
+			continue
 		}
+
+		// Update status
+		savedPresence.Activities = presence.Activities
+		if presence.Status != "" {
+			savedPresence.Status = presence.Status
+		}
+		if presence.ClientStatus.Desktop != "" {
+			savedPresence.ClientStatus.Desktop = presence.ClientStatus.Desktop
+		}
+		if presence.ClientStatus.Mobile != "" {
+			savedPresence.ClientStatus.Mobile = presence.ClientStatus.Mobile
+		}
+		if presence.ClientStatus.Web != "" {
+			savedPresence.ClientStatus.Web = presence.ClientStatus.Web
+		}
+		if presence.ClientStatus.Embedded != "" {
+			savedPresence.ClientStatus.Embedded = presence.ClientStatus.Embedded
+		}
+
+		// Update the optionally sent user information
+		// ID Is a mandatory field so you should not need to check if it is empty
+		savedPresence.User.ID = presence.User.ID
+
+		if presence.User.Avatar != "" {
+			savedPresence.User.Avatar = presence.User.Avatar
+		}
+		if presence.User.Discriminator != "" {
+			savedPresence.User.Discriminator = presence.User.Discriminator
+		}
+		if presence.User.Email != "" {
+			savedPresence.User.Email = presence.User.Email
+		}
+		if presence.User.Token != "" {
+			savedPresence.User.Token = presence.User.Token
+		}
+		if presence.User.Username != "" {
+			savedPresence.User.Username = presence.User.Username
+		}
+
+		return nil
 	}
 
 	guild.Presences = append(guild.Presences, presence)
@@ -1053,18 +1053,19 @@ func (s *State) OnInterface(se *Session, i interface{}) (err error) {
 			err = s.MemberRemove(t.Member)
 		}
 	case *GuildMembersChunk:
+		s.Lock()
 		if s.TrackMembers {
 			for i := range t.Members {
 				t.Members[i].GuildID = t.GuildID
-				err = s.MemberAdd(t.Members[i])
+				err = s.memberAdd(t.Members[i])
 			}
 		}
-
 		if s.TrackPresences {
 			for _, p := range t.Presences {
-				err = s.PresenceAdd(t.GuildID, p)
+				err = s.presenceAdd(t.GuildID, p)
 			}
 		}
+		s.Unlock()
 	case *GuildRoleCreate:
 		if s.TrackRoles {
 			err = s.RoleAdd(t.GuildID, t.Role)

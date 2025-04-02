@@ -522,20 +522,14 @@ func (s *Session) UserChannelPermissions(userID, channelID string) (apermissions
 	}
 
 	// Otherwise try get as much data from state as possible, falling back to the network.
-	channel, err := s.State.Channel(channelID)
-	if err != nil || channel == nil {
-		channel, err = s.Channel(channelID)
-		if err != nil {
-			return
-		}
+	channel, err := s.ChannelWithFallback(channelID)
+	if err != nil {
+		return
 	}
 
-	guild, err := s.State.Guild(channel.GuildID)
-	if err != nil || guild == nil {
-		guild, err = s.Guild(channel.GuildID)
-		if err != nil {
-			return
-		}
+	guild, err := s.GuildWithFallback(channel.GuildID)
+	if err != nil {
+		return
 	}
 
 	if userID == guild.OwnerID {
@@ -681,6 +675,18 @@ func (s *Session) Guild(guildID string) (st *Guild, err error) {
 
 	err = unmarshal(body, &st)
 	return
+}
+
+// GuildWithFallback returns a Guild from state if available, otherwise
+// it will make a request to the API to get the guild.
+// guildID  :  The ID of a Guild
+func (s *Session) GuildWithFallback(guildID string) (*Guild, error) {
+	guild, err := s.State.Guild(guildID)
+	if err == nil {
+		return guild, nil
+	}
+
+	return s.Guild(guildID)
 }
 
 // GuildWithCounts returns a Guild structure of a specific Guild with approximate member and presence counts.
@@ -1656,6 +1662,18 @@ func (s *Session) Channel(channelID string) (st *Channel, err error) {
 
 	err = unmarshal(body, &st)
 	return
+}
+
+// ChannelWithFallback returns a Channel from state if available, otherwise
+// it will make a request to the API to get the channel.
+// channelID  : The ID of the Channel you want returned.
+func (s *Session) ChannelWithFallback(channelID string) (*Channel, error) {
+	channel, err := s.State.Channel(channelID)
+	if err == nil {
+		return channel, nil
+	}
+
+	return s.Channel(channelID)
 }
 
 // ChannelEdit edits the given channel and returns the updated Channel data.
