@@ -22,6 +22,15 @@ func SnowflakeTimestamp(ID string) (t time.Time, err error) {
 	return
 }
 
+// MustSnowflakeTimestamp is a helper function that must return a time.Time from a Snowflake ID.
+func MustSnowflakeTimestamp(ID string) time.Time {
+	t, err := SnowflakeTimestamp(ID)
+	if err != nil {
+		return time.Time{}
+	}
+	return t
+}
+
 // MultipartBodyWithJSON returns the contentType and body for a discord request
 // data  : The object to encode for payload_json in the multipart request
 // files : Files to include in the request
