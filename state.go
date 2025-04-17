@@ -987,7 +987,7 @@ func (s *State) onReady(se *Session, r *Ready) (err error) {
 }
 
 // OnInterface handles all events related to states.
-func (s *State) OnInterface(se *Session, i interface{}) (err error) {
+func (s *State) OnInterface(se *Session, i any) (err error) {
 	if s == nil {
 		return ErrNilState
 	}

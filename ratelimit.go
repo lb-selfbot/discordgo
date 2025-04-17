@@ -29,7 +29,6 @@ type RateLimiter struct {
 
 // NewRatelimiter returns a new RateLimiter
 func NewRatelimiter() *RateLimiter {
-
 	return &RateLimiter{
 		buckets: make(map[string]*Bucket),
 		global:  new(int64),
@@ -115,7 +114,7 @@ type Bucket struct {
 
 	lastReset       time.Time
 	customRateLimit *customRateLimit
-	Userdata        interface{}
+	Userdata        any
 }
 
 // Release unlocks the bucket and reads the headers to update the buckets ratelimit info

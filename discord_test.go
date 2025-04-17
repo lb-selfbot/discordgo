@@ -49,7 +49,6 @@ func TestMain(m *testing.M) {
 
 // TestNewToken tests the New() function with a Token.
 func TestNewToken(t *testing.T) {
-
 	if envOAuth2Token == "" {
 		t.Skip("Skipping New(token), DGU_TOKEN not set")
 	}
@@ -118,14 +117,13 @@ func TestOpenClose(t *testing.T) {
 }
 
 func TestAddHandler(t *testing.T) {
-
 	testHandlerCalled := int32(0)
 	testHandler := func(s *Session, m *MessageCreate) {
 		atomic.AddInt32(&testHandlerCalled, 1)
 	}
 
 	interfaceHandlerCalled := int32(0)
-	interfaceHandler := func(s *Session, i interface{}) {
+	interfaceHandler := func(s *Session, i any) {
 		atomic.AddInt32(&interfaceHandlerCalled, 1)
 	}
 
@@ -162,7 +160,6 @@ func TestAddHandler(t *testing.T) {
 }
 
 func TestRemoveHandler(t *testing.T) {
-
 	testHandlerCalled := int32(0)
 	testHandler := func(s *Session, m *MessageCreate) {
 		atomic.AddInt32(&testHandlerCalled, 1)
@@ -285,7 +282,6 @@ func TestComplexScheduledEvents(t *testing.T) {
 			Location: "https://discord.com",
 		},
 	})
-
 	if err != nil {
 		t.Fatal("err on GuildScheduledEventEdit. Change of entity type to external failed")
 	}
@@ -295,7 +291,6 @@ func TestComplexScheduledEvents(t *testing.T) {
 		EntityType:     GuildScheduledEventEntityTypeVoice,
 		EntityMetadata: nil,
 	})
-
 	if err != nil {
 		t.Fatal("err on GuildScheduledEventEdit. Change of entity type to voice failed")
 	}

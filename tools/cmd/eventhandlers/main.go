@@ -39,20 +39,20 @@ func (eh {{privateName .}}EventHandler) Type() string {
 }
 {{if isDiscordEvent .}}
 // New returns a new instance of {{.}}.
-func (eh {{privateName .}}EventHandler) New() interface{} {
+func (eh {{privateName .}}EventHandler) New() any {
   return &{{.}}{}
 }{{end}}
 // Handle is the handler for {{.}} events.
-func (eh {{privateName .}}EventHandler) Handle(s *Session, i interface{}) {
+func (eh {{privateName .}}EventHandler) Handle(s *Session, i any) {
   if t, ok := i.(*{{.}}); ok {
     eh(s, t)
   }
 }
 
 {{end}}
-func handlerForInterface(handler interface{}) EventHandler {
+func handlerForInterface(handler any) EventHandler {
   switch v := handler.(type) {
-  case func(*Session, interface{}):
+  case func(*Session, any):
     return interfaceEventHandler(v){{range .}}
   case func(*Session, *{{.}}):
     return {{privateName .}}EventHandler(v){{end}}
