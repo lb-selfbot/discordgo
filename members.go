@@ -1,6 +1,7 @@
 package discordgo
 
 import (
+	"errors"
 	"fmt"
 	"math"
 	"strconv"
@@ -146,6 +147,53 @@ func (s *Session) FetchGuildMembers(params FetchGuildMembersParams) ([]*Member, 
 	}
 
 	return members, err
+}
+
+func (s *Session) QueryMember(guildID, userID string, reload bool, iteration ...int) (*Member, error) {
+	i := 0
+	if len(iteration) > 0 {
+		i = iteration[0]
+	}
+
+	member, err := s.State.Member(guildID, userID)
+	if err == nil && !reload {
+		return member, nil
+	}
+
+	userIDInt, err := strconv.Atoi(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	params := NewQueryGuildMembersParams(guildID)
+	params.UserIDs = []int{userIDInt}
+
+	members, err := s.QueryGuildMembers(params)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(members) == 0 && i < 3 {
+		// User is not in this server, find mutual servers
+		profile, err := s.UserProfile(userID)
+		if err != nil {
+			return nil, err
+		}
+
+		if len(profile.MutualGuilds) == 0 {
+			// No mutuals, can't get member
+			return nil, errors.New("no mutual guilds")
+		}
+
+		return s.QueryMember(profile.MutualGuilds[0].ID, userID, reload, i+1)
+	}
+
+	member = members[0]
+	if member == nil {
+		return nil, errors.New("member not found")
+	}
+
+	return member, nil
 }
 
 // Query guild members
@@ -497,10 +545,10 @@ func (m *MemberSidebar) HandleMemberListUpdate(event *GuildMemberListUpdate) {
 
 	if m.Limit == 0 {
 		m.Limit = m.GetLimit()
-		
+
 		go func() {
 			defer m.Session.ErrorChecker()
-					
+
 			m.StartSubscribing()
 		}()
 	}
@@ -578,10 +626,10 @@ func (m *MemberSidebar) GetMembers() ([]*Member, error) {
 						m.Limit = 10000
 					}
 				}
-				
+
 				go func() {
 					defer m.Session.ErrorChecker()
-							
+
 					m.StartSubscribing()
 				}()
 			}

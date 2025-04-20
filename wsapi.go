@@ -18,7 +18,6 @@ import (
 	"io"
 	nethttp "net/http"
 	"slices"
-	"strconv"
 	"sync/atomic"
 	"time"
 
@@ -237,24 +236,9 @@ func (s *Session) subscribeGuilds(wsConn *websocket.Conn, listening <-chan any) 
 
 		s.log(LogInformational, "subscribing to guild %s", guild.ID)
 
-		// Get self
-		self, err := s.State.Member(guild.ID, s.State.User.ID)
+		self, err := s.QueryMember(guild.ID, s.State.User.ID, true)
 		if err != nil {
-			params := NewQueryGuildMembersParams(guild.ID)
-
-			idInt, _ := strconv.Atoi(s.State.User.ID)
-			params.UserIDs = []int{idInt}
-
-			membersList, err := s.QueryGuildMembers(params)
-			if err != nil {
-				continue
-			}
-
-			if len(membersList) == 0 {
-				continue
-			}
-
-			self = membersList[0]
+			continue
 		}
 
 		// Get channels
