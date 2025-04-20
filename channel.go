@@ -7,6 +7,20 @@ type CategoryData struct {
 	Channels []*Channel
 }
 
+func (d *CategoryData) GetCategoryID() string {
+	if d.Category != nil {
+		return d.Category.ID
+	}
+	return ""
+}
+
+func (d *CategoryData) GetCategoryName() string {
+	if d.Category != nil {
+		return d.Category.Name
+	}
+	return "No Category"
+}
+
 // MapCategories takes a slice of channels and returns a slice of CategoryData.
 func MapCategories(channels []*Channel) []*CategoryData {
 	data := make([]*CategoryData, 0)
