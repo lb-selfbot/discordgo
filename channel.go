@@ -18,9 +18,8 @@ func MapCategories(channels []*Channel) []*CategoryData {
 			categories = append(categories, channel)
 			continue
 		}
-		if channel.ParentID != "" {
-			channelsByParentID[channel.ParentID] = append(channelsByParentID[channel.ParentID], channel)
-		}
+
+		channelsByParentID[channel.ParentID] = append(channelsByParentID[channel.ParentID], channel)
 	}
 
 	for _, categoryChannel := range categories {
@@ -32,6 +31,13 @@ func MapCategories(channels []*Channel) []*CategoryData {
 			category.Channels = make([]*Channel, 0)
 		}
 		data = append(data, category)
+	}
+
+	if orphanChannels, ok := channelsByParentID[""]; ok {
+		data = append(data, &CategoryData{
+			Category: nil,
+			Channels: orphanChannels,
+		})
 	}
 
 	return data
