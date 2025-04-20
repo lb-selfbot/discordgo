@@ -1,0 +1,38 @@
+package discordgo
+
+// CategoryData represents a category in a guild.
+// It contains the category channel and a list of channels that belong to it.
+type CategoryData struct {
+	Category *Channel
+	Channels []*Channel
+}
+
+// MapCategories takes a slice of channels and returns a slice of CategoryData.
+func MapCategories(channels []*Channel) []*CategoryData {
+	data := make([]*CategoryData, 0)
+	channelsByParentID := make(map[string][]*Channel)
+	categories := make([]*Channel, 0)
+
+	for _, channel := range channels {
+		if channel.Type == ChannelTypeGuildCategory {
+			categories = append(categories, channel)
+			continue
+		}
+		if channel.ParentID != "" {
+			channelsByParentID[channel.ParentID] = append(channelsByParentID[channel.ParentID], channel)
+		}
+	}
+
+	for _, categoryChannel := range categories {
+		category := &CategoryData{
+			Category: categoryChannel,
+			Channels: channelsByParentID[categoryChannel.ID],
+		}
+		if category.Channels == nil {
+			category.Channels = make([]*Channel, 0)
+		}
+		data = append(data, category)
+	}
+
+	return data
+}
