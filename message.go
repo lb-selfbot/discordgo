@@ -10,12 +10,13 @@
 package discordgo
 
 import (
-	"github.com/goccy/go-json"
 	"fmt"
 	"io"
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/goccy/go-json"
 )
 
 // MessageType is the type of Message
@@ -200,7 +201,7 @@ func (m *Message) GetCustomEmojis() []*Emoji {
 // GetLink gets the link pointing to a message.
 func (m *Message) GetLink() string {
 	link := "https://discord.com/channels/"
-	
+
 	if m.GuildID == "" {
 		link += "@me"
 	} else {
@@ -210,6 +211,18 @@ func (m *Message) GetLink() string {
 	link += "/" + m.ChannelID + "/" + m.ID
 
 	return link
+}
+
+// IsUserMentioned checks if the user is mentioned in the message.
+// Does not check if the message mentions everyone or a role.
+func (m *Message) IsUserMentioned(userID string) bool {
+	for _, mention := range m.Mentions {
+		if mention.ID == userID {
+			return true
+		}
+	}
+
+	return false
 }
 
 // MessageFlags is the flags of "message" (see MessageFlags* consts)
